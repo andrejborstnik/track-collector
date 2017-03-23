@@ -1,0 +1,387 @@
+#! /bin/bash
+
+#
+# Node application specific settings.
+#
+
+
+# Change to the app folder.
+cd $__ROOT__/$__APP__
+
+# Go to application folder.
+function go-app() {
+    if [ -z "$__APP__" ]
+    then
+        error "go-app: application is not defined (use cd when activation environment)!"
+        return
+    fi
+
+    if ! [ -d "$__ROOT__/$__APP__" ]
+    then
+        error "go-app: application '$__APP__' does not exist!"
+        return
+    fi
+
+    cd $__ROOT__/$__APP__
+}
+
+# Go to application bin folder.
+function go-app-bin() {
+    if ! [ -e $__ROOT__/$__APP__/bin ]
+    then
+        error "go-app-bin: application '$__APP__' does not have 'bin' directory!"
+        return
+    fi
+
+    cd $__ROOT__/$__APP__/bin
+}
+
+# Start backend and frontend servers.
+function __finish__() {
+    if ! [ -z "$(jobs -p)" ]
+    then
+        kill -15 $(jobs -p)
+    fi
+}
+trap __finish__ EXIT INT TERM
+
+function op-start() {
+    local OLD=$PWD
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-start: starts backend and frontend servers."
+                return
+            ;;
+        esac
+    fi
+
+    op-start-be -b
+    op-start-fe -b
+
+    # Wait for all background processes to finish.
+    wait
+
+    cd $OLD
+}
+
+# Start backend server.
+function op-start-be() {
+    local OLD=$PWD
+    local APP_PATH=$__ROOT__/backend
+    local IS_BACKGROUND=0
+
+    if [ ! -e $APP_PATH ]
+    then
+        error "Application path '$APP_PATH' does not exist!"
+        return
+    fi
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-start [-b]: starts backend application."
+                echo "    -b : start application in background."
+                return
+            ;;
+            '-b')
+                IS_BACKGROUND=1   
+            ;;
+        esac
+    fi
+
+    cd $APP_PATH
+
+    if [ $IS_BACKGROUND == "1" ]
+    then
+        npm start &
+    else
+        npm start
+    fi
+
+    cd $OLD
+}
+
+# Start frontend server.
+function op-start-fe() {
+    local OLD=$PWD
+    local APP_PATH=$__ROOT__/frontend
+    local IS_BACKGROUND=0
+
+    if [ ! -e $APP_PATH ]
+    then
+        error "Application path '$APP_PATH' does not exist!"
+        return
+    fi
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-start [-b]: starts frontend application."
+                echo "    -b : start application in background."
+                return
+            ;;
+            '-b')
+                IS_BACKGROUND=1   
+            ;;
+        esac
+    fi
+
+    cd $APP_PATH
+
+    if [ $IS_BACKGROUND == "1" ]
+    then
+        npm start &
+    else
+        npm start
+    fi
+
+    cd $OLD
+}
+
+# Run backend tests.
+function op-test-be() {
+    local OLD=$PWD
+    local APP_PATH=$__ROOT__/backend
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-test-be: runs backend tests."
+                return
+            ;;
+        esac
+    fi
+
+    cd $APP_PATH
+    npm test
+
+    cd $OLD
+}
+
+# Run frontend tests.
+function op-test-fe() {
+    local OLD=$PWD
+    local APP_PATH=$__ROOT__/frontend
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-test-fe: runs frontend tests."
+                return
+            ;;
+        esac
+    fi
+
+    cd $APP_PATH
+    npm run test-fe
+
+    cd $OLD
+}
+
+# Analyse frontend javascript code.
+function op-analyse-frontend-javascript-code() {
+    local OLD=$PWD
+    local APP_PATH=$__ROOT__/frontend
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-analyse-frontend-javascript-code: analyses frontend javascript code. The analyses is opened in the browser."
+                return
+            ;;
+        esac
+    fi
+
+    cd $APP_PATH
+    npm run analyse
+
+    cd $OLD
+}
+
+
+# Deploy master branch to staging server.
+function op-deploy-master-branch-to-stage-and-restart() {
+    local OLD=$PWD
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-deploy-master-branch-to-stage-and-restart: deploys master branch to staging server and restart it."
+                return
+            ;;
+        esac
+    fi
+
+    cd $BIN_DIR
+    fab app.deploy:stage,branch=master,restart=True    
+
+    cd $OLD
+}
+
+# Deploy production branch to staging server.
+function op-deploy-production-branch-to-stage-and-restart() {
+    local OLD=$PWD
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-deploy-production-branch-to-stage-and-restart: deploys production branch to staging server and restart it."
+                return
+            ;;
+        esac
+    fi
+
+    cd $BIN_DIR
+    fab app.deploy:stage,restart=True    
+
+    cd $OLD
+}
+
+# # Deploy master branch to production server.
+# function op-deploy-master-branch-to-prod-and-restart() {
+#     local OLD=$PWD
+
+#     if [ $# -gt 0 ]
+#     then
+#         case $1 in
+#             '-h' | '--help')
+#                 echo "op-deploy-master-branch-to-prod-and-restart: deploys master branch to production server and restart it."
+#                 return
+#             ;;
+#         esac
+#     fi
+
+#     cd $BIN_DIR
+#     fab app.deploy:prod,branch=master,restart=True    
+
+#     cd $OLD
+# }
+
+# Deploy production branch to production server.
+function op-deploy-production-branch-to-prod-and-restart() {
+    local OLD=$PWD
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-deploy-production-branch-to-prod-and-restart: deploys production branch to production server and restart it."
+                return
+            ;;
+        esac
+    fi
+
+    cd $BIN_DIR
+    fab app.deploy:prod,restart=True    
+
+    cd $OLD
+}
+
+# Visualize git code repository.
+function op-visualize-git-repository() {
+    local OLD=$PWD
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-visualize-git-repository: visually show current git repository code evolution."
+                return
+            ;;
+        esac
+    fi
+
+    cd $BIN_DIR
+    ./activate.sh run visualize
+
+    cd $OLD
+}
+
+# Import last database from production.
+function op-import-last-database-from-production() {
+    local OLD=$PWD
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-import-last-database-from-production: the last database backup in production will be imported locally. The local database will be overwritten."
+                return
+            ;;
+        esac
+    fi
+
+    cd $BIN_DIR
+    LAST_DB=$(fab app.list_db:prod | head -1)
+    DB_NAME=$(eval 'echo $DB_'$__MODE__)
+    fab app.import_db:prod,file=$LAST_DB,drop=1,db=$DB_NAME
+
+    cd $OLD
+}
+
+# Rebuild cache.
+function op-rebuild-cache() {
+    local OLD=$PWD
+    local APP_PATH=$__ROOT__/frontend
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-rebuild-cache: rebuilds frontend applications's cache."
+                return
+            ;;
+        esac
+    fi
+
+    cd $APP_PATH
+    [ -d ./build ] && rm -rf ./build
+
+    # Rebuild the cache.
+    gulp find-vendor-deps
+    gulp split-bundler-vendor
+
+    cd $OLD
+}
+
+# Backup database locally.
+function op-backup-database-locally() {
+    local OLD=$PWD
+
+    if [ $# -gt 0 ]
+    then
+        case $1 in
+            '-h' | '--help')
+                echo "op-backup-database: backups current (environment) database to a local backup folder."
+                return
+            ;;
+        esac
+    fi
+
+    cd $BIN_DIR
+    
+    # Indirect variable reference with eval.
+    VAR=DB_${__MODE__}
+    DB_NAME=$(eval 'echo $'$VAR)
+
+    # Run backup plugin on the right database.
+    if [ -n "$DB_NAME" ]
+    then
+        ./activate.sh run mongo backup $DB_NAME
+    else
+        error "Variable $VAR is not set in the environment!"
+    fi
+
+    cd $OLD
+}
+

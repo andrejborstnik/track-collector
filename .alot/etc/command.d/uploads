@@ -1,0 +1,10 @@
+#! /bin/bash
+
+#
+# Manage file uploads.
+#
+
+NODE=$(which node)
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+$NODE $DIR/../../app/bin/uploads.js "$@"

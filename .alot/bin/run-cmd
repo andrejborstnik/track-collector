@@ -1,0 +1,15 @@
+#! /bin/bash
+
+# 
+# Run custom command as a second line shebang
+#
+
+SEC_LINE=$(head -2 $1 | tail -1)
+LINE_ARR=($SEC_LINE)
+
+if [[ ${LINE_ARR[0]} == *"!" ]]
+then
+    CMD=${LINE_ARR[1]}
+    PARAMS=${LINE_ARR[@]:2}
+    /usr/bin/env $CMD $PARAMS $@
+fi

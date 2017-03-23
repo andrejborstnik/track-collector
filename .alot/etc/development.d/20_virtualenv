@@ -1,0 +1,110 @@
+#! /bin/bash
+
+#
+# CONSTS
+#
+
+
+# The name of the python environment.
+PY_ENV_NAME=.env
+
+# Environment directory.
+PY_ENV_DIR=$__ROOT__/$PY_ENV_NAME
+
+# Virtualenv python executable.
+PYTHON=$PY_ENV_DIR/bin/python
+
+# Virtualenv command.
+VIRTUALENV=$(which virtualenv)
+
+# New python path.
+export PYTHONPATH=$__ROOT__:$__ROOT__/$__CONFIG__
+
+
+#
+# Preconditions to create the virtual environment.
+#
+
+# Check if pip tool exists present.
+if [ $SYSTEM == "Darwin" -a -z "$BREW" ]
+then
+    error "brew has not been found. Please install it."
+    exit 1
+fi
+
+# Check if pip tool exists present.
+if [ -z "$PIP" ]
+then
+    [ $SYSTEM == "Darwin" ] && error "pip has not been found. Maybe you want to use 'brew install pip'."
+    [ $SYSTEM == "Linux" ] && error "pip has not been found. Maybe you want to use 'sudo apt-get install python-pip'."
+    exit 1
+fi
+
+# Check if virtualenv tool exists.
+if [ -z "$VIRTUALENV" ]
+then
+    warning "virtualenv has not been found, installing ..."
+    sudo $PIP install virtualenv
+fi
+
+# Linux support packages.
+if [ $SYSTEM == "Linux" ]
+then
+    sudo apt-get update
+    sudo apt-get install build-essential libssl-dev libffi-dev libfreetype6-dev libpng-dev pkg-config python-dev libblas3 liblapack3 gfortran
+fi
+
+#
+# Create virtual environment if there is none.
+#
+
+# Check if etc project folder exists, otherwise create it.
+if ! [ -d "$ETC_DIR" ]
+then
+    echo "Creating etc directory ..."
+    mkdir $ETC_DIR
+fi
+
+# Check if package_list file for virtual python environment exists, otherwise create it.
+if ! [ -f $ETC_DIR/package_list ]
+then
+    echo "Creating empty package_list in it ..."
+    touch $ETC_DIR/package_list
+fi
+
+# If environment exists, check if all packages on packages' list are installed.
+if [ -d $PY_ENV_DIR ]
+then
+    # Path to python site packages directory.
+    SP_DIR=$($PYTHON -c "from distutils.sysconfig import get_python_lib; print(get_python_lib());")
+
+    # Try each package from the packages' list in turn.
+    for package in $(cat $ETC_DIR/package_list | grep -v "#" | cut -d"=" -f 1)
+    do
+        if ! ls -d $SP_DIR/$package* >/dev/null 2>&1
+        then
+            warning "Package '$package' is not installed yet. Installing missing package ..."
+            $PY_ENV_DIR/bin/pip install $package
+        fi
+    done
+fi
+
+# Check if environment exists or create it.
+if ! [ -d $PY_ENV_DIR ]
+then
+    virtualenv $PY_ENV_DIR
+    $PY_ENV_DIR/bin/pip install -r $ETC_DIR/package_list
+fi
+
+# Check if frameworkpython script exists in environment or copy it.
+if [ ! -e "$PY_ENV_DIR/bin/frameworkpython" -a -e "$ETC_DIR/development/frameworkpython" ]
+then
+    cp $ETC_DIR/development/frameworkpython $PY_ENV_DIR/bin/frameworkpython
+fi
+
+# Activate python virtual environment.
+if [ -e $PY_ENV_DIR/bin/activate ]
+then
+    source $PY_ENV_DIR/bin/activate
+fi
+

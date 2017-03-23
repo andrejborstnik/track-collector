@@ -1,0 +1,14 @@
+[Unit]
+Description=<ServiceDescription>
+After=network.target
+
+[Service]
+ExecStart=<WorkingDirectory>/etc/staging/<ServiceScript>
+WorkingDirectory=<WorkingDirectory>
+User=<User>
+Group=<Group>
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+

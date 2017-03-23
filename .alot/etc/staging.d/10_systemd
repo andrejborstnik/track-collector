@@ -1,0 +1,43 @@
+#! /bin/bash
+
+#
+# Staging configuration
+#
+
+
+#
+# CONST
+#
+
+
+DEV_ETC=$ETC_DIR/development
+STAGE_ETC=$ETC_DIR/staging
+SERVICE_NAME=$SN_STAGE
+SERVICE_PATH=/etc/systemd/system/$SERVICE_NAME
+
+USER=$USER_STAGE
+GROUP=$GROUP_STAGE
+SERVICE_SCRIPT=node-app-start.sh
+SERVICE_DESCRIPTION=$DESC_STAGE
+
+
+#
+# MAIN
+#
+
+
+# Prepare systemd service.
+if [ $SYSTEM == "Linux" ]
+then
+    sudo cp $STAGE_ETC/generic.service $SERVICE_PATH
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<ServiceDescription>" "$SERVICE_DESCRIPTION"
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<WorkingDirectory>" "$__ROOT__/$ENV_NAME"
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<User>" "$USER"
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<Group>" "$GROUP"
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<ServiceScript>" "$SERVICE_SCRIPT"
+
+    # Enable the service.
+    sudo systemctl enable $SERVICE_NAME
+    # Reload systemctl daemon.
+    sudo systemctl daemon-reload
+fi

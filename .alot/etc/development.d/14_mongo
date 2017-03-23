@@ -1,0 +1,24 @@
+#! /bin/bash
+
+#
+# Mongo database.
+#
+
+
+# Find mongo.
+MONGO=$(which mongo)
+
+# Check if mongo exists on the system.
+[ "$SYSTEM" == "Darwin" -a -z "$MONGO" ] && error "Mongo database has not been found. Maybe you want to use 'brew install mongo'." && exit 1
+[ "$SYSTEM" == "Linux" -a -z "$MONGO" ] && error "Mongo database has not been found. Maybe you want to use 'apt-get install mongo'." && exit 1
+
+PS_MONGO=$(pgrep -lf mongo)
+
+[ -z "$PS_MONGO" ] && error "Mongo database server is not running." && exit 1
+
+# Check for jq (json helper).
+JQ=$(which jq)
+
+# Check if jq exists on the system.
+[ "$SYSTEM" == "Darwin" -a -z "$JQ" ] && error "JQ has not been found. Maybe you want to use 'brew install jq'." && exit 1
+[ "$SYSTEM" == "Linux" -a -z "$JQ" ] && error "JQ has not been found. Maybe you want to use 'apt-get install jq'." && exit 1

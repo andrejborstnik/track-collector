@@ -1,0 +1,43 @@
+#! /bin/bash
+
+#
+# Production configuration
+#
+
+
+#
+# CONST
+#
+
+
+DEV_ETC=$ETC_DIR/development
+PROD_ETC=$ETC_DIR/production
+SERVICE_NAME=$SN_PROD
+SERVICE_PATH=/etc/systemd/system/$SERVICE_NAME
+
+USER=$USER_PROD
+GROUP=$GROUP_PROD
+SERVICE_SCRIPT=node-app-start.sh
+SERVICE_DESCRIPTION=$DESC_PROD
+
+
+#
+# MAIN
+#
+
+
+# Prepare systemd service.
+if [ $SYSTEM == "Linux" ]
+then
+    sudo cp $PROD_ETC/generic.service $SERVICE_PATH
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<ServiceDescription>" "$SERVICE_DESCRIPTION"
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<WorkingDirectory>" "$__ROOT__/$ENV_NAME"
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<User>" "$USER"
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<Group>" "$GROUP"
+    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<ServiceScript>" "$SERVICE_SCRIPT"
+
+    # Enable the service.
+    sudo systemctl enable $SERVICE_NAME
+    # Reload systemctl daemon.
+    sudo systemctl daemon-reload
+fi

@@ -1,0 +1,38 @@
+#! /bin/bash
+
+#
+# Gulp autocompletion support.
+#
+
+
+[ "$SYSTEM" == "Darwin" -a -z "$NODE" ] && error "nodejs has not been found. Maybe you want to use 'brew install node'." && exit 1
+[ "$SYSTEM" == "Linux" -a -z "$NODE" ] && error "nodejs has not been found. Install the latest version from nodejs.org." && exit 1
+
+
+#
+# MAIN
+#
+
+
+function __main__() {
+    # Find GULP.
+    GULP=$(which gulp)
+    NPM=$(which npm)
+
+    # Linux support packages.
+    if [ $SYSTEM == "Linux" ]
+    then
+        SUDO=sudo
+    fi
+
+    if [ -z "$GULP" ]
+    then
+        $SUDO $NPM -g install gulp
+        GULP=$(which gulp)
+    fi
+
+    # Add gulp autocompletion (in version 4.0.0)
+    [ -n "$GULP" ] && eval "$($GULP --completion=bash)"
+}
+
+__main__

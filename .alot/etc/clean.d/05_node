@@ -1,0 +1,31 @@
+#
+# Remove installed node modules.
+#
+
+
+#
+# MAIN
+#
+
+
+function __main__() {
+    local PKG_PATH APP_PATH ORIG_PATH
+
+    # Find all node applications and remove installed packages.
+    for PKG_PATH in $(find $__ROOT__ -name package.json)
+    do
+        APP_PATH=$(dirname $PKG_PATH)
+        echo_red "Removing node packages for application: $APP_PATH ..."
+        ORIG_PATH=$PWD && cd $APP_PATH
+
+        # Remove md5 and directories.
+        [ -e $APP_PATH/.package.json.md5 ] && rm -f  $APP_PATH/.package.json.md5
+        [ -e $APP_PATH/npm-debug.log ] && rm -f  $APP_PATH/npm-debug.log
+        [ -d $APP_PATH/node_modules ] && rm -rf $APP_PATH/node_modules
+        [ -d $APP_PATH/build ] && rm -rf $APP_PATH/build
+        
+        cd $ORIG_PATH
+    done
+}
+
+__main__

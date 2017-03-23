@@ -1,0 +1,13 @@
+{
+  "name": "transforms",
+  "version": "0.1.0",
+  "license": "MIT",
+  "keywords": [
+    "browserify", "browserify-transform"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "browserify-transform-tools": "^1.7.0"
+  }
+}
+

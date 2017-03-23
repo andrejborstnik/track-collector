@@ -1,0 +1,13 @@
+#! /bin/bash
+
+# 
+# Run node with a custom search path.
+# $1 is a new node search-path
+# The code to execute can also come from standard input.
+#
+
+
+NODE_PATH=${!1}
+shift
+
+NODE_PATH=$NODE_PATH /usr/bin/env $(which node) $@

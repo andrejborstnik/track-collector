@@ -1,0 +1,69 @@
+#! /bin/bash
+
+#
+# FUNCTIONS
+#
+
+
+function uppercase() {
+    echo $1 | awk '{print toupper($0)}'
+}
+
+function lowercase() {
+    echo $1 | awk '{print tolower($0)}'
+}
+
+
+#
+# Check if node exists and install it's modules.
+#
+
+
+[ "$SYSTEM" == "Darwin" -a -z "$NODE" ] && error "nodejs has not been found. Maybe you want to use 'brew install node'." && exit 1
+[ "$SYSTEM" == "Linux" -a -z "$NODE" ] && error "nodejs has not been found. Install the latest version from nodejs.org." && exit 1
+
+
+#
+# MAIN
+#
+
+
+function __main__() {
+    local NPM PKG_PATH APP_PATH APP_NAME APP_LNAME APP_BASED_NODE_PATH ORIG_PATH
+    local RUN_ONCE
+
+    # Find NPM.
+    NPM=$(which npm)
+
+
+    # Find all node applications and install packages for them.
+    for PKG_PATH in $(find $__ROOT__ -name package.json | grep -v node_modules | grep -v packages)
+    do
+        APP_PATH=$(dirname $PKG_PATH)
+        [ -z "$RUN_ONCE" ] && echo && RUN_ONCE=1
+        echo_green "Installing node packages for application: $APP_PATH ..."
+        ORIG_PATH=$PWD && cd $APP_PATH
+
+        # Calculate application dependant NODE_X_PATH.
+        APP_NAME=$(uppercase $(basename $APP_PATH))
+        APP_LNAME=$(lowercase $(basename $APP_PATH))
+        APP_BASED_NODE_PATH=NODE_${APP_NAME}_PATH
+        [ -z "${!APP_BASED_NODE_PATH}" ] && eval "export $APP_BASED_NODE_PATH=$APP_PATH:$APP_PATH/src"
+
+        # Install
+        if [ ! -e $APP_PATH/.package.json.md5 ] || \
+           [ "$($MD5 $APP_PATH/package.json)" != "$(cat $APP_PATH/.package.json.md5)" ]
+        then
+            $MD5 $APP_PATH/package.json > $APP_PATH/.package.json.md5
+            $NPM install
+        fi
+
+    #    # Command line completion for NPM.
+    #    _TMP_FILE=$(mktemp)
+    #    $NPM completion > $_TMP_FILE
+    #    source $_TMP_FILE
+    #    rm -f $_TMP_FILE
+    done
+}
+
+__main__

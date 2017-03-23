@@ -1,0 +1,18 @@
+#! /bin/bash
+
+#
+# Basic environment tools.
+#
+
+
+# Change to the environment root folder.
+function go-root() {
+    cd $__ROOT__
+}
+
+function go-bin() {
+    cd $BIN_DIR
+}
+
+# Set default PATHS.
+PATH=$PATH:$__ROOT__:$BIN_DIR

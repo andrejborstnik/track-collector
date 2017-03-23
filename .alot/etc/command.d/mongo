@@ -1,0 +1,230 @@
+#! /bin/bash
+
+#
+# Mongo database handling command.
+#
+# List or backup databases.
+#
+
+
+#
+# PRECONDITIONS
+#
+
+
+# Find mongo.
+MONGO=$(which mongo)
+MONGO_DUMP=$(which mongodump)
+MONGO_RESTORE=$(which mongorestore)
+
+# Check if mongo exists on the system.
+[ "$SYSTEM" == "Darwin" -a -z "$MONGO" ] && error "Mongo database has not been found. Maybe you want to use 'brew install mongo'." && exit 1
+[ "$SYSTEM" == "Linux" -a -z "$MONGO" ] && error "Mongo database has not been found. Maybe you want to use 'apt-get install mongo'." && exit 1
+
+PS_MONGO=$(pgrep -lf mongo)
+
+[ -z "$PS_MONGO" ] && error "Mongo database server is not running." && exit 1
+
+# Check for jq.
+JQ=$(which jq)
+
+# Check if jq exists on the system.
+[ "$SYSTEM" == "Darwin" -a -z "$JQ" ] && error "JQ has not been found. Maybe you want to use 'brew install jq'." && exit 1
+[ "$SYSTEM" == "Linux" -a -z "$JQ" ] && error "JQ has not been found. Maybe you want to use 'apt-get install jq'." && exit 1
+
+
+#
+# CONSTS
+#
+
+
+BACKUP_FOLDER=~/backup
+[ ! -d "$BACKUP_FOLDER" ] && mkdir $BACKUP_FOLDER
+
+
+#
+# FUNCTIONS
+#
+
+
+usage() {
+    echo "Usage: $0 list|backup <db_name>|restore [-d] [-n <db_name>] <db_tgz_file>|help"
+    echo "    list"
+    echo "        List all the local mongo DBs."
+    echo "    backup <db_name> [<backup_folder>]"
+    echo "        Create a database backup (to optional backup folder) of the database named <db_name>. Default is ~/backup."
+    echo "    restore [-d] [-n <db_name>] <db_tgz_file>"
+    echo "        Restore a database from the backup tgz file <db_tgz_file> to a local mongo DB. Optionally drop the database first (-d)."
+    echo "        The restored database can have name <db_name> (default is the name derived from the tgz file)."
+    echo "    -h | --help | help"
+    echo "        This help."
+    exit 0
+}
+
+
+#
+# MAIN
+#
+
+
+# <parse params>
+#
+#
+
+# Check if at least one of parameters have been selected.
+if [ $# -eq 0 ]
+then
+    error "At least one of the commands: list or backup or restore has to be selected."
+    echo
+    usage
+fi
+
+# Defaults
+IS_LIST=0
+IS_BACKUP=0
+IS_RESTORE=0
+IS_DROP=0
+DB_FILE=
+
+while [ $# -gt 0 ]
+do
+    WORD=$1
+    case $WORD in
+        list)
+            IS_LIST=1
+        ;;
+        backup)
+            IS_BACKUP=1
+            if [ $# -gt 1 ]
+            then
+                DB=$2
+                shift
+            else
+                error "$WORD command: missing <db> parameter."
+                exit 1
+            fi
+
+            # If there is still one more parameter it must be backup folder.
+            if [ $# -gt 1 ]
+            then
+                BACKUP_FOLDER=$2
+                shift
+            fi
+        ;;
+        restore)
+            IS_RESTORE=1
+            while [ $# -gt 1 ]
+            do
+                INNER=$2
+                case $INNER in
+                    -d)
+                        IS_DROP=1
+                        shift
+                    ;;
+                    -n)
+                        shift
+                        if [ $# -gt 1 ]
+                        then
+                            DB_NEW_NAME=$2
+                            shift
+                        fi
+                    ;;
+                    *)
+                        DB_FILE=$INNER
+                        shift
+                    ;;
+                esac
+            done
+
+            if [ -z "$DB_FILE" ] || [[ "$DB_FILE" != *tgz ]]
+            then
+                error "Restore needs a tgz file."
+                usage
+                exit 1
+            fi
+
+            if [ ! -f "$DB_FILE" ]
+            then
+                error "File $DB_FILE does not exist"
+                exit 1
+            fi
+        ;;
+        help|-h|--help)
+            usage
+        ;;
+        *)
+            usage
+        ;;
+    esac
+
+    shift
+done
+
+#
+#
+# </parse params>
+
+if [ "$IS_LIST" == "1" ]
+then
+    echo_green "The list of databases:"
+    $MONGO --quiet  --eval "db.getMongo().getDBNames()" | jq '.[]' | tr -d '"'
+    exit 0
+fi
+
+if [ "$IS_BACKUP" == "1" ]
+then
+    EVAL="db.getMongo().getDBNames().findIndex(function(e,i,a) { return e == '$DB';}) >= 0"
+    IS_DB=$($MONGO --quiet --eval "$EVAL")
+    if [ $IS_DB == "false" ]
+    then
+        error "Database $DB does not exist!" 
+        exit 1
+    fi
+
+    if [ ! -d $BACKUP_FOLDER ]
+    then
+        error "Backup folder $BACKUP_FOLDER does not exist!"
+        exit 1
+    fi
+
+    echo_green "Creating backup of a database $DB ..."
+    TMPDIR=$(mktemp -d mongo_dump.XXXXXXXX)
+
+    $MONGO_DUMP -d $DB -o $TMPDIR
+
+    DB_NAME=${DB}_$(date +'%Y%m%d%H%M').tgz
+    tar -C $TMPDIR -czf $BACKUP_FOLDER/$DB_NAME $DB
+    echo_green "Created new backup: $BACKUP_FOLDER/$DB_NAME"
+
+    [ -d $TMPDIR ] && rm -rf $TMPDIR
+fi
+
+if [ "$IS_RESTORE" == "1" ]
+then
+    DB_NAME=$(basename $DB_FILE)
+    DB_NAME=${DB_NAME%%_*}
+
+    if [ -z "$DB_NEW_NAME" ]
+    then
+        DB_NEW_NAME=$DB_NAME
+    fi
+
+    echo_green "Extracting backup of a database file $DB_FILE ..."
+    TMPDIR=$(mktemp -d mongo_dump.XXXXXXXX)
+    tar -C $TMPDIR -xzf $DB_FILE
+
+    if [ "$IS_DROP" == "1" ]
+    then
+        EVAL="db.getMongo().getDB('$DB_NEW_NAME').dropDatabase().ok >= 0"
+        IS_DB=$($MONGO --quiet --eval "$EVAL")
+        if [ $IS_DB == "true" ]
+        then
+            echo_green "Database $DB_NEW_NAME has been dropped."
+        fi
+    fi
+
+    echo_green "Starting to import database $DB_NAME into $DB_NEW_NAME ..."
+    $MONGO_RESTORE  -d $DB_NEW_NAME $TMPDIR/$DB_NAME
+    echo_green "Database $DB_NAME has been imported to $DB_NEW_NAME."
+    [ -d $TMPDIR ] && rm -rf $TMPDIR
+fi

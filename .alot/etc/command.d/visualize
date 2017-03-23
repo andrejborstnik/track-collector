@@ -1,0 +1,14 @@
+#! /bin/bash
+
+#
+# Check if node exists and install it's modules.
+#
+
+
+GOURCE=$(which gource)
+
+[ "$SYSTEM" == "Darwin" -a -z "$GOURCE" ] && error "gource has not been found. Maybe you want to use 'brew install gource'." && exit 1
+[ "$SYSTEM" == "Linux" -a -z "$GOURCE" ] && error "gource has not been found. Install the latest version with apt-get install gource." && exit 1
+
+cd $__ROOT__
+$GOURCE -f -2560x1440 --seconds-per-day 1 --bloom-multiplier 1.5
