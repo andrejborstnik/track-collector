@@ -17,3 +17,5 @@
 
 
 Ce nalagate node module jih ne pozabit shranit, da bo aplikacija delala vsem. Nalagajte jih (za frontend del) v ```./frontend/```. Npr. ko ste v direktoriju ```frontend``` s ```npm install moj-modul --save```.
+
+Vec o Vue frameworku najdes na [https://vuejs.org/]('https://vuejs.org/').
