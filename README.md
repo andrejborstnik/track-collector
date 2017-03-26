@@ -17,3 +17,14 @@
 
 
 Ce nalagate node module jih ne pozabit shranit, da bo aplikacija delala vsem. Nalagajte jih (za frontend del) v ```./frontend/```. Npr. ko ste v direktoriju ```frontend``` s ```npm install moj-modul --save```.
+
+## Baza
+
+V ```backend/config/config_default.js``` je potrebno napisati kje se nahaja baza, kaksna so uporabniska imena ipd. Predlagam, da se za zdaj kar ohrani to kar sem napisal. V komponenti ```PostGreDemo.vue``` in na backendu sem naredil preprost api, s katerim lahko dostopate do baze s prej opisanimi parametri. Parametri za query (se) niso povsem implementirani.
+
+Predlagam, da se dogovorite kako bo izgledala baza in shemo napisete na drive (pri sebi seveda lahko ves cas testirate).
+
+## Backend 
+
+1. Napises funkcijo, ki jo rabis na backendu in jo pospravis na primerno mesto v ```src```.
+2. Uporabis v ```routes.js```. Tam in v ```backend.js``` lahko tudi konfiguriras express.

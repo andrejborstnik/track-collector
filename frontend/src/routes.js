@@ -5,6 +5,7 @@
 import Test from 'Test.vue';
 import Test2 from 'Test2.vue';
 import _404 from '404.vue';
+import PostGreDemo from 'PostGreDemo.vue';
 
 //
 // FRONTEND ROUTING
@@ -43,6 +44,11 @@ export default [
     {
         path: '/test',
         component: Test
+    },
+
+    {
+        path: '/db',
+        component: PostGreDemo
     },
 
     {
