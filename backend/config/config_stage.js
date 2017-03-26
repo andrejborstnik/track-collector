@@ -1,5 +1,5 @@
 //
-// IOW Staging Configuration
+// GPS Staging Configuration
 //
 // (only staging overrides should be put here)
 //

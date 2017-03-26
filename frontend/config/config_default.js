@@ -1,5 +1,5 @@
 //
-// IOW Development Configuration
+// GPS Development Configuration
 //
 
 

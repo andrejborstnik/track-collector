@@ -1,6 +1,6 @@
 {
-  "name": "IOW",
-  "description": "IOW backend application",
+  "name": "GPS",
+  "description": "GPS backend application",
   "author": "Abelium",
   "private": true,
   "scripts": {
