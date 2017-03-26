@@ -28,3 +28,5 @@ Predlagam, da se dogovorite kako bo izgledala baza in shemo napisete na drive (p
 
 1. Napises funkcijo, ki jo rabis na backendu in jo pospravis na primerno mesto v ```src```.
 2. Uporabis v ```routes.js```. Tam in v ```backend.js``` lahko tudi konfiguriras express.
+
+Vec o Vue frameworku najdes na [https://vuejs.org/]('https://vuejs.org/').
