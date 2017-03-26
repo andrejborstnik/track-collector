@@ -10,7 +10,7 @@
 
 ## Hello world
 
-1. Nekje pod ```src``` direktorijem naredis nov file, lahko vzames za osnovo npr. ```Test.vue```.
+1. Nekje pod ```src``` direktorijem naredis nov file, lahko vzames za osnovo npr. ```Test.vue```. Uporabljas lahko [ES6](http://es6-features.org/) sintakso.
 2. Naredis vsaj eno od:
    * Narejeno komponento vkljucis v drugo komponento, kot je v ```Test2.vue```.
    * Narejeno komponento v ```routes.js``` uvozis in jo dodas na nek url naslov.
