@@ -24,6 +24,10 @@ V ```backend/config/config_default.js``` je potrebno napisati kje se nahaja baza
 
 Predlagam, da se dogovorite kako bo izgledala baza in shemo napisete na drive (pri sebi seveda lahko ves cas testirate).
 
+## Api
+
+Definirati in implementirati je potrebno osnoven API. Uporabiti zelimo JSON struktore za vhod in izhod.
+
 ## Backend 
 
 1. Napises funkcijo, ki jo rabis na backendu in jo pospravis na primerno mesto v ```src```.
