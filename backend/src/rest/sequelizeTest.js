@@ -8,15 +8,14 @@ var Sequelize = require('sequelize');
 
 var config = require('config');
 
-var sequelize = new Sequelize('gps', 'gps', 'gps-tracks', {
-    host: 'localhost',
+var sequelize = new Sequelize(config.cn.database, config.cn.user, config.cn.password, {
+    host: config.cn.host,
     dialect: 'postgresql',
     pool: {
         max: 5,
         min: 0,
         idle: 10000
     }});
-
 
 
 var User = sequelize.define('user', {
