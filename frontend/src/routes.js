@@ -7,6 +7,8 @@ import Test2 from 'Test2.vue';
 import _404 from '404.vue';
 import PostGreDemo from 'PostGreDemo.vue';
 
+import ExampleMap from 'pages/ExampleMap.vue';
+
 //
 // FRONTEND ROUTING
 //
@@ -35,6 +37,11 @@ export default [
     //
     // Pages
     //
+
+    {
+        path: '/map',
+        component: ExampleMap
+    },
 
     {
         path: '/',
