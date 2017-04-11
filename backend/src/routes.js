@@ -25,6 +25,7 @@ const w = require('winston');
 w.level = config.log_level;
 
 const postgreApi = require('src/rest/postgreApi');
+const sequelizeTest = require('src/rest/sequelizeTest');
 
 w.info('Starting up in %s mode', config.__MODE__);
 
