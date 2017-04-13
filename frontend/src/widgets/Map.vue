@@ -5,6 +5,9 @@
     </section>
 </template>
 
+<style lang="scss">
+    /*@import "openlayers/dist/ol.css";*/
+</style>
 
 <script type="text/babel">
 

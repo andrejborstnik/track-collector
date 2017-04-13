@@ -1,6 +1,6 @@
 <template>
     <section>
-        <MyMap :mydata="{points, connections}" width="100%" height="700px" style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
+        <MyMap :mydata="{points, connections}" source="OSM" width="100%" height="700px" style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
     </section>
 </template>
 
