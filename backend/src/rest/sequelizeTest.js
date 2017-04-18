@@ -4,11 +4,11 @@
 
 'use strict';
 
-var Sequelize = require('sequelize');
+const Sequelize = require('sequelize');
 
-var config = require('config');
+const config = require('config');
 
-var sequelize = new Sequelize(config.cn.database, config.cn.user, config.cn.password, {
+let sequelize = new Sequelize(config.cn.database, config.cn.user, config.cn.password, {
     host: config.cn.host,
     dialect: 'postgresql',
     pool: {
@@ -18,7 +18,7 @@ var sequelize = new Sequelize(config.cn.database, config.cn.user, config.cn.pass
     }});
 
 
-var User = sequelize.define('user', {
+let User = sequelize.define('user', {
     username: Sequelize.STRING,
     birthday: Sequelize.DATE
 });
