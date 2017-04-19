@@ -104,6 +104,29 @@ const global_bundle_opts = {
 // Display all tasks.
 gulp.task('help', taskListing);
 
+// Calculate all paths of all components
+gulp.task('build-browse-components', () => {
+    return gulp
+    .src('pre-build/BrowseComponents.vue')
+    .pipe(modifyFile((content, path, file) => {
+        let files = glob.sync("src/**/*.vue");
+        files = _.map(files, (o) => o.replace(/src\//, ''));
+        content = content.split('<script type="text/babel">');
+        let last = content[1];
+        let first = content[0];
+        let middle = [];
+        middle.push(`//\n    // ALL COMPONENTS\n    //\n\n\n    let components = {};\n    let paths = [];\n    let componentMap = {};\n`);
+        let i = 0;
+        for (let file of files) {
+            if (file.indexOf('BrowseComponents') == -1 && file.indexOf('flow') == -1 && file.indexOf('App') == -1)
+                middle.push(`import * as aux${i} from '${file}';\n    components[aux${i}.name] = aux${i};\n    paths.push('${file}');\n    componentMap['${file}'] = aux${i}.name;\n`);
+            i++;
+        }
+        return `${first}<script type="text/babel">\n    ${middle.join('\n    ')}\n${last}`;
+    }))
+    .pipe(gulp.dest('src/pages/'))
+});
+
 
 
 // Live reloading.
@@ -773,6 +796,12 @@ gulp.task('watch', function ()  {
         _notify(vinyl_file);
         runSequence('app-static-scripts', bs.reload);
     });
+
+    // Recompile Browse components.
+    // Turn off if it too much time to rebundle time.
+    watch(['**/*.vue', "!src/pages/BrowseComponents.vue"], function () {
+        runSequence('build-browse-components');
+    });
 });
 
 
@@ -805,6 +834,7 @@ gulp.task('frontend-build', function () {
 gulp.task('start', function () {
     runSequence(
         'clean',
+        'build-browse-components',
         'frontend-build',
         'watch',
         'browser-sync'

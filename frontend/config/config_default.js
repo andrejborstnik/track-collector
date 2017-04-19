@@ -18,7 +18,8 @@ exports.paths_sass = [
 // The collection of node modules and their files to be exported to vendor build directory.
 exports.node_vendor_modules = {
     "bowser" : ["bowser.min.js"],
-    "jquery" : ["dist/jquery.min.js"]
+    "jquery" : ["dist/jquery.min.js"],
+    "foundation-sites": ["dist/css/foundation.css"]
 };
 
 

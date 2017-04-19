@@ -9,6 +9,8 @@ import PostGreDemo from 'PostGreDemo.vue';
 
 import ExampleMap from 'pages/ExampleMap.vue';
 
+import BrowseComponents from 'pages/BrowseComponents.vue';
+
 //
 // FRONTEND ROUTING
 //
@@ -45,12 +47,17 @@ export default [
 
     {
         path: '/',
-        component: Test2
+        component: BrowseComponents
     },
 
     {
         path: '/test',
         component: Test
+    },
+
+    {
+        path: '/test2',
+        component: Test2
     },
 
     {

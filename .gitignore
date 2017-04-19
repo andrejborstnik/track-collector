@@ -7,3 +7,5 @@ npm-debug.log
 .cache
 graphql.config.json
 graphql.schema.json
+
+frontend/src/pages/BrowseComponents.vue
