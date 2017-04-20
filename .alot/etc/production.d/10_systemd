@@ -27,17 +27,17 @@ SERVICE_DESCRIPTION=$DESC_PROD
 
 
 # Prepare systemd service.
-if [ $SYSTEM == "Linux" ]
-then
-    sudo cp $PROD_ETC/generic.service $SERVICE_PATH
-    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<ServiceDescription>" "$SERVICE_DESCRIPTION"
-    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<WorkingDirectory>" "$__ROOT__/$ENV_NAME"
-    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<User>" "$USER"
-    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<Group>" "$GROUP"
-    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<ServiceScript>" "$SERVICE_SCRIPT"
-
-    # Enable the service.
-    sudo systemctl enable $SERVICE_NAME
-    # Reload systemctl daemon.
-    sudo systemctl daemon-reload
-fi
+#if [ $SYSTEM == "Linux" ]
+#then
+#    sudo cp $PROD_ETC/generic.service $SERVICE_PATH
+#    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<ServiceDescription>" "$SERVICE_DESCRIPTION"
+#    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<WorkingDirectory>" "$__ROOT__/$ENV_NAME"
+#    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<User>" "$USER"
+#    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<Group>" "$GROUP"
+#    [ -e $SERVICE_PATH ] && replace_in_file $SERVICE_PATH "<ServiceScript>" "$SERVICE_SCRIPT"
+#
+#    # Enable the service.
+#    sudo systemctl enable $SERVICE_NAME
+#    # Reload systemctl daemon.
+#    sudo systemctl daemon-reload
+#fi
