@@ -4,16 +4,12 @@
 
         <div class="row expanded">
             <div class="shrink columns">
-
-                <!-- navigation -->
-                <a class="" data-toggle="offCanvasLeft1" @click="test" v-if="isMobile && !revealForMedium"><span class="cursor-pointer icon-flower" style="color: white;"></span></a>
-
-                <!-- back -->
-                <a style="color: white;" v-if="isMobile && revealForMedium"><span class="cursor-pointer icon-chevron-left"></span></a>
+                <a class="" data-toggle="offCanvasLeft1" v-if="isMobile"><span style="color: white;">+</span></a>
+                {{isMobile}}
             </div>
 
-            <div class="a-header-logo columns a-sidenav-logo" style="text-align: center;">
-                <a class="menu" >GPS</a>
+            <div style="text-align: center; color: white">
+                <span>GPS</span>
             </div>
         </div>
 
@@ -24,23 +20,21 @@
     export default {
         name: "BrowseHeader",
 
-        methods: {
-            test: function () {
-                console.log('here')
-            }
-        },
-
         mounted: function () {
             window.onresize = function(event) {
                 this.isMobile = window.innerWidth <= 640;
             }.bind(this);
         },
 
+        watch: {
+            headerStyle: function () {
+                if (this.headerStyle && !this.headerStyle['z-index'])
+                    this.headerStyle['z-index'] = 5;
+            }
+        },
+
         data () {
             return {
-                headerStyle: {
-                    'z-index': 5
-                },
                 // Foundation default: medium: 640px
                 isMobile: window.innerWidth <= 640
             }
@@ -49,6 +43,9 @@
         props: {
             revealForMedium: {
                 default: true
+            },
+            headerStyle: {
+                default: () => {return {'z-index': 5}}
             }
         }
     }

@@ -1,7 +1,7 @@
 <template>
 
     <div>
-        <span>Insert a query: <input v-model="query" @keyup.prevent.enter="queryDatabase"></span><br>
+        <span>Insert a query: <input v-model="query" @keyup.prevent.enter="queryDatabase" style="border: 1px solid gray;"></span><br>
         <span>Result: {{output}}</span>
     </div>
 

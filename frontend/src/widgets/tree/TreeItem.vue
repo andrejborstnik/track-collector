@@ -3,7 +3,8 @@
         <div
             :class="{bold: isFolder, leaf: !isFolder}"
             @click="click"
-            @dblclick="changeType">
+            @dblclick="changeType"
+            :data-toggle="!isFolder && menu_toggle">
             {{model.name}}
             <span v-if="isFolder">[{{open ? '-' : '+'}}]</span>
         </div>
@@ -12,7 +13,8 @@
                 class="item"
                 v-for="model in model.children"
                 :model="model"
-                :onclick="onclick">
+                :onclick="onclick"
+                :menu_toggle="menu_toggle">
             </Tree-Item>
             <!--<li class="add" @click="addChild">+</li>-->
         </ul>
@@ -27,7 +29,8 @@
             onclick: {
                 type: Function,
                 default: () => {}
-            }
+            },
+            menu_toggle: {}
         },
         data: function () {
             return {

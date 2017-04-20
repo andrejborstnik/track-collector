@@ -6,7 +6,7 @@
 
         <section style="flex: 1;" class="off-canvas-wrapper">
 
-            <Browse-Header :reveal-for-medium="revealForMedium"></Browse-Header>
+            <Browse-Header :reveal-for-medium="revealForMedium" :header-style="{'margin-left': isMobile ? '0px' : '300px', 'background-color': 'black'}"></Browse-Header>
 
             <div class="off-canvas position-left reveal-for-medium" style="width: 300px" id="offCanvasLeft1" data-transition="overlap" data-off-canvas>
 
@@ -16,17 +16,20 @@
                     <Tree-Item
                         class="item"
                         :model="treeData"
-                        :onclick="showComponent">
+                        :onclick="showComponent"
+                        menu_toggle="offCanvasLeft1">
                     </Tree-Item>
                 </ul>
 
             </div>
-            <div class="off-canvas-content" data-off-canvas-content>
+            <div class="off-canvas-content" data-off-canvas-content :style="{'margin-left': isMobile ? '0px' : '300px'}">
 
-                <div class="row">
+                <div class="row" style="margin: 2rem;">
+                    <h4>{{currentComponent}}</h4>
+                </div>
+
+                <div class="row" style="margin: 2rem; background-color: white; padding: 2rem;">
                     <div class="column">
-
-                        <button type="button" class="button show-for-small-only" data-toggle="offCanvasLeft1">Nav</button>
 
                         <wrapper-component :tag="currentComponent"></wrapper-component>
 
@@ -148,8 +151,15 @@
             return {
                 paths,
                 componentMap,
-                currentComponent: 'div'
+                currentComponent: 'div',
+                isMobile: window.innerWidth <= 640
             }
+        },
+
+        mounted: function () {
+            window.onresize = function(event) {
+                this.isMobile = window.innerWidth <= 640;
+            }.bind(this);
         },
 
         methods: {
