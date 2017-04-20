@@ -132,13 +132,14 @@ gulp.task('build-browse-components', () => {
 // Live reloading.
 const bs = browserSync.create();
 gulp.task('browser-sync', function () {
-    bs.init((config.IS_DEV_MODE ? null : '/trackcollector'), {
+    bs.init(null, {
         port: config.fe_port,
         ui: {
             port: config.port
         },
         ghostMode: is_dev,
         notify: false,
+        startPath: (config.IS_DEV_MODE ? null : '/trackcollector'),
         server: {
             baseDir: "./"+config.build_dest+"/app",
             routes: {
