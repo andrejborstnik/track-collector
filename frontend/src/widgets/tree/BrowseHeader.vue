@@ -5,10 +5,9 @@
         <div class="row expanded">
             <div class="shrink columns">
                 <a class="" data-toggle="offCanvasLeft1" v-if="isMobile"><span style="color: white;">+</span></a>
-                {{isMobile}}
             </div>
 
-            <div style="text-align: center; color: white">
+            <div style="text-align: center; color: orange">
                 <span>GPS</span>
             </div>
         </div>

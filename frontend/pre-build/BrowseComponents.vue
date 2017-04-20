@@ -6,9 +6,9 @@
 
         <section style="flex: 1;" class="off-canvas-wrapper">
 
-            <Browse-Header :reveal-for-medium="revealForMedium" :header-style="{'margin-left': isMobile ? '0px' : '300px', 'background-color': 'black'}"></Browse-Header>
+            <Browse-Header :reveal-for-medium="revealForMedium" :header-style="{'margin-left': isMobile ? '0px' : '300px', 'background-color': '#3C4A52'}"></Browse-Header>
 
-            <div class="off-canvas position-left reveal-for-medium" style="width: 300px" id="offCanvasLeft1" data-transition="overlap" data-off-canvas>
+            <div class="off-canvas position-left reveal-for-medium" style="width: 300px; padding-top: 100px;" id="offCanvasLeft1" data-transition="overlap" data-off-canvas>
 
                 <!-- Your menu or Off-canvas content goes here -->
 
