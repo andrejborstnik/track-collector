@@ -47,13 +47,6 @@ then
     sudo $PIP install virtualenv
 fi
 
-# Linux support packages.
-if [ $SYSTEM == "Linux" ]
-then
-    sudo apt-get update
-    sudo apt-get install build-essential libssl-dev libffi-dev libfreetype6-dev libpng-dev pkg-config python-dev libblas3 liblapack3 gfortran
-fi
-
 #
 # Create virtual environment if there is none.
 #
