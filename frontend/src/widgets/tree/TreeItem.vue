@@ -5,13 +5,13 @@
             @click="click"
             @dblclick="changeType"
             :data-toggle="!isFolder && menu_toggle">
-            {{model.name}}
+            {{model && model.name}}
             <span v-if="isFolder">[{{open ? '-' : '+'}}]</span>
         </div>
         <ul v-show="open" v-if="isFolder">
             <Tree-Item
                 class="item"
-                v-for="model in model.children"
+                v-for="model in (model.children)"
                 :model="model"
                 :onclick="onclick"
                 :menu_toggle="menu_toggle">
@@ -39,7 +39,7 @@
         },
         computed: {
             isFolder: function () {
-                return this.model.children && this.model.children.length;
+                return this.model && this.model.children && this.model.children.length;
             }
         },
         methods: {
@@ -52,7 +52,7 @@
                 this.toggle();
                 if (!this.isFolder) {
                     let file;
-                    if (this.model.path)
+                    if (this.model && this.model.path)
                         file = this.model.path + '/' + this.model.name;
                     else
                         file = this.model.name;
