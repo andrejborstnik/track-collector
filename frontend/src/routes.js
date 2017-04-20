@@ -11,29 +11,29 @@ import ExampleMap from 'pages/ExampleMap.vue';
 
 import BrowseComponents from 'pages/BrowseComponents.vue';
 
+import * as config from 'config';
+
 //
 // FRONTEND ROUTING
 //
 
-
-// Frontend routes.
-export default [
+let routes1 = [
 
     //
     // Redirect
     //
 
     {
-        path: '/index.html',
-        redirect: '/'
+        path: 'index.html',
+        redirect: ''
     },
     {
-        path: '/index.htm',
-        redirect: '/'
+        path: 'index.htm',
+        redirect: ''
     },
     {
-        path: '/index',
-        redirect: '/'
+        path: 'index',
+        redirect: ''
     },
 
     //
@@ -41,33 +41,53 @@ export default [
     //
 
     {
-        path: '/map',
+        path: 'map',
         component: ExampleMap
     },
 
     {
-        path: '/',
-        component: BrowseComponents
-    },
-
-    {
-        path: '/test',
+        path: 'test',
         component: Test
     },
 
     {
-        path: '/test2',
+        path: 'test2',
         component: Test2
     },
 
     {
-        path: '/db',
+        path: 'db',
         component: PostGreDemo
-    },
-
-    {
-        path: '*',
-        component: _404
     }
 
-]
+];
+
+let routes;
+
+if (!config.IS_DEV_MODE)
+    routes = [
+        {
+            path: '/trackcollector',
+            children: routes1,
+            component: BrowseComponents
+        },
+        {
+            path: '*',
+            component: _404
+        }
+    ];
+else
+    routes = [
+        {
+            path: '/',
+            children: routes1,
+            component: BrowseComponents
+        },
+        {
+            path: '*',
+            component: _404
+        }
+    ];
+
+// Frontend routes.
+export default routes;

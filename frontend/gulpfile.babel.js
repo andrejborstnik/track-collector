@@ -139,7 +139,6 @@ gulp.task('browser-sync', function () {
         },
         ghostMode: is_dev,
         notify: false,
-        startPath: (config.IS_DEV_MODE ? null : '/trackcollector'),
         server: {
             baseDir: "./"+config.build_dest+"/app",
             routes: {

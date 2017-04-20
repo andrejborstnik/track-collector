@@ -24,7 +24,7 @@ import main_app from 'src/App.vue';
 Vue.use(VueRouter);
 
 // Create a router instance.
-var router = new VueRouter({
+let router = new VueRouter({
     mode: 'history',
     routes
 });
