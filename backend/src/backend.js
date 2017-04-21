@@ -48,7 +48,7 @@ backend.use(function(err, req, res, next) {
 w.level = config.log_level;
 
 // Express backend server configuration.
-backend.use('/', routes);
+backend.use(config.path_prefix, routes);
 
 // Get port from environment and store in Express.
 backend.set('port', config.be_port);

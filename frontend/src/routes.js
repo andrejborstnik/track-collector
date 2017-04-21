@@ -17,7 +17,7 @@ import * as config from 'config';
 // FRONTEND ROUTING
 //
 
-let routes1 = [
+let routes = [
 
     //
     // Redirect
@@ -62,32 +62,17 @@ let routes1 = [
 
 ];
 
-let routes;
-
-if (!config.IS_DEV_MODE)
-    routes = [
-        {
-            path: '/trackcollector',
-            children: routes1,
-            component: BrowseComponents
-        },
-        {
-            path: '*',
-            component: _404
-        }
-    ];
-else
-    routes = [
-        {
-            path: '/',
-            children: routes1,
-            component: BrowseComponents
-        },
-        {
-            path: '*',
-            component: _404
-        }
-    ];
+routes = [
+    {
+        path: config.path_prefix,
+        children: routes,
+        component: BrowseComponents
+    },
+    {
+        path: '*',
+        component: _404
+    }
+];
 
 // Frontend routes.
 export default routes;
