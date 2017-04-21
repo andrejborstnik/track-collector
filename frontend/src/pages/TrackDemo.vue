@@ -1,0 +1,112 @@
+<template>
+
+    <div>
+        <a class="button" @click="getTrack">Show Alen</a>
+
+        <MyMap v-if="points" :mydata="{points, connections}" source="OSM" width="100%" height="700px"
+               style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
+    </div>
+
+</template>
+
+
+<style lang="scss">
+
+</style>
+
+
+<script type="text/babel">
+
+    import async from 'co';
+    import http from 'http';
+    import * as config from 'config';
+
+
+    import _ from 'lodash';
+
+    import MyMap from 'widgets/Map.vue';
+
+    //
+    // Functions
+    //
+
+    const getTrack = function () {
+        let query = 'test';
+
+        let path = `/api/track/${query}`;
+        http.get({
+            hostname: 'localhost',
+            port: config.be_port,
+            path
+        }, function (res) {
+            if (res.statusCode == 200) {
+                let chunks = [];
+                res.on('data', function (chunk) {
+                    chunks.push(chunk);
+                });
+                res.on('end', function () {
+                    this.output = JSON.parse(chunks.join());
+                }.bind(this));
+            }
+        }.bind(this));
+    };
+
+
+    //
+    // EXPORT
+    //
+
+
+    export default {
+        name: 'TrackDemo',
+
+        methods: {
+            getTrack
+        },
+
+        components: {
+            MyMap
+        },
+
+        computed: {
+            points: function () {
+                return _.map(this.output.samples, (o) => {
+                    return {
+                        longitude: o.longitude,
+                        latitude: o.latitude,
+                        name: 'test'
+                    }
+                })
+            },
+            connections: function () {
+                if (!this.output)
+                    return [];
+                let conn = [];
+                for (let i = 0; i < this.output.samples.length - 1; i++) {
+                    let A = this.output.samples[i];
+                    let B = this.output.samples[i + 1];
+                    conn.push({
+                        'A': {
+                            longitude: A.longitude,
+                            latitude: A.latitude,
+                            name: 'test'
+                        },
+                        'B': {
+                            longitude: B.longitude,
+                            latitude: B.latitude,
+                            name: 'test'
+                        }
+                    });
+                }
+                return conn;
+            }
+        },
+
+        data () {
+            return {
+                output: ''
+            }
+        }
+    }
+
+</script>
