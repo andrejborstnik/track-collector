@@ -11,6 +11,8 @@ import ExampleMap from 'pages/ExampleMap.vue';
 
 import BrowseComponents from 'pages/BrowseComponents.vue';
 
+import App from 'App.vue';
+
 import * as config from 'config';
 
 //
@@ -25,20 +27,25 @@ let routes = [
 
     {
         path: 'index.html',
-        redirect: ''
+        redirect: '/'
     },
     {
         path: 'index.htm',
-        redirect: ''
+        redirect: '/'
     },
     {
         path: 'index',
-        redirect: ''
+        redirect: '/'
     },
 
     //
     // Pages
     //
+
+    {
+        path: '/',
+        component: BrowseComponents
+    },
 
     {
         path: 'map',
@@ -66,7 +73,7 @@ routes = [
     {
         path: config.path_prefix,
         children: routes,
-        component: BrowseComponents
+        component: App
     },
     {
         path: '*',

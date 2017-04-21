@@ -3,7 +3,6 @@
 
     <section style="display: flex; flex-flow: column; min-height: 100vh; background-color: rgb(245, 245, 245);" v-load-foundation>
 
-
         <section style="flex: 1;" class="off-canvas-wrapper">
 
             <Browse-Header :reveal-for-medium="revealForMedium" :header-style="{'margin-left': isMobile ? '0px' : '300px', 'background-color': '#3C4A52'}"></Browse-Header>

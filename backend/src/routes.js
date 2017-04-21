@@ -57,7 +57,7 @@ router.get('/api/track/:query', function (req, res) {
         body: {
           deviceId: "string",
           startDate: "2017-04-21T09:15:00Z",
-          endDate: "2017-04-21T12:00:00.00Z",
+          endDate: "2017-05-21T12:00:00.00Z",
           userId: "string"
         }
     }).then((body) => {
