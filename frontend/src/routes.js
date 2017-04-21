@@ -8,6 +8,7 @@ import _404 from '404.vue';
 import PostGreDemo from 'PostGreDemo.vue';
 
 import ExampleMap from 'pages/ExampleMap.vue';
+import TrackDemo from 'pages/TrackDemo.vue';
 
 import BrowseComponents from 'pages/BrowseComponents.vue';
 
@@ -52,6 +53,10 @@ let routes = [
         component: BrowseComponents
     },
 
+    {
+        path: 'track',
+        component: TrackDemo
+    },
 
     {
         path: 'map',

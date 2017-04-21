@@ -27,13 +27,11 @@
         let query = this.query;
         let params = this.params;
 
-        let path = `/api/queryDb/${query}`;
+        let path = `/queryDb/${query}`;
         if (params)
             path = path + `?params=${params}`;
         http.get({
-            hostname: 'localhost',
-            port: config.be_port,
-            path
+            path: config.paths_api_prefix + path
         }, function (res) {
             if (res.statusCode == 200) {
                 let chunks = [];

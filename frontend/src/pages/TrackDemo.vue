@@ -33,11 +33,9 @@
     const getTrack = function () {
         let query = 'test';
 
-        let path = `/api/track/${query}`;
+        let path = `/track/${query}`;
         http.get({
-            hostname: 'localhost',
-            port: config.be_port,
-            path
+            path: config.paths_api_prefix + path
         }, function (res) {
             if (res.statusCode == 200) {
                 let chunks = [];
