@@ -48,6 +48,12 @@ let routes = [
     },
 
     {
+        path: 'browse',
+        component: BrowseComponents
+    },
+
+
+    {
         path: 'map',
         component: ExampleMap
     },
@@ -65,7 +71,12 @@ let routes = [
     {
         path: 'db',
         component: PostGreDemo
-    }
+    },
+
+    {
+        path: '*',
+        component: _404
+    },
 
 ];
 
