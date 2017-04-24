@@ -1,6 +1,12 @@
 <template>
 
     <div>
+        <div style="width: 200px;">
+            Od:
+                <input type="date" v-model="startDate"></input>
+            Do:
+                <input type="date" v-model="endDate"></input>
+        </div>
         <a class="button" @click="getTrack">Show Alen</a>
 
         <MyMap v-if="points" :mydata="{points, connections}" source="OSM" width="100%" height="700px"
@@ -36,11 +42,15 @@
         let path = `/track/${query}`;
         request({
             method: "POST",
-            uri: config.paths_api_prefix + path
+            uri: config.paths_api_prefix + path,
+            json: {
+                startDate: this.startDate,
+                endDate: this.endDate
+            }
         }).then((body) => {
-            this.output = JSON.parse(body);
+            this.output = body;
         });
-    }
+    };
 
     //
     // EXPORT
@@ -94,7 +104,9 @@
 
         data () {
             return {
-                output: ''
+                output: '',
+                startDate: '',
+                endDate: ''
             }
         }
     }

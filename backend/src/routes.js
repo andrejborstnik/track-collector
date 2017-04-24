@@ -10,6 +10,7 @@ const async = require('co-express');
 const router = express.Router();
 
 const request = require('request-promise-native');
+const moment = require('moment');
 // Setup Cross Origin Resource Sharing.
 const cors = require('cors');
 router.use(cors());
@@ -44,7 +45,7 @@ router.post('/api/queryDb/:query', function (req, res) {
 
 router.post('/api/track/:query', function (req, res) {
     let query = decodeURI(req.params.query);
-    let params = decodeURI(req.query.params); // todo parse safely
+    let params = req.body; // todo parse safely
 
     request({
         method: "POST",
@@ -56,8 +57,8 @@ router.post('/api/track/:query', function (req, res) {
         uri:'https://test.goopti.com/tracker/test/gpsQuery',
         body: {
           deviceId: "string",
-          startDate: "2017-04-21T09:15:00Z",
-          endDate: "2017-05-21T12:00:00.00Z",
+          startDate: moment(params.startDate).format(),
+          endDate: moment(params.endDate).format(),
           userId: "string"
         }
     }).then((body) => {
