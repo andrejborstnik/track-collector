@@ -334,11 +334,11 @@
         let i = 0;
         for (let connection of connections) {
             let data = fp.clone(connection);
-            if (!data.A.longitude || !data.A.longitude) {
+            if (!data.A.longitude || !data.A.latitude) {
                 console.log('No coords for ', data.A.name);
                 continue;
             }
-            if (!data.B.longitude || !data.B.longitude) {
+            if (!data.B.longitude || !data.B.latitude) {
                 console.log('No coords for ', data.B.name);
                 continue;
             }
