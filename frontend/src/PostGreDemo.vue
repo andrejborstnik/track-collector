@@ -1,8 +1,36 @@
 <template>
 
     <div>
-        <span>Insert a query: <input v-model="query" @keyup.prevent.enter="queryDatabase" style="border: 1px solid gray;"></span><br>
-        <span>Result: {{output}}</span>
+        <span>Insert a query: <input v-model="query" @keyup.prevent.enter="queryDatabase" style="border: 1px solid gray;" placeholder="select * from users"></span><br>
+
+
+
+        <template v-if="output">
+            <span>Result (raw): {{output}}</span>
+            <br>
+            <span> Result (table):</span>
+            <br>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>#</th>
+                        <th v-for="(value,key,i) in output[0]">     {{key}}
+                        </th> 
+                    </tr>
+                    <tr v-for="(x,idx) in output">
+                        <td>{{idx}}</td>
+                        <td v-for="(value,key) in x">
+                            {{value}}
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table> 
+        </template>
+
+        
+
+
     </div>
 
 </template>
@@ -53,8 +81,12 @@
 
         data () {
             return {
-                query: '',
-                output: ''
+                query: 'select * from users',
+                output: '',
+                    items: [
+                           { message: 'Foo' },
+                           { message: 'Bar' }
+                           ]
             }
         }
     }
