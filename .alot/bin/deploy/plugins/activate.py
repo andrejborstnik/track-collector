@@ -36,6 +36,7 @@ def activate(env_dir=None, environment="dev prod exit"):
 
     # Check if activate.sh exists.
     activate_cmd_path = "%s/bin/activate.sh" % env_dir
+
     exists = execute(helper.remote_exists, path=activate_cmd_path)[env.host_string]
     if exists:
         local("%s %s" % (activate_cmd_path, environment))
