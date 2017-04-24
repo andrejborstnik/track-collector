@@ -39,11 +39,13 @@
         }, function (res) {
             if (res.statusCode == 200) {
                 let chunks = [];
+                let body = '';
                 res.on('data', function (chunk) {
                     chunks.push(chunk);
+                    body += chunk;
                 });
                 res.on('end', function () {
-                    this.output = JSON.parse(chunks.join());
+                    this.output = JSON.parse(body);
                 }.bind(this));
             }
         }.bind(this));
