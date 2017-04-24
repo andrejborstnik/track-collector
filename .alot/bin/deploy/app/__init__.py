@@ -127,6 +127,7 @@ def deploy(target=None, server=None, restart=False, branch=None):
                     puts("Activating environment '%s' ..." % deploy_dir)
                     execute(activate, env_dir="%s/%s" % (deploy_dir, ENV_NAME), environment=environment)
 
+                    print('test')
                     run('op-start')
 
                     # if restart:
