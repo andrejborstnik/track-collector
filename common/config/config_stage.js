@@ -10,18 +10,11 @@
 //
 
 
-// Backend port.
-exports.be_port = 3107;
+exports.path_prefix = '/trackcollector';
 
-// Frontend port.
-exports.fe_port = 3007;
-
-// Browsersync port.
-exports.port = 4087;
+// Base URI for ALL backend services.
+exports.base_uri = `${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
 
 // Frontend API prefix.
-exports.paths_api_prefix = `https://gps-stage.matheo.si/api`;
-
-// Invitation API frontend URL.
-exports.follow_invitation_url = "https://gps-stage.matheo.si/follow";
+exports.paths_api_prefix = `https://test.goopti.com${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
 

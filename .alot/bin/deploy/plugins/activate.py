@@ -38,5 +38,5 @@ def activate(env_dir=None, environment="dev prod exit"):
     activate_cmd_path = "%s/bin/activate.sh" % env_dir
     exists = execute(helper.remote_exists, path=activate_cmd_path)[env.host_string]
     if exists:
-        sudo("%s %s" % (activate_cmd_path, environment), user=env.user)
+        local("%s %s" % (activate_cmd_path, environment))
 

@@ -6,8 +6,8 @@
 from fabric.api import *
 from fabric import operations
 from deploy.lib import helper
-from deploy.lib.slack import slack
-from deploy.lib.rocket import rocket
+# from deploy.lib.slack import slack
+# from deploy.lib.rocket import rocket
 from commands import * 
 import os
 
@@ -15,7 +15,7 @@ import os
 from deploy.plugins.git import git
 from deploy.plugins.activate import activate
 from deploy.plugins.clean import clean
-from deploy.plugins.systemctl import systemctl
+# from deploy.plugins.systemctl import systemctl
 
 # Configuration.
 from config_project import LOCK_FILE, ENV_NAME
@@ -83,19 +83,19 @@ def deploy(target=None, server=None, restart=False, branch=None):
         hosts_list = env.targets[target]
 
     # Override environment user and password.
-    with settings(user=env.profile[target]['user'], password=env.profile[target]['password']):
+    with settings(user=env.profile[target]['user'], key_filename=env.profile[target]['key_filename']): # , password=env.profile[target]['password']
         deploy_dir = env.profile[target]['deploy_dir']
         deploy_repo = env.profile[target]['deploy_repo']
-        service = env.profile[target]['service']
+        # service = env.profile[target]['service']
         environment = env.profile[target]['environment']
         deploy_branch = branch or env.profile[target]['branch']
-        url = env.profile[target]['url']
-        messaging = env.profile[target]['messaging']
-        channel = env.profile[target]['channel']
-        token = env.profile[target]['token']
+        # url = env.profile[target]['url']
+        # messaging = env.profile[target]['messaging']
+        # channel = env.profile[target]['channel']
+        # token = env.profile[target]['token']
 
         # Lock target hosts.
-        with settings(parallel=True, hosts=hosts_list):
+        with settings(hosts=hosts_list):
             execute(helper.deploy_lock, path=LOCK_FILE)
 
         # Deploy git repository to target hosts.
@@ -127,18 +127,18 @@ def deploy(target=None, server=None, restart=False, branch=None):
                     puts("Activating environment '%s' ..." % deploy_dir)
                     execute(activate, env_dir="%s/%s" % (deploy_dir, ENV_NAME), environment=environment)
 
-                    if restart:
-                        puts("Restarting service '%s' ..." % service)
-                        execute(systemctl, cmd='restart', service=service)
+                    # if restart:
+                    #     puts("Restarting service '%s' ..." % service)
+                    #     execute(systemctl, cmd='restart', service=service)
             
                     # Send deployment message.
-                    if messaging == 'slack':
-                        slack(token=token, channel=channel, target=target, url=url)
-                    elif messaging == 'rocket':
-                        rocket(token=token, channel=channel, target=target, url=url)
+                    # if messaging == 'slack':
+                    #     slack(token=token, channel=channel, target=target, url=url)
+                    # elif messaging == 'rocket':
+                    #     rocket(token=token, channel=channel, target=target, url=url)
             finally:
                 # Unlock, clean up.
-                with settings(parallel=True, hosts=hosts_list):
+                with settings(hosts=hosts_list):
                     execute(helper.deploy_unlock, path=LOCK_FILE)
 
 

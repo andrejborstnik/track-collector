@@ -33,37 +33,39 @@ env.deploy_pass = "depl0ydepl0y"
 # Deployment targets.
 env.targets = {
     'stage': [
-        'jupyter0',
+        'gps.int.goopti.com',
     ],
 
     'prod': [
-        'gps-srv',
+        '',
     ],
 }
 
 # Deployment profiles.
 env.profile = {
     'stage' : {
-        'user' : "gps-staging",
+        'user' : "trackcollector",
         'password' : "gps",
-        'deploy_dir' : "/home/gps-staging/www",
-        # 'deploy_repo' : "https://%s:%s@gogs.matheo.si/Abelium-alot/GPS.git", // todo
+        'key_filename': '~/.ssh/id_rsa',
+        'deploy_dir' : "/home/trackcollector/www",
+        'deploy_repo': "https://%s:%s@github.com/andrejborstnik/track-collector.git",
         'service' : "node-gps-staging.service",
         'environment' : "dev stage exit",
-        'backup_dir' : '/backup/gps-stage',
-        'branch': 'prod',
-        'url': 'https://gps-stage.matheo.si'
+        'backup_dir' : '/backup/trackcollector-stage',
+        'branch': 'master',
+        'url': 'https://test.goopti.com//trackcollector/browse'
     },
 
     'prod' : {
-        'user' : 'gps',
+        'user' : 'trackcollector',
         'password' : 'gps', # todo
-        'deploy_dir' : "/home/gps/www",
-        # 'deploy_repo' : "https://%s:%s@gogs.matheo.si/Abelium-alot/GPS.git", // todo
+        'key_filename': '~/.ssh/id_rsa',
+        'deploy_dir' : "/home/trackcollector/www",
+        'deploy_repo' : "https://%s:%s@github.com/andrejborstnik/track-collector.git",
         'service' : "node-gps.service",
         'environment' : 'dev prod exit',
-        'backup_dir' : '/backup/gps',
+        'backup_dir' : '/backup/trackcollector',
         'branch': 'prod',
-        'url': 'https://gps.matheo.si'
+        'url': 'https://test.goopti.com//trackcollector/browse'
     },
 }
