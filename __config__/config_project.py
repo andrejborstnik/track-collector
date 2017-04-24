@@ -47,7 +47,7 @@ env.profile = {
         'user' : "trackcollector",
         'password' : "gps",
         'key_filename': '~/.ssh/id_rsa',
-        'deploy_dir' : "/home/trackcollector/www",
+        'deploy_dir' : "~/www",
         'deploy_repo': "https://%s:%s@github.com/andrejborstnik/track-collector.git",
         'service' : "node-gps-staging.service",
         'environment' : "dev stage exit",
@@ -60,7 +60,7 @@ env.profile = {
         'user' : 'trackcollector',
         'password' : 'gps', # todo
         'key_filename': '~/.ssh/id_rsa',
-        'deploy_dir' : "/home/trackcollector/www",
+        'deploy_dir' : "~/www",
         'deploy_repo' : "https://%s:%s@github.com/andrejborstnik/track-collector.git",
         'service' : "node-gps.service",
         'environment' : 'dev prod exit',
