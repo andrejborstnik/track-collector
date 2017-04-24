@@ -50,7 +50,7 @@ env.profile = {
         'deploy_dir' : "/home/trackcollector/www",
         'deploy_repo': "https://%s:%s@github.com/andrejborstnik/track-collector.git",
         'service' : "node-gps-staging.service",
-        'environment' : "dev stage exit",
+        'environment' : "dev prod exit",
         'backup_dir' : '/backup/trackcollector-stage',
         'branch': 'master',
         'url': 'https://test.goopti.com//trackcollector/browse'
