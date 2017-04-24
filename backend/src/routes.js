@@ -30,7 +30,7 @@ const sequelizeTest = require('src/rest/sequelizeTest');
 
 w.info('Starting up in %s mode', config.__MODE__);
 
-router.get('/api/queryDb/:query', function (req, res) {
+router.post('/api/queryDb/:query', function (req, res) {
     let query = decodeURI(req.params.query);
     let params = decodeURI(req.query.params); // todo parse safely
 
@@ -42,7 +42,7 @@ router.get('/api/queryDb/:query', function (req, res) {
     });
 });
 
-router.get('/api/track/:query', function (req, res) {
+router.post('/api/track/:query', function (req, res) {
     let query = decodeURI(req.params.query);
     let params = decodeURI(req.query.params); // todo parse safely
 

@@ -18,7 +18,7 @@
 <script type="text/babel">
 
     import async from 'co';
-    import http from 'http';
+    const request = require('request-promise-native');
     import * as config from 'config';
 
 
@@ -34,23 +34,13 @@
         let query = 'test';
 
         let path = `/track/${query}`;
-        http.get({
-            path: config.paths_api_prefix + path
-        }, function (res) {
-            if (res.statusCode == 200) {
-                let chunks = [];
-                let body = '';
-                res.on('data', function (chunk) {
-                    chunks.push(chunk);
-                    body += chunk;
-                });
-                res.on('end', function () {
-                    this.output = JSON.parse(body);
-                }.bind(this));
-            }
-        }.bind(this));
-    };
-
+        request({
+            method: "POST",
+            uri: config.paths_api_prefix + path
+        }).then((body) => {
+            this.output = JSON.parse(body);
+        });
+    }
 
     //
     // EXPORT
