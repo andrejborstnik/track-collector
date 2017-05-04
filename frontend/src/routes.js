@@ -9,7 +9,7 @@ import PostGreDemo from 'PostGreDemo.vue';
 
 import ExampleMap from 'pages/ExampleMap.vue';
 import TrackDemo from 'pages/TrackDemo.vue';
-
+import Signin from 'pages/Signin.vue';
 import BrowseComponents from 'pages/BrowseComponents.vue';
 
 import App from 'App.vue';
@@ -61,6 +61,11 @@ let routes = [
     {
         path: 'map',
         component: ExampleMap
+    },
+
+    {
+        path: 'signin',
+        component: Signin
     },
 
     {
