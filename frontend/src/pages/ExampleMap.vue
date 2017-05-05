@@ -38,12 +38,14 @@
         this.points = [{
             longitude: 15.5,
             latitude: 46,
-            name: 'pointA'
+            name: 'pointA',
+            color: 'red'
         },
         {
             longitude: 15.7,
             latitude: 45.5,
-            name: 'pointB'
+            name: 'pointB',
+            color: 'blue'
         }];
         this.connections = [{
             'A': {
@@ -55,7 +57,8 @@
                 longitude: 15.7,
                 latitude: 45.5,
                 name: 'pointB'
-            }
+            },
+            color: 'orange'
         }];
 
 

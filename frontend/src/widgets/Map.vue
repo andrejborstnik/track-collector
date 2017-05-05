@@ -297,7 +297,7 @@
 
             iconFeature = new ol.Feature(data);
 
-            let color = colorFromLevel(row.measured_level);
+            let color = row.color || colorFromLevel(row.measured_level);
 
             iconFeature.setStyle(iconStyle(color));
             i++;
@@ -343,13 +343,15 @@
                 continue;
             }
 
+            let color = connection.color || colorFromLevel(connection.measured_level);
+
             data.geometry = new ol.geom.LineString([transformCoords([data.A.longitude, data.A.latitude]),
                 transformCoords([data.B.longitude, data.B.latitude])]);
 
             lineFeature = new ol.Feature(data);
 
             i++;
-            lineFeature.setStyle(lineStyle('grey'));
+            lineFeature.setStyle(lineStyle(color));
             lineFeature.setId(i);
             features.push(lineFeature);
         }
