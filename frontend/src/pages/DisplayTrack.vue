@@ -39,7 +39,7 @@
     const getData = function () {
         let points = [];
         let connections = [];
-        let tracks = JSON.parse(this.$route.params.tracks);
+        let tracks = JSON.parse(decodeURIComponent(this.$route.params.tracks));
 
         for (let track of tracks) {
             let prevpoint;
