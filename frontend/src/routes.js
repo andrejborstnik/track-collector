@@ -10,6 +10,7 @@ import PostGreDemo from 'PostGreDemo.vue';
 import ExampleMap from 'pages/ExampleMap.vue';
 import TrackDemo from 'pages/TrackDemo.vue';
 import Signin from 'pages/Signin.vue';
+import DisplayTrack from 'pages/DisplayTrack.vue';
 import BrowseComponents from 'pages/BrowseComponents.vue';
 
 import App from 'App.vue';
@@ -66,6 +67,11 @@ let routes = [
     {
         path: 'signin',
         component: Signin
+    },
+
+    {
+        path: 'display/:tracks',
+        component: DisplayTrack
     },
 
     {
