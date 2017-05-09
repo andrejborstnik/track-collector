@@ -28,6 +28,7 @@ w.level = config.log_level;
 
 const postgreApi = require('src/rest/postgreApi');
 const sequelizeTest = require('src/rest/sequelizeTest');
+const register = require('src/rest/register');
 
 w.info('Starting up in %s mode', config.__MODE__);
 
@@ -67,6 +68,8 @@ router.post('/api/track/:query', function (req, res) {
         throw err;
     });
 });
+
+router.post('/register/:query',register.register_new_user);
 
 module.exports = router;
 
