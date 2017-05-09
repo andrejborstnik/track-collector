@@ -11,6 +11,7 @@ import ExampleMap from 'pages/ExampleMap.vue';
 import TrackDemo from 'pages/TrackDemo.vue';
 import Signin from 'pages/Signin.vue';
 import Registration from 'pages/Registration.vue';
+import User_update from 'pages/User_update.vue';
 import DisplayTrack from 'pages/DisplayTrack.vue';
 import BrowseComponents from 'pages/BrowseComponents.vue';
 
