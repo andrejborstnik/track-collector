@@ -1,9 +1,9 @@
 <template>
 
     <div style="width: 80%;">
-        Uporabniško ime
+        Uporabniško ime:
         <input type="text" v-model="uname" @keyup.prevent.enter="login" />
-        Geslo
+        Geslo:
         <input type="password" v-model="geslo" @keyup.prevent.enter="login" />
         <a class="button" @click="login">Login</a>
     </div>
@@ -22,7 +22,7 @@
     };
 
     export default {
-        name: 'Signin',
+        name: 'Sign in',
 
         data: () => {
             return {
