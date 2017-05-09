@@ -36,7 +36,21 @@
                                       
         var user_JSON = JSON.stringify(user_registration_data);
         console.info(user_JSON);
-        console.log(this.user_name,this.user_mail,this.password,this.confirm_password)
+        console.log(this.user_name,this.user_mail,this.password,this.confirm_password);
+
+
+        var request = new XMLHttpRequest();
+        request.onload = function () {
+           var status = request.status; 
+           var data = request.responseText;
+           console.log(status);
+           console.log(data);
+        }
+
+        request.open("POST", "http://localhost:3102/register", true);
+        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        request.send(user_JSON);
+
     };
 
     export default {
