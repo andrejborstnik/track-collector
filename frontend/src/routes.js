@@ -69,6 +69,10 @@ let routes = [
         path: 'signin',
         component: Signin
     },
+        {
+        path: 'Registration',
+        component: Registration
+    },
 
     {
         path: 'display/:tracks',

@@ -30,9 +30,10 @@ function send_mail(recipient,subject,body) {
 
 exports.register_new_user = function (req, res) {
     console.log("registering new user:");
-    console.log(reg_data);
-    let reg_data = JSON.parse(req.body);
-    let body = "you have registered with name:" + reg_data.user_name +
-                " and password:" + reg_data.user_password;
-    send_mail(reg_data.user_mail,"Registration email test",body);
+    console.log(req.body);
+    let body = "you have registered with name:" + req.body.user_name +
+                " and password:" + req.body.user_password;
+    send_mail(req.body.user_mail,"Registration email test",body);
+    res.set('Content-Type', 'text/plain')
+    res.status(200).send(`You sent: ${body} to the backend`)
 }
