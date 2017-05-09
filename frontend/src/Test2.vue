@@ -1,7 +1,7 @@
 <template>
 
     <div class="paint-me">
-        <p>I am a test 2 and I contain a test.</p>
+        <p>I am a test 2 and I contain a test. Test.</p>
 
         <Test></Test>
     </div>
