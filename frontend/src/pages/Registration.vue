@@ -19,32 +19,39 @@
 
 <script type="text/babel">
 
-    import config from 'config';
+    import * as config from 'config';
+    const request = require('request-promise-native');
 
     const register_user = function () {
-        
-        if (this.password != this.confirm_password){
+        let user_mail = this.user_mail; // zadeve v this se lahko spremenijo sredi izvajanja funkcije, zato si jih zapomnimo.
+        let password = this.password;
+        let confirm_password = this.confirm_password;
+
+        if (!password || !user_mail) {
+            alert("Please fill all the fields.");
+            return;
+        }
+        else if (password != confirm_password){
             alert("Passwords do not match.");
             return;
         }
         
         const user_registration_data = {
-            "user_mail" : this.user_mail,
-            "user_password" : this.password
-        };
-                                      
-        const user_JSON = JSON.stringify(user_registration_data);
-
-        let request = new XMLHttpRequest();
-        request.onload = function () {
-           let status = request.status;
-           let data = request.responseText;
-           console.log(status, data);
+            "user_mail" : user_mail,
+            "user_password" : password
         };
 
-        request.open("POST", `${config.paths_api_prefix}/register`, true);
-        request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        request.send(user_JSON);
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/register`,
+            json: user_registration_data
+        }).then((body) => {
+            // todo login with api
+            this.$router.push('/browse');
+        }).catch((err) => {
+            // todo show different reasons
+            alert("There was an error.")
+        });
     };
 
     export default {
