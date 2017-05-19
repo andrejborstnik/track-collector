@@ -1,8 +1,6 @@
 <template>
 
     <div style="width: 80%;">
-        Uporabniško ime:
-        <input type="text" v-model="user_name" @keyup.prevent.enter="register_user" />
         Elektronska pošta:
         <input type="text" v-model="user_mail" @keyup.prevent.enter="register_user" />
         Geslo:
@@ -22,7 +20,6 @@
 <script type="text/babel">
 
     const register_user = function () {
-        console.info("Pritisnjen gumb AAA.");
         
         if (this.password != this.confirm_password){
             console.info("Napačna potrditev gesla.");
@@ -30,14 +27,12 @@
         }
         console.info("Uspesna potrditev gesla.");
         
-        var user_registration_data = {"user_name" : this.user_name,
-                                      "user_mail" : this.user_mail,
+        var user_registration_data = {"user_mail" : this.user_mail,
                                       "user_password" : this.password};
                                       
         var user_JSON = JSON.stringify(user_registration_data);
         console.info(user_JSON);
-        console.log(this.user_name,this.user_mail,this.password,this.confirm_password);
-
+        console.log(this.user_mail,this.password,this.confirm_password);
 
         var request = new XMLHttpRequest();
         request.onload = function () {
@@ -50,7 +45,6 @@
         request.open("POST", "http://localhost:3102/register", true);
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.send(user_JSON);
-
     };
 
     export default {

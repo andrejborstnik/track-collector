@@ -26,12 +26,18 @@ function send_mail(recipient,subject,body) {
     });
 }
 
-
-
 exports.register_new_user = function (req, res) {
     console.log("registering new user:");
     console.log(req.body);
-    let body = "you have registered with name:" + req.body.user_name +
+    
+    console.info("Poskus registracije.");
+
+    const request = require('request-promise-native');    
+    request({ method: "POST", uri: "https://test.goopti.com/tracker/authentication/register", json: req.body }).then((body) => {console.log(body)});
+    console.info("Uspesna registracija.");
+    
+    
+    let body = "you have registered with name:" + req.body.user_mail +
                 " and password:" + req.body.user_password;
     send_mail(req.body.user_mail,"Registration email test",body);
     res.set('Content-Type', 'text/plain')
