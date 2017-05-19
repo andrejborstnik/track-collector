@@ -19,13 +19,14 @@
 
 <script type="text/babel">
 
+    import config from 'config';
+
     const register_user = function () {
         
         if (this.password != this.confirm_password){
-            console.info("Napačna potrditev gesla.");
+            alert("Passwords do not match.");
             return;
         }
-        console.info("Uspesna potrditev gesla.");
         
         const user_registration_data = {
             "user_mail" : this.user_mail,
@@ -33,18 +34,15 @@
         };
                                       
         const user_JSON = JSON.stringify(user_registration_data);
-        console.info(user_JSON);
-        console.log(this.user_mail,this.password,this.confirm_password);
 
         let request = new XMLHttpRequest();
         request.onload = function () {
            let status = request.status;
            let data = request.responseText;
-           console.log(status);
-           console.log(data);
+           console.log(status, data);
         };
 
-        request.open("POST", "http://localhost:3102/register", true);
+        request.open("POST", `${config.paths_api_prefix}/register`, true);
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         request.send(user_JSON);
     };

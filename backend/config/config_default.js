@@ -21,3 +21,5 @@ exports.cn = {
     user: 'gps',
     password: 'gps-tracks'
 };
+
+exports.java_be = 'https://test.goopti.com/tracker';

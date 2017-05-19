@@ -70,8 +70,9 @@ let routes = [
         path: 'signin',
         component: Signin
     },
-        {
-        path: 'Registration',
+
+    {
+        path: 'registration',
         component: Registration
     },
 

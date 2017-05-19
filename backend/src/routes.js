@@ -70,7 +70,7 @@ router.post('/api/track/:query', function (req, res) {
 });
 
 
-router.post('/register',register.register_new_user);
+router.post('/api/register', register.register_new_user);
 
 module.exports = router;
 
