@@ -26,8 +26,8 @@ const config = require('config');
 const w = require('winston');
 w.level = config.log_level;
 
-const postgreApi = require('src/rest/postgreApi');
-const sequelizeTest = require('src/rest/sequelizeTest');
+// const postgreApi = require('src/rest/postgreApi');
+// const sequelizeTest = require('src/rest/sequelizeTest');
 const register = require('src/rest/register');
 
 w.info('Starting up in %s mode', config.__MODE__);
@@ -36,12 +36,12 @@ router.post('/api/queryDb/:query', function (req, res) {
     let query = decodeURI(req.params.query);
     let params = decodeURI(req.query.params); // todo parse safely
 
-    postgreApi.queryDb(query, params).then(function (result) {
-        res.send(result);
-    }).catch(function (err) {
-        w.error(err);
-        res.status(400).send(err);
-    });
+    // postgreApi.queryDb(query, params).then(function (result) {
+    //     res.send(result);
+    // }).catch(function (err) {
+    //     w.error(err);
+    //     res.status(400).send(err);
+    // });
 });
 
 router.post('/api/track/:query', function (req, res) {
