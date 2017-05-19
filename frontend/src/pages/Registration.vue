@@ -1,13 +1,13 @@
 <template>
 
     <div style="width: 80%;">
-        Elektronska pošta:
+        Email:
         <input type="text" v-model="user_mail" @keyup.prevent.enter="register_user" />
-        Geslo:
+        Password:
         <input type="password" v-model="password" @keyup.prevent.enter="register_user" />
-        Potrditev gesla:
+        Confirm password:
         <input type="password" v-model="confirm_password" @keyup.prevent.enter="register_user" />
-        <a class="button" @click="register_user">Sing up</a>
+        <a class="button" @click="register_user">Sign up</a>
     </div>
 
 </template>
@@ -27,20 +27,22 @@
         }
         console.info("Uspesna potrditev gesla.");
         
-        var user_registration_data = {"user_mail" : this.user_mail,
-                                      "user_password" : this.password};
+        const user_registration_data = {
+            "user_mail" : this.user_mail,
+            "user_password" : this.password
+        };
                                       
-        var user_JSON = JSON.stringify(user_registration_data);
+        const user_JSON = JSON.stringify(user_registration_data);
         console.info(user_JSON);
         console.log(this.user_mail,this.password,this.confirm_password);
 
-        var request = new XMLHttpRequest();
+        let request = new XMLHttpRequest();
         request.onload = function () {
-           var status = request.status; 
-           var data = request.responseText;
+           let status = request.status;
+           let data = request.responseText;
            console.log(status);
            console.log(data);
-        }
+        };
 
         request.open("POST", "http://localhost:3102/register", true);
         request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
