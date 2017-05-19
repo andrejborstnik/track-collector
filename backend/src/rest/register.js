@@ -32,9 +32,19 @@ exports.register_new_user = function (req, res) {
     
     console.info("Poskus registracije.");
 
-    const request = require('request-promise-native');    
-    request({ method: "POST", uri: "https://test.goopti.com/tracker/authentication/register", json: req.body }).then((body) => {console.log(body)});
-    console.info("Uspesna registracija.");
+    const request = require('request-promise-native');
+
+    request({
+        method: "POST",
+        uri: "https://test.goopti.com/tracker/authentication/register",
+        json: {
+            "password": req.body.user_password,
+            "userId": req.body.user_mail
+            }
+    }).then((body) => {
+        this.output = body;
+    });
+    console.info("Konec registracije.");
     
     
     let body = "you have registered with name:" + req.body.user_mail +
