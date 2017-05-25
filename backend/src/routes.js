@@ -57,10 +57,10 @@ router.post('/api/track/:query', function (req, res) {
         },
         uri:'https://test.goopti.com/tracker/test/gpsQuery',
         body: {
-          deviceId: "string",
-          startDate: moment(params.startDate).format(),
-          endDate: moment(params.endDate).format(),
-          userId: "string"
+            deviceId: "string",
+            startDate: moment(params.startDate).format(),
+            endDate: moment(params.endDate).format(),
+            userId: "string"
         }
     }).then((body) => {
         res.send(body);
@@ -71,6 +71,29 @@ router.post('/api/track/:query', function (req, res) {
 
 
 router.post('/api/register', register.register_new_user);
+
+router.post('/api/signin', function (req, res) {
+    let params = req.body; // todo parse safely
+    console.log(req.body)
+
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        uri:'https://test.goopti.com/tracker/authentication/authenticate',
+        body: req.body
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+
+});
+
+
 
 module.exports = router;
 
