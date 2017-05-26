@@ -30,6 +30,7 @@
     "gulp-modify-file": "^0.1.0",
     "gulp-uncss": "^1.0.6",
     "jquery": "^2.2.4",
+    "js-cookie": "^2.1.4",
     "lodash": "^4.16.6",
     "node-sass": "^3.10.1",
     "node-webhooks": "^1.1.3",

@@ -74,7 +74,6 @@ router.post('/api/register', register.register_new_user);
 
 router.post('/api/signin', function (req, res) {
     let params = req.body; // todo parse safely
-    console.log(req.body)
 
     request({
         method: "POST",

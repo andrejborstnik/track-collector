@@ -7,17 +7,17 @@
 function loadScript(src, callback) {
     console.debug("Loading-script:", src, "...");
 
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
+    let head = document.getElementsByTagName('head')[0];
+    let script = document.createElement('script');
     script.type = 'text/javascript';
     script.src = src;
 
-    var success = function () {
+    let success = function () {
         console.debug("Loaded-script:", src);
         callback();
     };
 
-    var fail = function (e) {
+    let fail = function (e) {
         console.error("Error:", src, ":", e);
     };
 
@@ -41,10 +41,10 @@ function loadScript(src, callback) {
 // }
 
 function loadSeqOfScripts(urls_list) {
-    var _script = function() {console.debug("All scripts have been loaded ...");}
+    let _script = function() {console.debug("All scripts have been loaded ...");}
 
     for (url of urls_list.reverse()) {
-        var _script = function(url, script) {
+        _script = function(url, script) {
             return function() {
                 loadScript('static/js/' + url, script);
             }
@@ -80,7 +80,7 @@ function getXHR() {
 // A HTTP get request.
 function httpGetAsync(theUrl, callback)
 {
-    var xmlHttp = getXHR();
+    let xmlHttp = getXHR();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
             callback(xmlHttp.responseText);
@@ -98,25 +98,8 @@ function httpGetAsync(theUrl, callback)
 // Load CSS.
 // loadLink("stylesheet", "<frontend-css-bundle>", function() {});
 
-loadScript("static/vendor/bowser/bowser.min.js", function () {
-    // Check browser version and load the correct page.
-    // console.log('Browser: ' + bowser.name + ' ' + bowser.version);
-    var application_should_load = bowser.check({msie:"12", safari:"10", firefox:"38", msedge:"14"});
-    if (application_should_load) {
-        var scripts = <frontend-scripts-array>;
-        scripts.unshift('static/vendor/jquery/dist/jquery.min.js');
-        scripts.push('static/js/<main-application-file>');
-        loadSeqOfScripts(scripts);
-    }
-    else {
-        var current_url = window.location.href;
-        var url_segments = current_url.split('/follow/');
-        if (url_segments.length > 1) {
-            var token = url_segments[1];
-            // var no_browser_url = window.location.protocol + '//' + window.location.hostname + "<no-browser-url>/" + token;
-            var no_browser_url = "<no-browser-url>/" + token;
-            httpGetAsync(no_browser_url, function() {});
-        }
-        window.location = 'static/html/browser.html';
-    }
+loadScript("static/vendor/jquery/dist/jquery.min.js", function () {
+    let scripts = <frontend-scripts-array>;
+    scripts.push('static/js/<main-application-file>');
+    loadSeqOfScripts(scripts);
 });

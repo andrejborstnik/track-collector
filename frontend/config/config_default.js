@@ -25,4 +25,3 @@ exports.node_vendor_modules = {
 
 // Frontend application.
 exports.main_application_file = "frontend.js";
-

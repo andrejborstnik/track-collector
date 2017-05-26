@@ -48,22 +48,26 @@ let routes = [
 
     {
         path: '/',
-        component: BrowseComponents
+        component: BrowseComponents,
+        meta: { auth: true }
     },
 
     {
         path: 'browse',
-        component: BrowseComponents
+        component: BrowseComponents,
+        meta: { auth: true }
     },
 
     {
         path: 'track',
-        component: TrackDemo
+        component: TrackDemo,
+        meta: { auth: true }
     },
 
     {
         path: 'map',
-        component: ExampleMap
+        component: ExampleMap,
+        meta: { auth: true }
     },
 
     {
@@ -78,22 +82,26 @@ let routes = [
 
     {
         path: 'display/:tracks',
-        component: DisplayTrack
+        component: DisplayTrack,
+        meta: { auth: true }
     },
 
     {
         path: 'test',
-        component: Test
+        component: Test,
+        meta: { auth: true }
     },
 
     {
         path: 'test2',
-        component: Test2
+        component: Test2,
+        meta: { auth: true }
     },
 
     {
         path: 'db',
-        component: PostGreDemo
+        component: PostGreDemo,
+        meta: { auth: true }
     },
 
     {

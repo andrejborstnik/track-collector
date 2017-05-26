@@ -17,6 +17,9 @@ exports.fe_port = 3002;
 // Browsersync port.
 exports.port = 4080;
 
+// Cookie expiration time in days.
+exports.cookie_expiry = 7;
+
 // Build destination.
 exports.build_dest = "build";
 
