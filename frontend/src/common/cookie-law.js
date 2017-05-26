@@ -17,9 +17,6 @@ import Vue from 'vue';
 // Cookies support.
 import * as cookies from 'common/cookies';
 
-// Setup Store.
-import store from 'common/store';
-
 
 // API.
 // import async from 'co';             // Co async support.
@@ -35,10 +32,10 @@ export function storeCookieDirective() {
 
     if (directive_cookie && session_cookie && !session_cookie.cookies_accepted) {
         // Update store.
-        Vue.set(store.state.user, "cookies_accepted", true);
+        // Vue.set(store.state.user, "cookies_accepted", true);
 
         // Update session cookie.
-        cookies.update_session_cookie({cookies_accepted: true});
+        // cookies.update_session_cookie({cookies_accepted: true});
 
         // Update database. todo save cookie accepted to db.
         // async(function*() {
