@@ -72,7 +72,7 @@ let readSessionCookie = function (router, {to, from}) {
         // Setting so the next component knows where we came from. todo
         // Vue.set(store.component.signin, "returnToUrl", to.path);
 
-        return '/signin';
+        return `${config.paths_api_prefix}/signin`;
     }
 
 };
