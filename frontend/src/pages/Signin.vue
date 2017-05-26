@@ -49,7 +49,7 @@
     //            if (user.cookies_accepted)
     //                cookies.set_directive_cookie();
 
-                this.$router.push(`${config.paths_api_prefix}/browse`);
+                this.$router.push(`${config.path_prefix}/browse`);
             }
             else {
                 cookies.remove_session_cookie();
