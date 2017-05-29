@@ -44,8 +44,7 @@ router.post('/api/queryDb/:query', function (req, res) {
     // });
 });
 
-router.post('/api/track/:query', function (req, res) {
-    let query = decodeURI(req.params.query);
+router.post('/api/track', function (req, res) {
     let params = req.body; // todo parse safely
 
     request({
@@ -55,12 +54,15 @@ router.post('/api/track/:query', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri:'https://test.goopti.com/tracker/test/gpsQuery',
+        uri:'https://test.goopti.com/tracker/tracker/gpsQuery',
         body: {
-            deviceId: "string",
-            startDate: moment(params.startDate).format(),
             endDate: moment(params.endDate).format(),
-            userId: "string"
+            groupId: params.groupId,
+            requiredAccuracy: params.requiredAccuracy,
+            singlePointStops: params.singlePointStops,
+            startDate: moment(params.startDate).format(),
+            token: params.token,
+            userIds: params.userIds
         }
     }).then((body) => {
         res.send(body);

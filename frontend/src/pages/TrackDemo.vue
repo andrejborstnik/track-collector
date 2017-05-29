@@ -7,7 +7,7 @@
             Do:
                 <input type="date" v-model="endDate"></input>
         </div>
-        <a class="button" @click="getTrack">Show Alen</a>
+        <a class="button" @click="getTrack">Show your tracks</a>
 
         <MyMap v-if="points" :mydata="{points, connections}" source="OSM" width="100%" height="700px"
                style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
@@ -37,19 +37,37 @@
     //
 
     const getTrack = function () {
-        let query = 'test';
+//        async(function*() {
+//                //        POST /group/list
+//    //        {
+//    //            "token": "string"
+//    //        }
+//
+//
+//
+//
+//        }.bind(this));
 
-        let path = `/track/${query}`;
+        let path = `/track`;
         request({
             method: "POST",
             uri: config.paths_api_prefix + path,
             json: {
+                endDate: this.endDate,
+                groupId: "string",
+                requiredAccuracy: 0,
+                singlePointStops: true,
                 startDate: this.startDate,
-                endDate: this.endDate
+                token: this.$store.user.token,
+                userIds: [
+                    "string"
+                ]
             }
         }).then((body) => {
-            this.output = body;
+            this.output = body.tracks;
         });
+
+
     };
 
     //
@@ -70,33 +88,44 @@
 
         computed: {
             points: function () {
-                return _.map(this.output.samples, (o) => {
-                    return {
-                        longitude: o.longitude,
-                        latitude: o.latitude,
-                        name: 'test'
-                    }
-                })
+//                let points = [];
+//                for (let j = 0; j < this.output.length; j++) {
+//                    let color = this.colors[j % this.colors.length];
+//                    for (let i = 0; i < this.output[j].samples.length; i++) {
+//                        let o = this.output[j].samples[i];
+//                        points.push({
+//                            longitude: o.longitude,
+//                            latitude: o.latitude,
+//                            name: 'test',
+//                            color
+//                        });
+//                    }
+//                }
+                return [];
             },
             connections: function () {
                 if (!this.output)
                     return [];
                 let conn = [];
-                for (let i = 0; i < this.output.samples.length - 1; i++) {
-                    let A = this.output.samples[i];
-                    let B = this.output.samples[i + 1];
-                    conn.push({
-                        'A': {
-                            longitude: A.longitude,
-                            latitude: A.latitude,
-                            name: 'test'
-                        },
-                        'B': {
-                            longitude: B.longitude,
-                            latitude: B.latitude,
-                            name: 'test'
-                        }
-                    });
+                for (let j = 0; j < this.output.length; j++) {
+                    let color = this.colors[j % this.colors.length];
+                    for (let i = 0; i < this.output[j].samples.length - 1; i++) {
+                        let A = this.output[j].samples[i];
+                        let B = this.output[j].samples[i + 1];
+                        conn.push({
+                            'A': {
+                                longitude: A.longitude,
+                                latitude: A.latitude,
+                                name: 'test'
+                            },
+                            'B': {
+                                longitude: B.longitude,
+                                latitude: B.latitude,
+                                name: 'test'
+                            },
+                            color
+                        });
+                    }
                 }
                 return conn;
             }
@@ -106,7 +135,8 @@
             return {
                 output: '',
                 startDate: '',
-                endDate: ''
+                endDate: '',
+                colors: ['red', 'green', 'grey', 'orange', 'yellow', 'blue', 'black'] // this colors or hex.
             }
         }
     }
