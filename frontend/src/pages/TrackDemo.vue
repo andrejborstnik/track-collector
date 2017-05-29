@@ -8,6 +8,7 @@
                 <input type="date" v-model="endDate"></input>
         </div>
         <a class="button" @click="getTrack">Show your tracks</a>
+        <div v-if="connections"></div>
 
         <MyMap v-if="points" :mydata="{points, connections}" source="OSM" width="100%" height="700px"
                style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
@@ -26,6 +27,8 @@
     import async from 'co';
     const request = require('request-promise-native');
     import * as config from 'config';
+
+    import moment from 'moment';
 
 
     import _ from 'lodash';
@@ -91,8 +94,9 @@
 //                let points = [];
 //                for (let j = 0; j < this.output.length; j++) {
 //                    let color = this.colors[j % this.colors.length];
-//                    for (let i = 0; i < this.output[j].samples.length; i++) {
-//                        let o = this.output[j].samples[i];
+//                    let x = this.output[j].samples;
+//                    for (let i = 0; i < x.length; i++) {
+//                        let o = x[i];
 //                        points.push({
 //                            longitude: o.longitude,
 //                            latitude: o.latitude,
@@ -107,11 +111,13 @@
                 if (!this.output)
                     return [];
                 let conn = [];
+                console.log('here')
                 for (let j = 0; j < this.output.length; j++) {
                     let color = this.colors[j % this.colors.length];
-                    for (let i = 0; i < this.output[j].samples.length - 1; i++) {
-                        let A = this.output[j].samples[i];
-                        let B = this.output[j].samples[i + 1];
+                    let x = this.output[j].samples;
+                    for (let i = 0; i < x.length - 1; i++) {
+                        let A = x[i];
+                        let B = x[i + 1];
                         conn.push({
                             'A': {
                                 longitude: A.longitude,
@@ -127,6 +133,7 @@
                         });
                     }
                 }
+                console.log('here', conn.length)
                 return conn;
             }
         },
