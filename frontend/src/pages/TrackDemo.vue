@@ -105,13 +105,13 @@
 //                        });
 //                    }
 //                }
+//                return points;
                 return [];
             },
             connections: function () {
                 if (!this.output)
                     return [];
                 let conn = [];
-                console.log('here')
                 for (let j = 0; j < this.output.length; j++) {
                     let color = this.colors[j % this.colors.length];
                     let x = this.output[j].samples;
@@ -133,7 +133,6 @@
                         });
                     }
                 }
-                console.log('here', conn.length)
                 return conn;
             }
         },
