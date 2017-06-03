@@ -39,6 +39,8 @@ import main_app from 'src/App.vue';
 import { cookie_law } from 'common/cookie-law';
 import * as cookies from 'common/cookies';
 
+import * as config from 'config';
+
 //
 // ROUTING
 //
