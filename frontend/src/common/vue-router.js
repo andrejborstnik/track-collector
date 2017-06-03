@@ -43,6 +43,8 @@ import signin from 'src/pages/Signin.vue';
 import { cookie_law } from 'common/cookie-law';
 import * as cookies from 'common/cookies';
 
+import * as config from 'config';
+
 //
 // ROUTING
 //
