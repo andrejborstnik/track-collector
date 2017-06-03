@@ -3,9 +3,9 @@
     <div>
         <div style="width: 200px;">
             Od:
-                <input type="date" v-model="startDate"></input>
+                <input type="date" id="datum-od" v-model="startDate"></input>
             Do:
-                <input type="date" v-model="endDate"></input>
+                <input type="date" id="datum-do" v-model="endDate"></input>
         </div>
         <a class="button" @click="getTrack">Show your tracks</a>
         <div v-if="connections"></div>
@@ -38,6 +38,22 @@
     //
     // Functions
     //
+    Date.prototype.yyyymmdd = function() {
+      var mm = this.getMonth() + 1; // getMonth() is zero-based
+      var dd = this.getDate();
+
+      return [this.getFullYear(),
+              (mm>9 ? '' : '0') + mm,
+              (dd>9 ? '' : '0') + dd
+             ].join('-');
+    };
+    const setDate = function () {
+        var today = new Date();
+        var yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        this.startDate = yesterday.yyyymmdd();
+        this.endDate = today.yyyymmdd();
+    }
 
     const getTrack = function () {
 //        async(function*() {
@@ -82,11 +98,16 @@
         name: 'TrackDemo',
 
         methods: {
-            getTrack
+            getTrack,
+            setDate
         },
 
         components: {
             MyMap
+        },
+
+        mounted(){
+            this.setDate()
         },
 
         computed: {
