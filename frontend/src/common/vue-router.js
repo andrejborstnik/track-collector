@@ -32,9 +32,13 @@ Object.defineProperty(Vue.prototype, '$store', {
     }
 });
 
+// Vuetify
+import Vuetify from 'vuetify'
+Vue.use(Vuetify)
+
 // Import main application.
 import main_app from 'src/App.vue';
-
+import signin from 'src/pages/Signin.vue';
 // Cookies support.
 import { cookie_law } from 'common/cookie-law';
 import * as cookies from 'common/cookies';
@@ -102,7 +106,7 @@ router.beforeEach((to, from, next) => { // Check authentication before each tran
 });
 
 // Create Vue application and start the router.
-Vue.component('main_app', main_app);
+// Vue.component('main_app', main_app);
 
 // Start router.
 new Vue({
@@ -113,5 +117,5 @@ new Vue({
           store
       }
   },
-  render: h => h('main_app')
+  render: h => h('router-view')
 });

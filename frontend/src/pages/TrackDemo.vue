@@ -1,18 +1,76 @@
 <template>
 
-    <div>
-        <div style="width: 200px;">
-            Od:
-                <input type="date" v-model="startDate"></input>
-            Do:
-                <input type="date" v-model="endDate"></input>
-        </div>
-        <a class="button" @click="getTrack">Show your tracks</a>
+     <v-container id="trackShow" fluid>
+           <v-card raised>
+                 <v-layout align-baseline justify-end style="border-width: 1">
+                   <v-flex xs12 sm6>
+                     <v-dialog
+                       persistent
+                       v-model="modalFrom"
+                       lazy
+                     >
+                       <v-text-field
+                         slot="activator"
+                         label="From:"
+                         v-model="startDate"
+                         prepend-icon="event"
+                         readonly
+                       ></v-text-field>
+                       <v-date-picker v-model="startDate" scrollable>
+                         <template scope="{ save, cancel }">
+                           <v-card-row actions>
+                             <v-btn flat primary v-on:click.native.native="cancel()">Cancel</v-btn>
+                             <v-btn flat primary v-on:click.native.native="save()">Save</v-btn>
+                           </v-card-row>
+                         </template>
+                       </v-date-picker>
+                     </v-dialog>
+                   </v-flex>
+                   <v-flex xs12 sm6>
+                     <v-dialog
+                       persistent
+                       v-model="modalTo"
+                       lazy
+                     >
+                       <v-text-field
+                         slot="activator"
+                         label="To:"
+                         v-model="endDate"
+                         prepend-icon="event"
+                         readonly
+                       ></v-text-field>
+                       <v-date-picker v-model="endDate" scrollable>
+                         <template scope="{ save, cancel }">
+                           <v-card-row actions>
+                             <v-btn flat primary v-on:click.native.native="cancel()">Cancel</v-btn>
+                             <v-btn flat primary v-on:click.native.native="save()">Save</v-btn>
+                           </v-card-row>
+                         </template>
+                       </v-date-picker>
+                     </v-dialog>
+                   </v-flex>
+
+                   <!--
+                   Od:
+                       <input type="date" v-model="startDate"></input>
+
+                   Do:
+                       <input type="date" v-model="endDate"></input>
+                          -->
+                  <v-btn primary light
+                       v-on:click.native="getTrack">Show your tracks</v-btn>
+                 </v-layout>
+          </v-card>
+        <v-dialog persistent v-model="loading" lazy>
+          <v-layout row justify-center>
+            <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7" class="purple--text"></v-progress-circular>
+          </v-layout>
+        </v-dialog>
         <div v-if="connections"></div>
 
         <MyMap v-if="points" :mydata="{points, connections}" source="OSM" width="100%" height="700px"
                style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
-    </div>
+     </v-container>
 
 </template>
 
@@ -52,6 +110,7 @@
 //        }.bind(this));
 
         let path = `/track`;
+        this.loading = true;
         request({
             method: "POST",
             uri: config.paths_api_prefix + path,
@@ -67,6 +126,7 @@
                 ]
             }
         }).then((body) => {
+            this.loading = false;
             this.output = body.tracks;
         });
 
@@ -140,9 +200,12 @@
         data () {
             return {
                 output: '',
-                startDate: '',
-                endDate: '',
-                colors: ['red', 'green', 'grey', 'orange', 'yellow', 'blue', 'black'] // this colors or hex.
+                startDate: "2017-05-07",
+                endDate: "2017-05-14",
+                colors: ['red', 'green', 'grey', 'orange', 'yellow', 'blue', 'black'], // this colors or hex.
+                modalFrom: false,
+                modalTo: false,
+                loading: false
             }
         }
     }

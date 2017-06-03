@@ -12,7 +12,7 @@
 import Vue from 'vue';
 
 // Foundation.
-import 'foundation-sites';
+// import 'foundation-sites';
 
 // Utilities.
 import _ from 'lodash';
@@ -24,11 +24,11 @@ import _ from 'lodash';
 
 
 // Load foundation JS for specific element.
-Vue.directive('load-foundation', {
-    inserted: function (el) {
-        $(el).foundation();
-    }
-});
+// Vue.directive('load-foundation', {
+//     inserted: function (el) {
+//         $(el).foundation();
+//     }
+// });
 
 
 

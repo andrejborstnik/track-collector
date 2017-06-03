@@ -48,8 +48,9 @@ let routes = [
 
     {
         path: '/',
-        component: BrowseComponents,
-        meta: { auth: true }
+        redirect: 'signin'
+        // component: BrowseComponents,
+        // meta: { auth: true }
     },
 
     {
