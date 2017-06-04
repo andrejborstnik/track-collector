@@ -8,7 +8,7 @@
                <v-icon v-bind:class="['amber white--text']">{{ 'call_to_action' }}</v-icon>
              </v-list-tile-avatar>
              <v-list-tile-content>
-               <v-list-tile-title>Tukaj bodo grupe</v-list-tile-title>
+               <v-list-tile-title>Groups</v-list-tile-title>
              </v-list-tile-content>
              <v-list-tile-action>
                <v-btn icon dark v-on:click.native.stop="drawerLeft = !drawerLeft">

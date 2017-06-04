@@ -23,7 +23,8 @@ let store = {
     state: {
         path_to: null,
         path_from: null
-    }
+    },
+    providers: []
 };
 
 Object.defineProperty(Vue.prototype, '$store', {

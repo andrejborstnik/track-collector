@@ -92,6 +92,19 @@ router.post('/api/group/list', function (req, res) {
     });
 });
 
+router.get('/api/authentication/providers/list', function (req, res) {
+    request({
+        method: "GET",
+        headers: {
+            'Accept': 'application/json',
+        },
+        uri:'https://test.goopti.com/tracker/authentication/providers/list',
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
 
 
 

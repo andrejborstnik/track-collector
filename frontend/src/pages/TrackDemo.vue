@@ -133,7 +133,6 @@
     const getGroups = function () {
         let path = `/group/list`;
         this.loading = true;
-        debugger
         request({
             method: "POST",
             uri: config.paths_api_prefix + path,
