@@ -72,9 +72,10 @@
     };
 
     let scaleMarker = function (feature, scale = 0.01) {
-        let image = feature.getStyle().getImage();
-        image.setScale(scale);
-        feature.changed();
+        //ALEN - začasno onemogočeno, ker še ne dela prav za krogce
+        // let image = feature.getStyle().getImage();
+        // image.setScale(scale);
+        // feature.changed();
     };
 
     let hideMarkers = function (vectorLayer, filterOut) {
@@ -191,6 +192,36 @@
         });
     };
 
+    let pointStyle = function (color, scale = 0.01) {
+        // todo currently only green orange red and grey are supported
+        let predefined = {'red': '#E81E25', 'green': '#79ce16', 'grey': '#808080',
+            'orange': '#ffa500', 'yellow': '#ffd700', 'blue': '#01aae8', 'black': '#000000'};
+        if (predefined[color]) {
+            color = predefined[color];
+        }
+        else if (!isValidHexColor(color)) {
+            color = predefined['grey']; // todo can output something
+        }
+
+        return new ol.style.Style({
+            image: new ol.style.Circle({
+                 radius: 6,
+                 fill: new ol.style.Fill({
+                   color: color
+                 })
+                 ,
+                 stroke: new ol.style.Stroke({
+                   color: "white",
+                   width: 1
+                 })
+               })
+        });
+    };
+
+    let zoomToVectorLayerExtent = function() {
+        this.map.getView().fit(this.lineVectorLayer.getSource().getExtent(), this.map.getSize());
+    }
+
     let onMapClick = function(evt) {
         // todo save clone last hovered and use it to compare
         if (!this.lastHoveredFeature) {
@@ -285,8 +316,10 @@
             return;
         let features = [];
         let iconFeature;
-
-        let firefoxPreloadBlueStyle = iconStyle('blue'); // firefox needs images preloaded. quickfix is here. todo
+        // firefox needs images preloaded. quickfix is here. todo
+        let firefoxPreloadBlueStyle = rows.length > 0 && rows[0].marker
+                                        ? iconStyle('blue')
+                                        : pointStyle('blue');
         let i = 0;
         for (let row of rows) {
             let data = fp.clone(row);
@@ -294,12 +327,15 @@
             delete data.latitude;
             data.labelPoint = new ol.geom.Point(transformCoords([row.longitude, row.latitude]));
             data.geometry = new ol.geom.Point(transformCoords([row.longitude, row.latitude]));
-
-            iconFeature = new ol.Feature(data);
-
             let color = row.color || colorFromLevel(row.measured_level);
-
-            iconFeature.setStyle(iconStyle(color));
+            let marker = data.marker
+            delete data.circle;
+            iconFeature = new ol.Feature(data);
+            if(marker == "CIRCLE") {
+              iconFeature.setStyle(pointStyle(color));
+            } else if(marker == "MARKER"){
+              iconFeature.setStyle(iconStyle(color));
+            }
             i++;
             iconFeature.setId(i);
             iconFeature.getStyle().setZIndex(1);
@@ -312,7 +348,9 @@
             });
 
             let vectorLayer = new ol.layer.Vector({
-                source: vectorSource
+                source: vectorSource,
+                minResolution: 0.001,
+                maxResolution: 10
             });
             // todo add style function here. the style can change according to feature properties
             // http://openlayersbook.github.io/ch11-creating-web-map-apps/example-08.html
@@ -454,7 +492,8 @@
             onMapClick,
             initMap,
             getData,
-            onMapPointermove
+            onMapPointermove,
+            zoomToVectorLayerExtent
         },
 
         mixins: [activate_mixin],

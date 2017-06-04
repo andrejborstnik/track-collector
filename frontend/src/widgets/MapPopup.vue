@@ -1,18 +1,20 @@
 <template>
     <section>
-        <div class="ol-popup" id="test" style="{width: `${width}`}">
+        <div class="ol-popup" id="olpopup" >
             <a @click="closePopup" id="popup-closer" class="ol-popup-closer"></a>
             <div>
                 <p>
                     {{title}}
                 </p>
             </div>
+            <!--
             <code>{{coords}}</code>
             <div>
                 <div v-for="(val, key) of content">
                     <span>{{key}}:</span> <span>{{val}}</span>
                 </div>
             </div>
+          -->
         </div>
     </section>
 </template>
@@ -35,15 +37,15 @@
         background-color: #adadad;
         color: white;
     }
-    #popup {
-        width: 250px;
+    #olpopup {
+        width: 100px;
     }
     .ol-popup {
         position: absolute;
         background-color: white;
         -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
         filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-        padding: 15px;
+        padding: 3px;
         border-radius: 10px;
         border: 1px solid #cccccc;
         bottom: 12px;
@@ -108,7 +110,7 @@
               type: String
           },
           width: {
-              default: '100px'
+              default: '200px'
           }
 	  },
 

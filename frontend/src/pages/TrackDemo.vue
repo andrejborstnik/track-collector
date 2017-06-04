@@ -1,9 +1,9 @@
 <template>
 
      <v-container id="trackShow" fluid>
-           <v-card raised>
-                 <v-layout align-baseline justify-end style="border-width: 1">
-                   <v-flex xs12 sm6>
+           <v-card id="rangeCard" raised>
+                 <v-layout row-sm column child-flex-sm align-center justify-space-between>
+                   <v-flex xs4>
                      <v-dialog
                        persistent
                        v-model="modalFrom"
@@ -16,17 +16,10 @@
                          prepend-icon="event"
                          readonly
                        ></v-text-field>
-                       <v-date-picker v-model="startDate" scrollable>
-                         <template scope="{ save, cancel }">
-                           <v-card-row actions>
-                             <v-btn flat primary v-on:click.native.native="cancel()">Cancel</v-btn>
-                             <v-btn flat primary v-on:click.native.native="save()">Save</v-btn>
-                           </v-card-row>
-                         </template>
-                       </v-date-picker>
+                       <v-date-picker v-model="startDate" scrollable></v-date-picker>
                      </v-dialog>
                    </v-flex>
-                   <v-flex xs12 sm6>
+                   <v-flex xs4>
                      <v-dialog
                        persistent
                        v-model="modalTo"
@@ -39,26 +32,15 @@
                          prepend-icon="event"
                          readonly
                        ></v-text-field>
-                       <v-date-picker v-model="endDate" scrollable>
-                         <template scope="{ save, cancel }">
-                           <v-card-row actions>
-                             <v-btn flat primary v-on:click.native.native="cancel()">Cancel</v-btn>
-                             <v-btn flat primary v-on:click.native.native="save()">Save</v-btn>
-                           </v-card-row>
-                         </template>
-                       </v-date-picker>
+                       <v-date-picker v-model="endDate" scrollable></v-date-picker>
                      </v-dialog>
                    </v-flex>
-
-                   <!--
-                   Od:
-                       <input type="date" v-model="startDate"></input>
-
-                   Do:
-                       <input type="date" v-model="endDate"></input>
-                          -->
-                  <v-btn primary light
-                       v-on:click.native="getTrack">Show your tracks</v-btn>
+                   <v-flex xs4>
+                     <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
+                   </v-flex>
+                   <v-flex xs4>
+                     <v-btn primary light v-on:click.native="zoomToData">Zoom</v-btn>
+                   </v-flex>
                  </v-layout>
           </v-card>
         <v-dialog persistent v-model="loading" lazy>
@@ -68,15 +50,20 @@
         </v-dialog>
         <div v-if="connections"></div>
 
-        <MyMap v-if="points" :mydata="{points, connections}" source="OSM" width="100%" height="700px"
-               style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
+        <MyMap v-if="points"
+              ref="map"
+              :mydata="{points, connections}"
+              source="OSM" width="100%" height="700px"
+              style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
      </v-container>
 
 </template>
 
 
 <style lang="scss">
-
+  #rangeCard {
+    padding: 0px
+  }
 </style>
 
 
@@ -133,6 +120,10 @@
 
     };
 
+
+    const zoomToData = function () {
+       this.$refs.map.zoomToVectorLayerExtent()
+    }
     //
     // EXPORT
     //
@@ -142,7 +133,8 @@
         name: 'TrackDemo',
 
         methods: {
-            getTrack
+            getTrack,
+            zoomToData
         },
 
         components: {
@@ -151,33 +143,41 @@
 
         computed: {
             points: function () {
-//                let points = [];
-//                for (let j = 0; j < this.output.length; j++) {
-//                    let color = this.colors[j % this.colors.length];
-//                    let x = this.output[j].samples;
-//                    for (let i = 0; i < x.length; i++) {
-//                        let o = x[i];
-//                        points.push({
-//                            longitude: o.longitude,
-//                            latitude: o.latitude,
-//                            name: 'test',
-//                            color
-//                        });
-//                    }
-//                }
-//                return points;
-                return [];
+               let points = [];
+               let j = 0;
+               for (let el of this.output) {
+                   let color = this.colors[j % this.colors.length];
+                   j++;
+                   for (let o of el.samples) {
+                       points.push({
+                           longitude: o.longitude,
+                           latitude: o.latitude,
+                           name: moment(o.timestamp).format('DD MMM YY HH:mm:ss'),
+                           marker: "CIRCLE",
+                           color
+                       });
+                   }
+               }
+               return points;
             },
             connections: function () {
                 if (!this.output)
                     return [];
                 let conn = [];
-                for (let j = 0; j < this.output.length; j++) {
+                let j = 0;
+                for (let el of this.output) {
                     let color = this.colors[j % this.colors.length];
-                    let x = this.output[j].samples;
-                    for (let i = 0; i < x.length - 1; i++) {
-                        let A = x[i];
-                        let B = x[i + 1];
+                    j++;
+                    let x = el.samples;
+                    let last = null;
+                    for (let current of x) {
+                        if(last == null) {
+                            last = current;
+                            continue
+                        }
+                        let A = last;
+                        let B = current;
+                        last = current;
                         conn.push({
                             'A': {
                                 longitude: A.longitude,

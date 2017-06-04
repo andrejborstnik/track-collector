@@ -1,16 +1,29 @@
 <template>
   <v-container fluid class="text-xs-center">
+    <v-dialog v-model="showAlert" persistent lazy>
+      <v-card>
+        <v-card-row>
+          <v-card-title>Sign-in error</v-card-title>
+        </v-card-row>
+        <v-card-row>
+          <v-card-text>Please fill all the fields.</v-card-text>
+        </v-card-row>
+        <v-card-row actions>
+          <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert = false">Ok</v-btn>
+        </v-card-row>
+      </v-card>
+    </v-dialog>
     <v-layout align-center justify-center>
-      <v-flex xs4>
-        <v-card id="loginCard" raised>
-          <v-layout column align-center>
+      <v-flex xs12>
+        <v-card raised class="pa-3">
+          <v-layout column align-center justify-space-around>
                     <v-flex xs10>
                       <v-text-field
                         name="username"
                         label="Username"
                         id="username"
                         v-model="user_mail"
-                        @keyup.prevent.enter="login"
+                        v-on:keydown.enter.prevent="login"
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs10>
@@ -19,11 +32,12 @@
                         label="Password"
                         id="password"
                         v-model="password"
-                        @keyup.prevent.enter="login"
+                        type="password"
+                        v-on:keydown.enter.prevent="login"
                       ></v-text-field>
                     </v-flex>
                     <v-flex xs10>
-                        <v-btn dark primary
+                        <v-btn
                         v-on:click.native="login">Login</v-btn>
                     </v-flex>
           </v-layout>
@@ -43,8 +57,8 @@
 </template>
 
 <style lang="scss">
-    #loginCard .card{
-      color: 'red'
+    #loginCard {
+      padding: 16px
     }
 </style>
 
@@ -62,7 +76,8 @@
         let password = this.password;
 
         if (!password || !user_mail) {
-            alert("Please fill all the fields.");
+            //alert("Please fill all the fields.");
+            this.showAlert = true;
             return;
         }
 
@@ -102,7 +117,8 @@
         data: () => {
             return {
                 password: '',
-                user_mail: ''
+                user_mail: '',
+                showAlert: null
             }
         },
 

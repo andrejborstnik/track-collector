@@ -78,7 +78,7 @@ let readSessionCookie = function (router, {to, from}) {
         // Setting so the next component knows where we came from. todo
         // Vue.set(store.component.signin, "returnToUrl", to.path);
 
-        return `${config.path_prefix}/signin`;
+        return `${config.path_prefix}signin`;
     }
 
 };
@@ -98,7 +98,6 @@ router.beforeEach((to, from, next) => { // Check authentication before each tran
 
     // Check if there is session cookie (and user).
     let newurl = readSessionCookie(router, {to, from});
-
     if (newurl) {
         Vue.set(store.state, "path_to", newurl);
         next(newurl);
