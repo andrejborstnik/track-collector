@@ -18,18 +18,24 @@
            </v-list-tile>
          </v-list-item>
        </v-list>
-       <v-list class="pt-0" dense>
-         <v-divider></v-divider>
-         <v-list-item v-for="item in leftItems" :key="item">
-           <v-list-tile>
-             <v-list-tile-action>
-               <v-icon>{{ item.icon }}</v-icon>
-             </v-list-tile-action>
+       <v-list>
+         <v-list-group v-for="group in this.$store.groups" :value="group.active" v-bind:key="group.groupId">
+           <v-list-tile slot="item">
              <v-list-tile-content>
-               <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+               <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
              </v-list-tile-content>
+             <v-list-tile-action>
+               <v-icon>keyboard_arrow_down</v-icon>
+             </v-list-tile-action>
            </v-list-tile>
-         </v-list-item>
+           <v-list-item v-for="user in group.users" v-bind:key="user.userId">
+             <v-list-tile>
+               <v-list-tile-content>
+                 <v-list-tile-title>{{ user.userId }}</v-list-tile-title>
+               </v-list-tile-content>
+             </v-list-tile>
+           </v-list-item>
+         </v-list-group>
        </v-list>
      </v-navigation-drawer>
      <v-navigation-drawer temporary hide-overlay v-model="drawerRight" v-bind:close-on-click="false" right light>

@@ -98,25 +98,14 @@
         var today = new Date();
         var yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        this.startDate = "2017-05-07",
-        this.endDate = "2017-05-14",
+        this.startDate = "2017-05-07";
+        this.endDate = "2017-05-14";
         // ALEN - začasno zakomentirano
         // this.startDate = moment(yesterday).format("YYYY-MM-DD")
         // this.endDate = moment(today).format("YYYY-MM-DD")
-    }
+    };
 
     const getTrack = function () {
-//        async(function*() {
-//                //        POST /group/list
-//    //        {
-//    //            "token": "string"
-//    //        }
-//
-//
-//
-//
-//        }.bind(this));
-
         let path = `/track`;
         this.loading = true;
         request({
@@ -141,6 +130,23 @@
 
     };
 
+    const getGroups = function () {
+        let path = `/group/list`;
+        this.loading = true;
+        debugger
+        request({
+            method: "POST",
+            uri: config.paths_api_prefix + path,
+            json: {
+                token: this.$store.user.token,
+            }
+        }).then((body) => {
+            this.loading = false;
+            if(body.status == "OK") {
+                this.$store.groups = body.groups;
+            }
+        });
+    };
 
     const zoomToData = function () {
        this.$refs.map.zoomToVectorLayerExtent()
@@ -156,7 +162,8 @@
         methods: {
             getTrack,
             zoomToData,
-            setDate
+            setDate,
+            getGroups
         },
 
         components: {
@@ -164,7 +171,8 @@
         },
 
         mounted(){
-            this.setDate()
+            this.setDate();
+            this.getGroups()
         },
 
         computed: {
