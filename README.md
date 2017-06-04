@@ -1,32 +1,32 @@
 # GPS
 
-## Kako zaceti
+## Kako začeti
 
-1. Skloniras repozitorij: ```git clone git@github.com:andrejborstnik/track-collector.git```
-2. Gres v repozitorij
-3. Zazenes aktivacijsko skripto: ```.alot/bin/activate.sh dev``` (in pocakas da se polodajo vsi node moduli - ce opazite, da sem kaksnega prevec pustil kar zbrisite)
-4. Zazenes aplikacijo: ```op-start```
-5. Ko se aplikacija zgradi (par sekund) lahko spreminjas kodo in ko shranis se spletna stran sama osvezi. V konzoli, kjer si zagnal ```op-start``` vidis morebitne napake pri grajenju. Javascript napake pa vidis v konzoli browserja.
+1. Skloniraš repozitorij: ```git clone git@github.com:andrejborstnik/track-collector.git```
+2. Greš v repozitorij
+3. Zaženes aktivacijsko skripto: ```.alot/bin/activate.sh dev``` (in počakaš da se poloadajo vsi node moduli - če opazite, da sem kakšnega prevec pustil, kar zbrišite)
+4. Zaženeš aplikacijo: ```op-start```
+5. Ko se aplikacija zgradi (par sekund) lahko spreminjaš kodo in ko shraniš se spletna stran sama osvezi. V konzoli, kjer si zagnal ```op-start``` vidiš morebitne napake pri grajenju. Javascript napake pa vidiš v konzoli browserja.
 
-## Hello world
+## Frontend
 
 1. Nekje pod ```src``` direktorijem naredis nov file, lahko vzames za osnovo npr. ```Test.vue```. Uporabljas lahko [ES6](http://es6-features.org/) sintakso.
 2. Naredis vsaj eno od:
-   * Narejeno komponento vkljucis v drugo komponento, kot je v ```Test2.vue```.
-   * Narejeno komponento v ```routes.js``` uvozis in jo dodas na nek url naslov.
+   * Narejeno komponento vkljuciš v drugo komponento, kot je v ```Test2.vue```.
+   * Narejeno komponento v ```routes.js``` uvoziš in jo dodaš na nek url naslov.
+ 
+Če nalagate node module jih ne pozabit shranit, da bo aplikacija delala vsem. Nalagajte jih (za frontend del) v ```./frontend/```. Npr. ko ste v direktoriju ```frontend``` s ```npm install moj-modul --save```.
 
+Za izgradnjo aplikacije uporabljamo komponente po oblikovalskem principu [Material Design](https://material.io/guidelines/), ki je osnova Googlovih desktop in mobile aplikacij, posebej na Androidu. Specifično, uporabljamo knjižnico komponent [Vuetifyjs](https://vuetifyjs.com/vuetify/quick-start).
 
-Ce nalagate node module jih ne pozabit shranit, da bo aplikacija delala vsem. Nalagajte jih (za frontend del) v ```./frontend/```. Npr. ko ste v direktoriju ```frontend``` s ```npm install moj-modul --save```.
+## Baza (DEPRICATED)
 
-## Baza
-
-V ```backend/config/config_default.js``` je potrebno napisati kje se nahaja baza, kaksna so uporabniska imena ipd. Predlagam, da se za zdaj kar ohrani to kar sem napisal. V komponenti ```PostGreDemo.vue``` in na backendu sem naredil preprost api, s katerim lahko dostopate do baze s prej opisanimi parametri. Parametri za query (se) niso povsem implementirani.
-
-Predlagam, da se dogovorite kako bo izgledala baza in shemo napisete na drive (pri sebi seveda lahko ves cas testirate).
+V ```backend/config/config_default.js``` je potrebno napisati kje se nahaja baza, kakšna so uporabniška imena ipd. Predlagam, da se za zdaj kar ohrani to kar sem napisal. V komponenti ```PostGreDemo.vue``` in na backendu sem naredil preprost api, s katerim lahko dostopate do baze s prej opisanimi parametri. Parametri za query (se) niso povsem implementirani.
 
 ## Api
 
-Definirati in implementirati je potrebno osnoven API. Uporabiti zelimo JSON struktore za vhod in izhod.
+* [Test Deployment API (Swagger)](https://test.goopti.com/tracker/)
+* [GIT](https://github.com/alenFMF/tracker)
 
 ## Backend 
 
