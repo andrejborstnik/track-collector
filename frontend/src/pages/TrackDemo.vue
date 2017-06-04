@@ -1,5 +1,4 @@
 <template>
-
      <v-container id="trackShow" fluid>
            <v-card id="rangeCard" raised>
                  <v-layout row-sm column child-flex-sm align-center justify-space-between>
@@ -84,6 +83,28 @@
     // Functions
     //
 
+// To se raje naredi s knjižnico 'moment'
+    // Date.prototype.yyyymmdd = function() {
+    //   var mm = this.getMonth() + 1; // getMonth() is zero-based
+    //   var dd = this.getDate();
+    //
+    //   return [this.getFullYear(),
+    //           (mm>9 ? '' : '0') + mm,
+    //           (dd>9 ? '' : '0') + dd
+    //          ].join('-');
+    // };
+
+    const setDate = function () {
+        var today = new Date();
+        var yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        this.startDate = "2017-05-07",
+        this.endDate = "2017-05-14",
+        // ALEN - začasno zakomentirano
+        // this.startDate = moment(yesterday).format("YYYY-MM-DD")
+        // this.endDate = moment(today).format("YYYY-MM-DD")
+    }
+
     const getTrack = function () {
 //        async(function*() {
 //                //        POST /group/list
@@ -134,11 +155,16 @@
 
         methods: {
             getTrack,
-            zoomToData
+            zoomToData,
+            setDate
         },
 
         components: {
             MyMap
+        },
+
+        mounted(){
+            this.setDate()
         },
 
         computed: {
@@ -200,8 +226,8 @@
         data () {
             return {
                 output: '',
-                startDate: "2017-05-07",
-                endDate: "2017-05-14",
+                startDate: null,
+                endDate: null,
                 colors: ['red', 'green', 'grey', 'orange', 'yellow', 'blue', 'black'], // this colors or hex.
                 modalFrom: false,
                 modalTo: false,
