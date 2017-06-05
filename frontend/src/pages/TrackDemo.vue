@@ -1,68 +1,69 @@
 <template>
-     <v-container id="trackShow" fluid>
-           <v-card id="rangeCard" raised>
-                 <v-layout row-sm column child-flex-sm align-center justify-space-between>
-                   <v-flex xs4>
-                     <v-dialog
-                       persistent
-                       v-model="modalFrom"
-                       lazy
-                     >
-                       <v-text-field
-                         slot="activator"
-                         label="From:"
-                         v-model="startDate"
-                         prepend-icon="event"
-                         readonly
-                       ></v-text-field>
-                       <v-date-picker v-model="startDate" scrollable></v-date-picker>
-                     </v-dialog>
-                   </v-flex>
-                   <v-flex xs4>
-                     <v-dialog
-                       persistent
-                       v-model="modalTo"
-                       lazy
-                     >
-                       <v-text-field
-                         slot="activator"
-                         label="To:"
-                         v-model="endDate"
-                         prepend-icon="event"
-                         readonly
-                       ></v-text-field>
-                       <v-date-picker v-model="endDate" scrollable></v-date-picker>
-                     </v-dialog>
-                   </v-flex>
-                   <v-flex xs4>
-                     <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
-                   </v-flex>
-                   <v-flex xs4>
-                     <v-btn primary light v-on:click.native="zoomToData">Zoom</v-btn>
-                   </v-flex>
-                 </v-layout>
-          </v-card>
+    <v-container id="trackShow" fluid>
+        <v-card id="rangeCard" raised>
+            <v-layout row-sm column child-flex-sm align-center justify-space-between>
+                <v-flex xs4>
+                    <v-dialog
+                            persistent
+                            v-model="modalFrom"
+                            lazy
+                    >
+                        <v-text-field
+                                slot="activator"
+                                label="From:"
+                                v-model="startDate"
+                                prepend-icon="event"
+                                readonly
+                        ></v-text-field>
+                        <v-date-picker v-model="startDate" scrollable></v-date-picker>
+                    </v-dialog>
+                </v-flex>
+                <v-flex xs4>
+                    <v-dialog
+                            persistent
+                            v-model="modalTo"
+                            lazy
+                    >
+                        <v-text-field
+                                slot="activator"
+                                label="To:"
+                                v-model="endDate"
+                                prepend-icon="event"
+                                readonly
+                        ></v-text-field>
+                        <v-date-picker v-model="endDate" scrollable></v-date-picker>
+                    </v-dialog>
+                </v-flex>
+                <v-flex xs4>
+                    <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
+                </v-flex>
+                <v-flex xs4>
+                    <v-btn primary light v-on:click.native="zoomToData">Zoom</v-btn>
+                </v-flex>
+            </v-layout>
+        </v-card>
         <v-dialog persistent v-model="loading" lazy>
-          <v-layout row justify-center>
-            <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7" class="purple--text"></v-progress-circular>
-          </v-layout>
+            <v-layout row justify-center>
+                <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7"
+                                     class="purple--text"></v-progress-circular>
+            </v-layout>
         </v-dialog>
         <div v-if="connections"></div>
 
         <MyMap v-if="points"
-              ref="map"
-              :mydata="{points, connections}"
-              source="OSM" width="100%" height="700px"
-              style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
-     </v-container>
+               ref="map"
+               :mydata="{points, connections}"
+               source="OSM" width="100%" height="700px"
+               style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
+    </v-container>
 
 </template>
 
 
 <style lang="scss">
-  #rangeCard {
-    padding: 0px
-  }
+    #rangeCard {
+        padding: 0px
+    }
 </style>
 
 
@@ -83,7 +84,7 @@
     // Functions
     //
 
-// To se raje naredi s knjižnico 'moment'
+    // To se raje naredi s knjižnico 'moment'
     // Date.prototype.yyyymmdd = function() {
     //   var mm = this.getMonth() + 1; // getMonth() is zero-based
     //   var dd = this.getDate();
@@ -95,8 +96,8 @@
     // };
 
     const setDate = function () {
-        var today = new Date();
-        var yesterday = new Date();
+        let today = new Date();
+        let yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         this.startDate = "2017-05-07";
         this.endDate = "2017-05-14";
@@ -141,14 +142,14 @@
             }
         }).then((body) => {
             this.loading = false;
-            if(body.status == "OK") {
+            if (body.status == "OK") {
                 this.$store.groups = body.groups;
             }
         });
     };
 
     const zoomToData = function () {
-       this.$refs.map.zoomToVectorLayerExtent()
+        this.$refs.map.zoomToVectorLayerExtent()
     }
     //
     // EXPORT
@@ -176,22 +177,22 @@
 
         computed: {
             points: function () {
-               let points = [];
-               let j = 0;
-               for (let el of this.output) {
-                   let color = this.colors[j % this.colors.length];
-                   j++;
-                   for (let o of el.samples) {
-                       points.push({
-                           longitude: o.longitude,
-                           latitude: o.latitude,
-                           name: moment(o.timestamp).format('DD MMM YY HH:mm:ss'),
-                           marker: "CIRCLE",
-                           color
-                       });
-                   }
-               }
-               return points;
+                let points = [];
+                let j = 0;
+                for (let el of this.output) {
+                    let color = this.colors[j % this.colors.length];
+                    j++;
+                    for (let o of el.samples) {
+                        points.push({
+                            longitude: o.longitude,
+                            latitude: o.latitude,
+                            name: moment(o.timestamp).format('DD MMM YY HH:mm:ss'),
+                            marker: "CIRCLE",
+                            color
+                        });
+                    }
+                }
+                return points;
             },
             connections: function () {
                 if (!this.output)
@@ -204,7 +205,7 @@
                     let x = el.samples;
                     let last = null;
                     for (let current of x) {
-                        if(last == null) {
+                        if (last == null) {
                             last = current;
                             continue
                         }
