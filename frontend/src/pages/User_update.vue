@@ -28,10 +28,10 @@
         }
         console.info("Uspesna potrditev gesla.");
         
-        var user_update_data = {"user_name" : this.user_name,
+        let user_update_data = {"user_name" : this.user_name,
                                 "user_password" : this.password};
                                       
-        var user_JSON = JSON.stringify(user_update_data);
+        let user_JSON = JSON.stringify(user_update_data);
         console.info(user_JSON);
         console.log(this.user_name,this.password,this.confirm_password)
     };
