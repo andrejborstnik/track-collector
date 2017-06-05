@@ -34,8 +34,8 @@ Object.defineProperty(Vue.prototype, '$store', {
 });
 
 // Vuetify
-import Vuetify from 'vuetify'
-Vue.use(Vuetify)
+import Vuetify from 'vuetify';
+Vue.use(Vuetify);
 
 // Import main application.
 import main_app from 'src/App.vue';
@@ -79,7 +79,7 @@ let readSessionCookie = function (router, {to, from}) {
         // Setting so the next component knows where we came from. todo
         // Vue.set(store.component.signin, "returnToUrl", to.path);
 
-        return `${config.path_prefix}signin`;
+        return `${config.path_prefix}/signin`;
     }
 
 };
