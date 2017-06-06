@@ -58,6 +58,21 @@
             </v-list>
             <v-list class="pt-0" dense>
                 <v-divider></v-divider>
+                
+                <v-list-item>
+                    <v-list-tile v-on:click.native="profile">
+                        <v-list-tile-action>
+                            <!--COMMENT
+                            <v-icon>dashboard</v-icon>
+                            COMMENT-->
+                            <v-icon>perm_identity</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Profile</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-item>
+                
                 <v-list-item>
                     <v-list-tile v-on:click.native="logout">
                         <v-list-tile-action>
@@ -68,6 +83,22 @@
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-item>
+                
+                <v-list-item>
+                    <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
+                        <v-list-tile-action>
+                            <!--COMMENT
+                            <v-icon>dashboard</v-icon>
+                            COMMENT-->
+                            <v-icon>mode_edit</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Edit_TEMPLATE</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-item>
+                
+
             </v-list>
         </v-navigation-drawer>
         <v-toolbar fixed light>
@@ -99,9 +130,19 @@
     //
     import * as cookies from 'common/cookies';
 
+    const profile = function () {
+        console.info("Profile function.");
+        //this.$router.go('profile');
+        this.$router.push('profile');
+    };
+
     const logout = function () {
         cookies.remove_session_cookie();
         this.$router.go(0);
+    };
+    
+    const edit_TEMPLATE_ACTION = function () {
+        console.info("EDIT_TEMPLATE spremeni vse te oblike za nov meni.");
     };
 
     export default {
@@ -115,15 +156,19 @@
                     {title: 'About', icon: 'question_answer'}
                 ],
                 rightItems: [
-                    {title: 'Profile', icon: 'dashboard'},
-                    {title: 'Logout', icon: 'question_answer', action: "logout"}
+                    //{title: 'Profile', icon: 'dashboard', action: "profile"},
+                    {title: 'Profile', icon: 'perm_identity', action: "profile"},
+                    {title: 'Logout', icon: 'question_answer', action: "logout"},
+                    {title: 'Edit_TEMPLATE', icon: 'mode_edit', action: "edit_TEMPLATE_ACTION"}
                 ],
                 mini: true,
                 right: null
             }
         },
         methods: {
-            logout
+            profile,
+            logout,
+            edit_TEMPLATE_ACTION
         }
     }
 

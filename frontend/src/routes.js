@@ -14,6 +14,7 @@ import Registration from 'pages/Registration.vue';
 import User_update from 'pages/User_update.vue';
 import DisplayTrack from 'pages/DisplayTrack.vue';
 import BrowseComponents from 'pages/BrowseComponents.vue';
+import Profile from 'pages/Profile.vue';
 
 import App from 'App.vue';
 
@@ -51,6 +52,18 @@ let routes = [
         redirect: 'signin'
         // component: BrowseComponents,
         // meta: { auth: true }
+    },
+    
+    {
+        path: 'profile',
+        component: Profile,
+        meta: { auth: true }
+    },
+
+    {
+        path: 'change_password',
+        component: User_update,
+        meta: { auth: true }
     },
 
     {

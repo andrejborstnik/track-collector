@@ -93,7 +93,7 @@
     "vinyl-transform": "^1.0.0",
     "vueify": "^9.4.0",
     "vueify-insert-css": "^1.0.0",
-    "vuetify": "^0.12.6",
+    "vuetify": "^0.12.7",
     "watchify": "file:packages/watchify"
   }
 }

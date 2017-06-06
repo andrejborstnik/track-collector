@@ -40,6 +40,11 @@ Vue.use(Vuetify);
 // Import main application.
 import main_app from 'src/App.vue';
 import signin from 'src/pages/Signin.vue';
+//ZAKAJ JE BILO PREJ TO 2-krat?
+//import signin from 'src/pages/Signin.vue';
+
+import user_update from 'src/pages/User_update.vue';
+import profile from 'src/pages/Profile.vue';
 // Cookies support.
 import { cookie_law } from 'common/cookie-law';
 import * as cookies from 'common/cookies';
