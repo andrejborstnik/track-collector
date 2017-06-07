@@ -1,6 +1,7 @@
 <template>
+
     <v-container fluid class="text-xs-center">
-        <v-dialog v-model="showAlert" persistent lazy>
+       <v-dialog v-model="showAlert" persistent lazy>
             <v-card>
                 <v-card-row>
                     <v-card-title>{{this.errorTitle}}</v-card-title>
@@ -13,33 +14,42 @@
                 </v-card-row>
             </v-card>
         </v-dialog>
+    <!--COMMENT    
         <v-layout align-center justify-center>
+    COMMENT-->
+    
+
             <v-card raised class="pt-4 pl-5 pr-5 pb-3">
                 <v-layout column>
                     <h5>Change password</h5>
                     
+                    <h6><span>User: {{ this.$store.user.email }}</span></h6>
+                    
                     <v-text-field
-                            name="username"
-                            label="Username"
-                            id="username"
-                            v-model="user_mail"
-                            @keydown.enter.prevent="change_password"
-                            class="ma-0"
-                    ></v-text-field>
-                    <v-text-field
-                            name="password"
-                            label="Password"
-                            id="password"
-                            v-model="password"
+                            name="current_password"
+                            label="Current password"
+                            id="current_password"
+                            v-model="current_password"
                             type="password"
                             @keydown.enter.prevent="change_password"
                             class="ma-0"
                     ></v-text-field>
+                    
                     <v-text-field
-                            name="confirm_password"
-                            label="Confirm password"
-                            id="password"
-                            v-model="confirm_password"
+                            name="new_password"
+                            label="New password"
+                            id="new_password"
+                            v-model="new_password"
+                            type="password"
+                            @keydown.enter.prevent="change_password"
+                            class="ma-0"
+                    ></v-text-field>
+
+                    <v-text-field
+                            name="confirm_new_password"
+                            label="Confirm new password"
+                            id="confirm_new_password"
+                            v-model="confirm_new_password"
                             type="password"
                             @keydown.enter.prevent="change_password"
                             class="ma-0"
@@ -52,8 +62,12 @@
                     </v-flex>
                 </v-layout>
             </v-card>
+
+    <!--COMMENT
         </v-layout>
+    COMMENT-->
     </v-container>
+
 </template>
 
 <style lang="scss">
@@ -72,42 +86,69 @@
     import * as cookies from 'common/cookies';
 
     const change_password = function () {
-        let user_mail = this.user_mail; // zadeve v this se lahko spremenijo sredi izvajanja funkcije, zato si jih zapomnimo.
-        let password = this.password;
-        let confirm_password = this.confirm_password;
-        let provider = this.provider == null || this.provider.text == this.systemProvider ? null : this.provider.text;
-
+        let current_password = this.current_password; // zadeve v this se lahko spremenijo sredi izvajanja funkcije, zato si jih zapomnimo.
+        let new_password = this.new_password;
+        let confirm_new_password = this.confirm_new_password;
+        
         console.info("Korak 1.");
+        console.info(new_password);
+        console.info(confirm_new_password);
+        console.info(this.password);
+        console.info(this);
+        console.info(this.provider);
 
-        if (this.password.length < 3) {
+        if (new_password.length < 3) {
             this.errorTitle = "Failure";
             this.errorMessage = "Password is to short.";
             this.showAlert = true;
             return;
         }
-        if (this.password != this.confirm_password) {
+
+        if (new_password != confirm_new_password) {
             this.errorTitle = "Failure";
-            this.errorMessage = "Password is not same as confirm password.";
+            this.errorMessage = "New password is not same as confirm password.";
             this.showAlert = true;
             return;
         }
-        const user_registration_data = {
-            "password": password,
-            "userId": user_mail,
-            "provider": provider
-        };
         
+        const user_change_password_data = {
+            "oldPassword": current_password,
+            "newPassword": new_password
+        };
         
         request({
             method: "POST",
-            uri: `${config.paths_api_prefix}/signin`,//AAAAA
-            json: user_registration_data
+            uri: `${config.paths_api_prefix}/user_update`,
+            //TREBA POPRAVIT NA post /authentication/update 
+            json: user_change_password_data
         }).then((body) => {
-            console.info("Uspesna potrditev gesla.");
-            this.$router.push(`${config.path_prefix}track`);
-           });
+            if (body.status == "OK") {
+                console.info("Korak A.");
+                //TO DO: Javiti uspesno spremembo gesla
+                //na enak nacin kot this.errorTitle in this.errorMessage (showAlert)
+                this.$router.push(`${config.path_prefix}/profile`);
+            }
+            else {
+                console.info("Korak B.");
+                cookies.remove_session_cookie();
+                this.errorTitle = "Authentication failure";
+                this.errorMessage = "Wrong current password, please login again.";
+                this.showAlert = true;
+            }
+        }).catch((err) => {
+            console.info("Korak C.");
+            //cookies.remove_session_cookie();
+            this.errorTitle = "Authentication failure";
+            this.errorMessage = "System error.";
+            this.showAlert = true;
+        });
+        
+        //TO DO: Po uspesni potrditvi gesla redirect sem in tu 
+        //sporocilo da geslo uspesno spremenjeno
+        //this.$router.push(`${config.path_prefix}/profile`);
 
     };
+    
     export default {
         name: 'User_update',
 

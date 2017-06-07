@@ -25,15 +25,31 @@
                             @keydown.enter.prevent="login"
                             class="ma-0"
                     ></v-text-field>
+                    
                     <v-text-field
                             name="password"
                             label="Password"
                             id="password"
                             v-model="password"
                             type="password"
-                            @keydown.enter.prevent="login"
                             class="ma-0"
                     ></v-text-field>
+                    
+                    <!--COMMENT
+                    ?????
+                    <v-text-field
+                            name="password"
+                            label="Password"
+                            id="password"
+                            v-model="password"
+                            type="password"
+                            COMMENT
+                            To lahko pustimo tu vsaj za sedaj:
+                            @keydown.enter.prevent="login"
+                            COMMENT
+                            class="ma-0"
+                    ></v-text-field>
+                    COMMENT-->
                     <v-btn-dropdown
                             label="Auth provider"
                             v-model="provider"

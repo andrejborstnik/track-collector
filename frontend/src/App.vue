@@ -38,6 +38,7 @@
                 </v-list-group>
             </v-list>
         </v-navigation-drawer>
+        
         <v-navigation-drawer temporary hide-overlay v-model="drawerRight" :close-on-click="false" right light>
             <v-list class="pa-0">
                 <v-list-item>
