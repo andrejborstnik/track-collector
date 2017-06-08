@@ -93,6 +93,8 @@
 
     import * as cookies from 'common/cookies';
 
+    import {activate_mixin} from 'common/activate-mixin';
+
     const login = function () {
         let user_mail = this.user_mail; // zadeve v this se lahko spremenijo sredi izvajanja funkcije, zato si jih zapomnimo.
         let password = this.password;
@@ -158,8 +160,16 @@
         });
     };
 
+    const activate = function () {
+        // Se izvede vsakic, ko se stran aktivira. Mounted se izvede le, ko se komponenta prvic skreira (in v Vue nikoli ne umre, razen, ce ji reces).
+        // Na primer, ce se odlogiras in nazaj logiras z drugim racunom, bi ti z mounted kazalo providerje prvega uporabnika.
+        this.getProviders();
+    };
+
     export default {
         name: 'Signin',
+
+        mixins: [activate_mixin],
 
         data: () => {
             return {
@@ -175,14 +185,9 @@
 
         methods: {
             login,
-            getProviders
-        },
-
-        mounted(){
-            this.getProviders();
-        },
-
-
+            getProviders,
+            activate
+        }
     }
 
 </script>
