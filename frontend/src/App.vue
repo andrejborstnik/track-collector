@@ -19,7 +19,7 @@
                 </v-list-item>
             </v-list>
             <v-list>
-                <v-list-group v-for="group in this.$store.groups" :value="group.active" :key="group.groupId">
+                <v-list-group v-for="group in $store.groups" :value="group.active" :key="group.groupId">
                     <v-list-tile slot="item">
                         <v-list-tile-content>
                             <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
@@ -47,7 +47,7 @@
                             <v-icon v-bind:class="['amber white--text']">{{ 'call_to_action' }}</v-icon>
                         </v-list-tile-avatar>
                         <v-list-tile-content>
-                            <v-list-tile-title>{{this.$store.user.email}}</v-list-tile-title>
+                            <v-list-tile-title>{{$store.user.email}}</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
                             <v-btn icon dark v-on:click.native.stop="drawerRight = !drawerRight">

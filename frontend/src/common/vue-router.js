@@ -24,7 +24,8 @@ let store = {
         path_to: null,
         path_from: null
     },
-    providers: []
+    providers: [],
+    groups: []
 };
 
 Object.defineProperty(Vue.prototype, '$store', {
@@ -39,12 +40,7 @@ Vue.use(Vuetify);
 
 // Import main application.
 import main_app from 'src/App.vue';
-import signin from 'src/pages/Signin.vue';
-//ZAKAJ JE BILO PREJ TO 2-krat?
-//import signin from 'src/pages/Signin.vue';
 
-import user_update from 'src/pages/User_update.vue';
-import profile from 'src/pages/Profile.vue';
 // Cookies support.
 import { cookie_law } from 'common/cookie-law';
 import * as cookies from 'common/cookies';
@@ -112,9 +108,6 @@ router.beforeEach((to, from, next) => { // Check authentication before each tran
     else
         next();
 });
-
-// Create Vue application and start the router.
-// Vue.component('main_app', main_app);
 
 // Start router.
 new Vue({

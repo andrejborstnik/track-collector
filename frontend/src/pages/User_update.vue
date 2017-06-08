@@ -119,14 +119,14 @@
         request({
             method: "POST",
             uri: `${config.paths_api_prefix}/user_update`,
-            //TREBA POPRAVIT NA post /authentication/update 
+            //TREBA POPRAVIT NA post /authentication/update
             json: user_change_password_data
         }).then((body) => {
             if (body.status == "OK") {
                 console.info("Korak A.");
                 //TO DO: Javiti uspesno spremembo gesla
                 //na enak nacin kot this.errorTitle in this.errorMessage (showAlert)
-                this.$router.push(`${config.url_prefix}/profile`);
+                this.$router.push(`${config.path_prefix}/profile`);
             }
             else {
                 console.info("Korak B.");
@@ -145,7 +145,7 @@
         
         //TO DO: Po uspesni potrditvi gesla redirect sem in tu 
         //sporocilo da geslo uspesno spremenjeno
-        //this.$router.push(`${config.url_prefix}/profile`);
+        //this.$router.push(`${config.path_prefix}/profile`);
 
     };
     
