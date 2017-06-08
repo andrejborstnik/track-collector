@@ -3,13 +3,13 @@
         <v-dialog v-model="showAlert" persistent lazy>
             <v-card>
                 <v-card-row>
-                    <v-card-title>{{this.errorTitle}}</v-card-title>
+                    <v-card-title>{{errorTitle}}</v-card-title>
                 </v-card-row>
                 <v-card-row>
-                    <v-card-text>{{this.errorMessage}}</v-card-text>
+                    <v-card-text>{{errorMessage}}</v-card-text>
                 </v-card-row>
                 <v-card-row actions>
-                    <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=!showAlert">Ok</v-btn>
+                    <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
                 </v-card-row>
             </v-card>
         </v-dialog>

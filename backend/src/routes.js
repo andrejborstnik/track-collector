@@ -106,6 +106,23 @@ router.get('/api/authentication/providers/list', function (req, res) {
     });
 });
 
+router.post('/api/authentication/update', function (req, res) {
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: req.body,
+        uri:'https://test.goopti.com/tracker/authentication/update',
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
+
 
 
 router.post('/api/register', register.register_new_user);
