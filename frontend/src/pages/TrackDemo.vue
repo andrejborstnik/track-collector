@@ -1,12 +1,11 @@
 <template>
     <v-container id="trackShow" fluid>
+
         <v-card id="rangeCard" raised>
             <v-layout row-sm column child-flex-sm align-center justify-space-between>
                 <v-flex xs4>
                     <v-dialog
-                            persistent
                             v-model="modalFrom"
-                            lazy
                     >
                         <v-text-field
                                 slot="activator"
@@ -20,9 +19,7 @@
                 </v-flex>
                 <v-flex xs4>
                     <v-dialog
-                            persistent
                             v-model="modalTo"
-                            lazy
                     >
                         <v-text-field
                                 slot="activator"
@@ -52,7 +49,7 @@
 
         <MyMap v-if="points"
                ref="map"
-               :mydata="{points, connections}"
+               :mydata="mydata"
                source="OSM" width="100%" height="700px"
                style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
     </v-container>
@@ -79,6 +76,8 @@
     import _ from 'lodash';
 
     import MyMap from 'widgets/Map.vue';
+
+    import {activate_mixin} from 'common/activate-mixin';
 
     //
     // Functions
@@ -151,6 +150,12 @@
     const zoomToData = function () {
         this.$refs.map.zoomToVectorLayerExtent()
     };
+
+    const activate = function () {
+        this.setDate();
+        this.getGroups();
+    };
+
     //
     // EXPORT
     //
@@ -163,16 +168,14 @@
             getTrack,
             zoomToData,
             setDate,
-            getGroups
+            getGroups,
+            activate
         },
+
+        mixins: [activate_mixin],
 
         components: {
             MyMap
-        },
-
-        mounted(){
-            this.setDate();
-            this.getGroups()
         },
 
         computed: {
@@ -228,6 +231,12 @@
                     }
                 }
                 return conn;
+            },
+            mydata: function () {
+                return {
+                    points: this.points,
+                    connections: this.connections
+                };
             }
         },
 

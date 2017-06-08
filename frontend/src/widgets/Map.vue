@@ -21,6 +21,8 @@
 
     import config from 'config';
 
+    import _ from 'lodash';
+
     // Components
     import Popup from 'widgets/MapPopup.vue';
 
@@ -219,8 +221,11 @@
     };
 
     let zoomToVectorLayerExtent = function() {
-        this.map.getView().fit(this.lineVectorLayer.getSource().getExtent(), this.map.getSize());
-    }
+        if (_.isNull(this.lineVectorLayer))
+            return;
+        else if (!_.isNull(this.lineVectorLayer.getSource()))
+            this.map.getView().fit(this.lineVectorLayer.getSource().getExtent(), this.map.getSize());
+    };
 
     let onMapClick = function(evt) {
         // todo save clone last hovered and use it to compare
@@ -529,13 +534,13 @@
                         this.mydatachanged = false;
                     }
                     else {
-                        mydatachanged = true;
+                        this.mydatachanged = true;
                     }
                 }.bind(this));
             },
             mydatachanged: function () {
                 if (!this.mydatachanged)
-                    this.getData()
+                    this.getData();
             }
         },
 
@@ -578,7 +583,7 @@
             mydata: {
                 type: Object,
                 default: () => {return {'points': [], 'connections': []};}
-            }
+            },
         },
 
         components: {
