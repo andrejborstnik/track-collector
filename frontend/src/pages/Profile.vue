@@ -13,8 +13,8 @@
                                     :readonly="readonly[field]"
                                     type="text"
                                     v-model="userData[field]"
-                                    @dblclick="readolny[field] = false"
-                                    @keyup.enter.prevent="readonly[field] = true"
+                                    @dblclick.native="setReadonly(field, false)"
+                                    @keyup.enter.prevent="setReadonly(field, true)"
                             ></v-text-field>
                         </v-flex>
                     </v-layout>
@@ -159,12 +159,17 @@
         });
     };
 
+    const setReadonly = function (field, bool) {
+        this.readonly[field] = bool;
+    };
+
 
     export default {
         name: 'Profile',
 
         mixins: [activate_mixin],
 
+        // todo same username on change
         data: () => {
             return {
                 password: null,
@@ -192,7 +197,8 @@
 
         methods: {
             update_user,
-            activate
+            activate,
+            setReadonly
         }
 
     }
