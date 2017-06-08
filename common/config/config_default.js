@@ -34,6 +34,8 @@ exports.log_level = 'debug';
 
 exports.path_prefix = '/';
 
+exports.url_prefix = `${exports.path_prefix == '/' ? '' : exports.path_prefix}`;
+
 // Base URI for ALL backend services.
 exports.base_uri = `${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
 

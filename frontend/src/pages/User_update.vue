@@ -126,7 +126,7 @@
                 console.info("Korak A.");
                 //TO DO: Javiti uspesno spremembo gesla
                 //na enak nacin kot this.errorTitle in this.errorMessage (showAlert)
-                this.$router.push(`${config.path_prefix}/profile`);
+                this.$router.push(`${config.url_prefix}/profile`);
             }
             else {
                 console.info("Korak B.");
@@ -145,7 +145,7 @@
         
         //TO DO: Po uspesni potrditvi gesla redirect sem in tu 
         //sporocilo da geslo uspesno spremenjeno
-        //this.$router.push(`${config.path_prefix}/profile`);
+        //this.$router.push(`${config.url_prefix}/profile`);
 
     };
     

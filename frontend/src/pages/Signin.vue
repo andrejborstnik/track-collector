@@ -31,6 +31,7 @@
                             label="Password"
                             id="password"
                             v-model="password"
+                            @keydown.enter.prevent="login"
                             type="password"
                             class="ma-0"
                     ></v-text-field>
@@ -124,7 +125,7 @@
                 // Set directives cookie.
                 //            if (user.cookies_accepted)
                 //                cookies.set_directive_cookie();
-                this.$router.push(`${config.path_prefix}/track`);
+                this.$router.push(`${config.url_prefix}/track`);
             }
             else {
                 cookies.remove_session_cookie();
