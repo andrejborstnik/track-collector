@@ -150,7 +150,7 @@
 
     const zoomToData = function () {
         this.$refs.map.zoomToVectorLayerExtent()
-    }
+    };
     //
     // EXPORT
     //

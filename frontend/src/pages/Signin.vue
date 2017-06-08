@@ -14,7 +14,7 @@
             </v-card>
         </v-dialog>
         <v-layout align-center justify-center>
-            <v-card raised class="pt-4 pl-5 pr-5 pb-3">
+            <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="login">
                 <v-layout column>
                     <h5>Sign-in</h5>
                     <v-text-field
@@ -22,7 +22,6 @@
                             label="Username"
                             id="username"
                             v-model="user_mail"
-                            @keydown.enter.prevent="login"
                             class="ma-0"
                     ></v-text-field>
                     
@@ -31,7 +30,6 @@
                             label="Password"
                             id="password"
                             v-model="password"
-                            @keydown.enter.prevent="login"
                             type="password"
                             class="ma-0"
                     ></v-text-field>
