@@ -29,6 +29,7 @@ w.level = config.log_level;
 // const postgreApi = require('src/rest/postgreApi');
 // const sequelizeTest = require('src/rest/sequelizeTest');
 const register = require('src/rest/register');
+const resetPassword = require('src/rest/resetPassword');
 
 w.info('Starting up in %s mode', config.__MODE__);
 
@@ -142,6 +143,7 @@ router.post('/api/authentication/profile', function (req, res) {
 
 
 router.post('/api/register', register.register_new_user);
+router.post('/api/resetPassword', resetPassword.resetPassword);
 
 router.post('/api/signin', function (req, res) {
     let params = req.body; // todo parse safely

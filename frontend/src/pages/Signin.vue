@@ -61,6 +61,8 @@
                         <v-btn
                                 @click.native="login">Login
                         </v-btn>
+
+                        <router-link to="resetPassword">Forgot password?</router-link>
                     </v-flex>
                 </v-layout>
                 <!--
