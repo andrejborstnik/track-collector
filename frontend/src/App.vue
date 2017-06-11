@@ -38,7 +38,7 @@
                 </v-list-group>
             </v-list>
         </v-navigation-drawer>
-        
+
         <v-navigation-drawer temporary hide-overlay v-model="drawerRight" :close-on-click="false" right light>
             <v-list class="pa-0">
                 <v-list-item>
@@ -59,7 +59,7 @@
             </v-list>
             <v-list class="pt-0" dense>
                 <v-divider></v-divider>
-                
+
                 <v-list-item>
                     <v-list-tile v-on:click.native="profile">
                         <v-list-tile-action>
@@ -73,7 +73,7 @@
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-item>
-                
+
                 <v-list-item>
                     <v-list-tile v-on:click.native="logout">
                         <v-list-tile-action>
@@ -84,7 +84,7 @@
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-item>
-                
+
                 <v-list-item>
                     <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
                         <v-list-tile-action>
@@ -98,7 +98,7 @@
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-item>
-                
+
 
             </v-list>
         </v-navigation-drawer>
@@ -111,9 +111,7 @@
             </v-btn>
         </v-toolbar>
         <main>
-            <v-container fluid>
                 <router-view></router-view>
-            </v-container>
         </main>
     </v-app>
 </template>
@@ -141,7 +139,7 @@
         cookies.remove_session_cookie();
         this.$router.go(0);
     };
-    
+
     const edit_TEMPLATE_ACTION = function () {
         console.info("EDIT_TEMPLATE spremeni vse te oblike za nov meni.");
     };

@@ -1,55 +1,115 @@
 <template>
-    <v-container id="trackShow" fluid>
+    <v-container id="trackShow" fluid class="ma-0 pa-0">
 
-        <v-card id="rangeCard" raised>
-            <v-layout row-sm column child-flex-sm align-center justify-space-between>
-                <v-flex xs4>
-                    <v-dialog
-                            v-model="modalFrom"
-                    >
-                        <v-text-field
-                                slot="activator"
-                                label="From:"
-                                v-model="startDate"
-                                prepend-icon="event"
-                                readonly
-                        ></v-text-field>
-                        <v-date-picker v-model="startDate" scrollable></v-date-picker>
-                    </v-dialog>
-                </v-flex>
-                <v-flex xs4>
-                    <v-dialog
-                            v-model="modalTo"
-                    >
-                        <v-text-field
-                                slot="activator"
-                                label="To:"
-                                v-model="endDate"
-                                prepend-icon="event"
-                                readonly
-                        ></v-text-field>
-                        <v-date-picker v-model="endDate" scrollable></v-date-picker>
-                    </v-dialog>
-                </v-flex>
-                <v-flex xs4>
-                    <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
-                </v-flex>
-                <v-flex xs4>
-                    <v-btn primary light v-on:click.native="zoomToData">Zoom</v-btn>
-                </v-flex>
-            </v-layout>
-        </v-card>
+
+
+
+      <v-expansion-panel>
+        <v-expansion-panel-content v-model="panelOpen">
+                  <div slot="header">Set time</div>
+
+
+                        <v-layout row wrap class="ma-0 pa-3">
+                              <v-menu
+                                lazy
+                                :close-on-content-click="false"
+                                v-model="menuFromDate"
+                                transition="v-scale-transition"
+                                offset-y
+                                :nudge-left="40"
+                              >
+                                <v-text-field
+                                  slot="activator"
+                                  label="Start date:"
+                                  v-model="startDateText"
+                                  prepend-icon="event"
+                                  readonly
+                                ></v-text-field>
+                                <v-date-picker v-model="startDate" no-title scrollable actions>
+                                </v-date-picker>
+                              </v-menu>
+                              <v-menu
+                                lazy
+                                :close-on-content-click="false"
+                                v-model="menuFromTime"
+                                transition="v-scale-transition"
+                                offset-y
+                                :nudge-left="40"
+                              >
+                                <v-text-field
+                                  slot="activator"
+                                  label="Start time:"
+                                  v-model="startTime"
+                                  prepend-icon="access_time"
+                                  readonly
+                                ></v-text-field>
+                                <v-time-picker v-model="startTime" format="24hr"></v-time-picker>
+                              </v-menu>
+                              <v-menu
+                                lazy
+                                :close-on-content-click="false"
+                                v-model="menuToDate"
+                                transition="v-scale-transition"
+                                offset-y
+                                :nudge-left="40"
+                              >
+                                <v-text-field
+                                  slot="activator"
+                                  label="End date:"
+                                  v-model="endDateText"
+                                  prepend-icon="event"
+                                  readonly
+                                ></v-text-field>
+                                <v-date-picker v-model="endDate" no-title scrollable actions>
+                                </v-date-picker>
+                              </v-menu>
+                              <v-menu
+                                lazy
+                                :close-on-content-click="false"
+                                v-model="menuToTime"
+                                transition="v-scale-transition"
+                                offset-y
+                                :nudge-left="40"
+                              >
+                                <v-text-field
+                                  slot="activator"
+                                  label="End time:"
+                                  v-model="endTime"
+                                  prepend-icon="access_time"
+                                  readonly
+                                ></v-text-field>
+                                <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
+                              </v-menu>
+                              <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
+                              <v-btn primary light v-on:click.native="zoomToData">Zoom</v-btn>
+                        </v-layout>
+
+
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+
+
         <v-dialog persistent v-model="loading" lazy>
             <v-layout row justify-center>
                 <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7"
                                      class="purple--text"></v-progress-circular>
             </v-layout>
         </v-dialog>
+        <v-layout child-flex class="pl-3 pr-3">
+            <vue-slider ref="slider" v-model="value"
+              :min="minDate"
+              :max="maxDate"
+              :interval=1000
+              :dot-size=30
+              :formatter=formatterFunction
+            ></vue-slider>
+        </v-layout>
         <div v-if="connections"></div>
 
         <MyMap v-if="points"
                ref="map"
                :mydata="mydata"
+               :timeInterval="value"
                source="OSM" width="100%" height="700px"
                style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
     </v-container>
@@ -72,6 +132,7 @@
 
     import moment from 'moment';
 
+    import vueSlider from 'vue-slider-component/src/vue2-slider.vue';
 
     import _ from 'lodash';
 
@@ -94,6 +155,19 @@
     //          ].join('-');
     // };
 
+    const now = moment();
+    const tomorrow = moment().add(1, 'days');
+
+    const formatterFunction = function(v) {
+        if(v == null) return "";
+        return moment(v).format("YYYY-MM-DD k:mm:ss");
+    }.bind(this);
+
+    const formatterFunction2 = function(v) {
+        let x = v ? v : 0;
+        return moment(now).add(tomorrow.diff(now, "seconds")*v, 'seconds').format("YYYY-MM-DD k:mm:ss");
+    }.bind(this);
+
     const setDate = function () {
         let today = new Date();
         let yesterday = new Date();
@@ -108,21 +182,23 @@
     const getTrack = function () {
         let path = `/track`;
         this.loading = true;
+        console.log("time string test:", moment(this.endDate).toISOString())
         request({
             method: "POST",
             uri: config.paths_api_prefix + path,
             json: {
-                endDate: this.endDate,
+                endDate: moment(this.endDate).toISOString(),
                 groupId: "string",
                 requiredAccuracy: 0,
                 singlePointStops: true,
-                startDate: this.startDate,
+                startDate: moment(this.startDate).toISOString(),
                 token: this.$store.user.token,
                 userIds: [
                     "string"
                 ]
             }
         }).then((body) => {
+            console.log(body);
             this.loading = false;
             this.output = body.tracks;
         });
@@ -169,15 +245,16 @@
             zoomToData,
             setDate,
             getGroups,
-            activate
+            activate,
+            formatterFunction
         },
 
         mixins: [activate_mixin],
 
         components: {
-            MyMap
+            MyMap,
+            vueSlider
         },
-
         computed: {
             points: function () {
                 let points = [];
@@ -219,11 +296,13 @@
                             'A': {
                                 longitude: A.longitude,
                                 latitude: A.latitude,
+                                timestamp: moment(A.timestamp).valueOf(),
                                 name: 'test'
                             },
                             'B': {
                                 longitude: B.longitude,
                                 latitude: B.latitude,
+                                timestamp: moment(B.timestamp).valueOf(),
                                 name: 'test'
                             },
                             color
@@ -237,6 +316,24 @@
                     points: this.points,
                     connections: this.connections
                 };
+            },
+            startDateText: function() {
+                return moment(this.startDate).format("D MMM YYYY");
+            },
+            endDateText: function() {
+                return moment(this.endDate).format("D MMM YYYY");
+            },
+            minDate: function() {
+                if(this.startDate == null) return 0;
+                let x = moment(this.startDate).valueOf();
+                console.log("min", x);
+                return x;
+            },
+            maxDate: function() {
+                if(this.endDate == null) return 1;
+                let x = moment(this.endDate).valueOf();
+                console.log("max", x);
+                return x;
             }
         },
 
@@ -245,10 +342,18 @@
                 output: '',
                 startDate: null,
                 endDate: null,
+                startTime: null,
+                endTime: null,
                 colors: ['red', 'green', 'grey', 'orange', 'yellow', 'blue', 'black'], // this colors or hex.
+                menuFromDate: false,
+                menuToDate: false,
+                menuFromTime: false,
+                menuToTime: false,
                 modalFrom: false,
                 modalTo: false,
-                loading: false
+                loading: false,
+                value: [0, Number.MAX_VALUE],
+                panelOpen: true
             }
         }
     }
