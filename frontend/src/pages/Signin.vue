@@ -35,20 +35,12 @@
                     ></v-text-field>
                     
                     <!--COMMENT
-                    ?????
-                    <v-text-field
-                            name="password"
-                            label="Password"
-                            id="password"
-                            v-model="password"
-                            type="password"
-                            COMMENT
-                            To lahko pustimo tu vsaj za sedaj:
-                            @keydown.enter.prevent="login"
-                            COMMENT
-                            class="ma-0"
-                    ></v-text-field>
+                    Animacija pri Auth provider je zelo cudna.
+                    Vsaj ob prvem kliku na mojem brovserju meni 
+                    kar prileti iz leve strani. 
+                    Verjetno bo treba to popraviti.
                     COMMENT-->
+                    
                     <v-btn-dropdown
                             label="Auth provider"
                             v-model="provider"
@@ -57,23 +49,23 @@
                             overflow="overflow"
                             class="ma-0 pa-0"
                     ></v-btn-dropdown>
+                    
                     <v-flex xm4 class="ma-0">
+
                         <v-btn
                                 @click.native="login">Login
                         </v-btn>
-
-                        <router-link to="resetPassword">Forgot password?</router-link>
+                        
+                        <table style="width:100%">
+                          <tr>
+                            <td><router-link to="resetPassword">Forgot password?</router-link></td>
+                          </tr>
+                          <tr>
+                            <td><router-link to="registration">New account.</router-link></td>
+                          </tr>
+                        </table>
                     </v-flex>
                 </v-layout>
-                <!--
-                <div style="width: 80%;">
-                    Username:
-                    <input type="text" v-model="user_mail" @keyup.prevent.enter="login" />
-                    Password:
-                    <input type="password" v-model="password" @keyup.prevent.enter="login" />
-                    <a class="button" @click="login">Login</a>
-                </div>
-              -->
             </v-card>
         </v-layout>
     </v-container>
