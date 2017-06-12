@@ -130,7 +130,7 @@
     const request = require('request-promise-native');
     import * as config from 'config';
 
-    import moment from 'moment';
+    import moment from 'moment-timezone';
 
     import vueSlider from 'vue-slider-component/src/vue2-slider.vue';
 
@@ -174,24 +174,30 @@
         yesterday.setDate(yesterday.getDate() - 1);
         this.startDate = "2017-05-07";
         this.endDate = "2017-05-14";
+        this.startTime = "08:00";
+        this.endTime = "13:00";
         // ALEN - začasno zakomentirano
         // this.startDate = moment(yesterday).format("YYYY-MM-DD")
         // this.endDate = moment(today).format("YYYY-MM-DD")
     };
 
+    const buildTimestamp = function(date, time) {
+        return date + "T" + time + ":00"
+    };
+
     const getTrack = function () {
         let path = `/track`;
         this.loading = true;
-        console.log("time string test:", moment(this.endDate).toISOString())
+        console.log("time string test:", moment(buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString())
         request({
             method: "POST",
             uri: config.paths_api_prefix + path,
             json: {
-                endDate: moment(this.endDate).toISOString(),
+                endDate: moment(buildTimestamp(this.endDate, this.endTime)).tz('Europe/Berlin').toISOString(),
                 groupId: "string",
                 requiredAccuracy: 0,
                 singlePointStops: true,
-                startDate: moment(this.startDate).toISOString(),
+                startDate: moment(buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString(),
                 token: this.$store.user.token,
                 userIds: [
                     "string"
@@ -325,13 +331,13 @@
             },
             minDate: function() {
                 if(this.startDate == null) return 0;
-                let x = moment(this.startDate).valueOf();
+                let x = moment(buildTimestamp(this.startDate, this.startTime)).valueOf();
                 console.log("min", x);
                 return x;
             },
             maxDate: function() {
                 if(this.endDate == null) return 1;
-                let x = moment(this.endDate).valueOf();
+                let x = moment(buildTimestamp(this.endDate, this.endTime)).valueOf();
                 console.log("max", x);
                 return x;
             }
