@@ -120,6 +120,12 @@
             this.showAlert = true;
             return;
         }
+        else if (!validateEmail(user_mail)){
+            this.errorTitle = "Failure";
+            this.errorMessage = "Please enter a valid email address.";
+            this.showAlert = true;
+            return;
+        }
         else if (password.length < 5){
             this.errorTitle = "Failure";
             this.errorMessage = "Password is to short.";
@@ -157,6 +163,11 @@
         });
     };
     
+    const validateEmail = function (email) {
+          var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return re.test(email);
+    };
+    
     export default {
         name: 'Registaration',
         
@@ -177,7 +188,8 @@
         },
         
         methods: {
-            register_user
+            register_user,
+            validateEmail
         }
     }
 </script>
