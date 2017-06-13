@@ -1,9 +1,5 @@
 <template>
     <v-container id="trackShow" fluid class="ma-0 pa-0">
-
-
-
-
       <v-expansion-panel>
         <v-expansion-panel-content v-model="panelOpen">
                   <div slot="header">Set time</div>
@@ -96,7 +92,7 @@
             </v-layout>
         </v-dialog>
         <v-layout child-flex class="pl-3 pr-3">
-            <vue-slider ref="slider" v-model="value"
+            <vue-slider ref="slider" v-model="sliderValue"
               :min="minDate"
               :max="maxDate"
               :interval=1000
@@ -106,12 +102,19 @@
         </v-layout>
         <div v-if="connections"></div>
 
-        <MyMap v-if="points"
+        <!-- <MyMap v-if="points"
                ref="map"
                :mydata="mydata"
-               :timeInterval="value"
+               :timeInterval="sliderValue"
                source="OSM" width="100%" height="700px"
-               style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
+               style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap> -->
+         <MyMap ref="map"
+                :trackStorage="trackStorage"
+                :storageChanged="storageChanged"
+                :timeInterval="sliderValue"
+                source="OSM" width="100%" height="700px"
+                style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
+
     </v-container>
 
 </template>
@@ -136,7 +139,9 @@
 
     import _ from 'lodash';
 
-    import MyMap from 'widgets/Map.vue';
+    import MyMap from 'widgets/Map2.vue';
+
+    import TrackStorage from 'common/TrackStorage';
 
     import {activate_mixin} from 'common/activate-mixin';
 
@@ -186,28 +191,33 @@
     };
 
     const getTrack = function () {
-        let path = `/track`;
-        this.loading = true;
-        console.log("time string test:", moment(buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString())
-        request({
-            method: "POST",
-            uri: config.paths_api_prefix + path,
-            json: {
-                endDate: moment(buildTimestamp(this.endDate, this.endTime)).tz('Europe/Berlin').toISOString(),
-                groupId: "string",
-                requiredAccuracy: 0,
-                singlePointStops: true,
-                startDate: moment(buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString(),
-                token: this.$store.user.token,
-                userIds: [
-                    "string"
-                ]
-            }
-        }).then((body) => {
-            console.log(body);
-            this.loading = false;
-            this.output = body.tracks;
-        });
+        this.trackStorage.startDate = this.startDate;
+        this.trackStorage.startTime = this.startTime;
+        this.trackStorage.endDate = this.endDate;
+        this.trackStorage.endTime = this.endTime;
+        this.trackStorage.getTrack(this.$store.user.token, null, null);
+        // let path = `/track`;
+        // this.loading = true;
+        // console.log("time string test:", moment(buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString())
+        // request({
+        //     method: "POST",
+        //     uri: config.paths_api_prefix + path,
+        //     json: {
+        //         endDate: moment(buildTimestamp(this.endDate, this.endTime)).tz('Europe/Berlin').toISOString(),
+        //         groupId: "string",
+        //         requiredAccuracy: 0,
+        //         singlePointStops: true,
+        //         startDate: moment(buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString(),
+        //         token: this.$store.user.token,
+        //         userIds: [
+        //             "string"
+        //         ]
+        //     }
+        // }).then((body) => {
+        //     console.log(body);
+        //     this.loading = false;
+        //     this.output = body.tracks;
+        // });
 
 
     };
@@ -242,7 +252,6 @@
     // EXPORT
     //
 
-
     export default {
         name: 'TrackDemo',
 
@@ -262,67 +271,67 @@
             vueSlider
         },
         computed: {
-            points: function () {
-                let points = [];
-                let j = 0;
-                for (let el of this.output) {
-                    let color = this.colors[j % this.colors.length];
-                    j++;
-                    for (let o of el.samples) {
-                        points.push({
-                            longitude: o.longitude,
-                            latitude: o.latitude,
-                            name: moment(o.timestamp).format('DD MMM YY HH:mm:ss'),
-                            marker: "CIRCLE",
-                            color
-                        });
-                    }
-                }
-                return points;
-            },
-            connections: function () {
-                if (!this.output)
-                    return [];
-                let conn = [];
-                let j = 0;
-                for (let el of this.output) {
-                    let color = this.colors[j % this.colors.length];
-                    j++;
-                    let x = el.samples;
-                    let last = null;
-                    for (let current of x) {
-                        if (last == null) {
-                            last = current;
-                            continue
-                        }
-                        let A = last;
-                        let B = current;
-                        last = current;
-                        conn.push({
-                            'A': {
-                                longitude: A.longitude,
-                                latitude: A.latitude,
-                                timestamp: moment(A.timestamp).valueOf(),
-                                name: 'test'
-                            },
-                            'B': {
-                                longitude: B.longitude,
-                                latitude: B.latitude,
-                                timestamp: moment(B.timestamp).valueOf(),
-                                name: 'test'
-                            },
-                            color
-                        });
-                    }
-                }
-                return conn;
-            },
-            mydata: function () {
-                return {
-                    points: this.points,
-                    connections: this.connections
-                };
-            },
+            // points: function () {
+            //     let points = [];
+            //     let j = 0;
+            //     for (let el of this.output) {
+            //         let color = this.colors[j % this.colors.length];
+            //         j++;
+            //         for (let o of el.samples) {
+            //             points.push({
+            //                 longitude: o.longitude,
+            //                 latitude: o.latitude,
+            //                 name: moment(o.timestamp).format('DD MMM YY HH:mm:ss'),
+            //                 marker: "CIRCLE",
+            //                 color
+            //             });
+            //         }
+            //     }
+            //     return points;
+            // },
+            // connections: function () {
+            //     if (!this.output)
+            //         return [];
+            //     let conn = [];
+            //     let j = 0;
+            //     for (let el of this.output) {
+            //         let color = this.colors[j % this.colors.length];
+            //         j++;
+            //         let x = el.samples;
+            //         let last = null;
+            //         for (let current of x) {
+            //             if (last == null) {
+            //                 last = current;
+            //                 continue
+            //             }
+            //             let A = last;
+            //             let B = current;
+            //             last = current;
+            //             conn.push({
+            //                 'A': {
+            //                     longitude: A.longitude,
+            //                     latitude: A.latitude,
+            //                     timestamp: moment(A.timestamp).valueOf(),
+            //                     name: 'test'
+            //                 },
+            //                 'B': {
+            //                     longitude: B.longitude,
+            //                     latitude: B.latitude,
+            //                     timestamp: moment(B.timestamp).valueOf(),
+            //                     name: 'test'
+            //                 },
+            //                 color
+            //             });
+            //         }
+            //     }
+            //     return conn;
+            // },
+            // mydata: function () {
+            //     return {
+            //         points: this.points,
+            //         connections: this.connections
+            //     };
+            // },
             startDateText: function() {
                 return moment(this.startDate).format("D MMM YYYY");
             },
@@ -342,7 +351,10 @@
                 return x;
             }
         },
-
+        mounted: function () {
+                this.trackStorage = new TrackStorage(this.$refs.map.map, "USER", 'red');
+                this.storageChanged += 1;
+        },
         data () {
             return {
                 output: '',
@@ -358,8 +370,10 @@
                 modalFrom: false,
                 modalTo: false,
                 loading: false,
-                value: [0, Number.MAX_VALUE],
-                panelOpen: true
+                sliderValue: [0, Number.MAX_VALUE],
+                panelOpen: true,
+                storageChanged: 0,
+                trackStorage: null
             }
         }
     }
