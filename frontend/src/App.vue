@@ -19,7 +19,7 @@
                 </v-list-item>
             </v-list>
             <v-list>
-                <v-list-group v-for="group in $store.groups" :value="group.active" :key="group.groupId">
+                <v-list-group v-for="group in $store.user.groups" :value="group.active" :key="group.groupId">
                     <v-list-tile slot="item">
                         <v-list-tile-content>
                             <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
@@ -31,14 +31,20 @@
                     <v-list-item v-for="user in group.users" :key="user.userId">
                         <v-list-tile>
                             <v-list-tile-content>
-                                <v-list-tile-title>{{ user.userId }}</v-list-tile-title>
+                                <v-list-tile-title v-bind:style="user.style">{{ user.userId }}</v-list-tile-title>
                             </v-list-tile-content>
+                            <v-list-tile-action>
+                              <v-btn icon v-on:click.native="toggleVisibility(user)">
+                                  <v-icon v-if="user.visible" light>visibility</v-icon>
+                                  <v-icon v-if="!user.visible" light>visibility_off</v-icon>
+                              </v-btn>
+                            </v-list-tile-action>
                         </v-list-tile>
                     </v-list-item>
                 </v-list-group>
             </v-list>
         </v-navigation-drawer>
-        
+
         <v-navigation-drawer temporary hide-overlay v-model="drawerRight" :close-on-click="false" right light>
             <v-list class="pa-0">
                 <v-list-item>
@@ -59,7 +65,7 @@
             </v-list>
             <v-list class="pt-0" dense>
                 <v-divider></v-divider>
-                
+
                 <v-list-item>
                     <v-list-tile v-on:click.native="profile">
                         <v-list-tile-action>
@@ -73,7 +79,7 @@
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-item>
-                
+
                 <v-list-item>
                     <v-list-tile v-on:click.native="logout">
                         <v-list-tile-action>
@@ -84,7 +90,7 @@
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-item>
-                
+
                 <v-list-item>
                     <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
                         <v-list-tile-action>
@@ -98,7 +104,7 @@
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-item>
-                
+
 
             </v-list>
         </v-navigation-drawer>
@@ -111,9 +117,7 @@
             </v-btn>
         </v-toolbar>
         <main>
-            <v-container fluid>
                 <router-view></router-view>
-            </v-container>
         </main>
     </v-app>
 </template>
@@ -141,9 +145,16 @@
         cookies.remove_session_cookie();
         this.$router.go(0);
     };
-    
+
     const edit_TEMPLATE_ACTION = function () {
         console.info("EDIT_TEMPLATE spremeni vse te oblike za nov meni.");
+    };
+
+    const toggleVisibility = function(userInGroup) {
+        let current = userInGroup.visible;
+        userInGroup.visible = !current;
+        let tmpStr = this.$store.user.trackStorage.registerUser(userInGroup.userId, userInGroup.style.color);
+        tmpStr.visible = userInGroup.visible;
     };
 
     export default {
@@ -169,7 +180,8 @@
         methods: {
             profile,
             logout,
-            edit_TEMPLATE_ACTION
+            edit_TEMPLATE_ACTION,
+            toggleVisibility
         }
     }
 

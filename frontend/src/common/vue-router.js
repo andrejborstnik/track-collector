@@ -12,20 +12,29 @@ import VueRouter from 'vue-router';
 // Import routes.
 import routes from 'src/routes';
 
+// Color pallete
+import ColorPallete from 'common/ColorPallete';
+
+// storage
+import MultiTrackStorage from 'common/MultiTrackStorage';
+
 // Store
 let store = {
     user: {
         cookies_accepted: false,
         email: null,
         token: null,
-        admin: false
+        admin: false,
+        groups: null,
+        trackStorage: new MultiTrackStorage()
     },
     state: {
         path_to: null,
         path_from: null
     },
     providers: [],
-    groups: []
+    groups: [],
+    pallete: new ColorPallete()
 };
 
 Object.defineProperty(Vue.prototype, '$store', {

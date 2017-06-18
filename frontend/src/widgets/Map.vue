@@ -368,39 +368,83 @@
         }
     };
 
+    let startTimeIndex = null;
+    let endTimeIndex = null;
+    let onStyle = new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                          width: 3,
+                          color: "rgba(255,0,0,1)"
+                      })
+                  });
+    let offStyle = new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                          width: 3,
+                          color: "rgba(255,0,0,0)"
+                      })
+                  });
+    let lineFeatures = [];
+
+    let adjustVisibility = function() {
+        if(this.startTimeIndex == null) return;
+        let len = this.startTimeIndex.length;
+        for(let i = 0; i < len; i++) {
+            let feature = this.lineFeatures[i];
+            if(this.startTimeIndex[i] >= this.timeInterval[0] && this.timeInterval[1] >= this.endTimeIndex[i]) {
+                feature.setStyle(onStyle);
+            } else {
+                feature.setStyle(offStyle);
+            }
+        }
+    };
+
     let setConnectionsFromData = function (connections) {
         if (!connections || !connections.length)
             return;
-        let features = [];
+        let len = connections.length;
+        // initializing integer arrays
+        this.startTimeIndex = new Array(len);
+        this.endTimeIndex = new Array(len);
+        for(let i = 0; i < len; i++) {this.startTimeIndex[i] = 0; this.endTimeIndex[i] = 0;}
+
+        // let features = [];
+        this.lineFeatures = [];
         let lineFeature;
 
         let i = 0;
         for (let connection of connections) {
             let data = fp.clone(connection);
             if (!data.A.longitude || !data.A.latitude) {
-                console.log('No coords for ', data.A.name);
+                // console.log('No coords for ', data.A.name);
+                console.log('No coords for a segment(A).');
                 continue;
             }
             if (!data.B.longitude || !data.B.latitude) {
-                console.log('No coords for ', data.B.name);
+                // console.log('No coords for ', data.B.name);
+                console.log('No coords for a segment(B).');
                 continue;
             }
 
-            let color = connection.color || colorFromLevel(connection.measured_level);
+            // let color = connection.color || colorFromLevel(connection.measured_level);
 
             data.geometry = new ol.geom.LineString([transformCoords([data.A.longitude, data.A.latitude]),
                 transformCoords([data.B.longitude, data.B.latitude])]);
 
             lineFeature = new ol.Feature(data);
-
+            this.lineFeatures.push(lineFeature);
+            lineFeature.setId(i + 1);
+            lineFeature.setStyle(onStyle);
+            this.startTimeIndex[i] = data.A.timestamp;
+            this.endTimeIndex[i] = data.B.timestamp;
             i++;
-            lineFeature.setStyle(lineStyle(color));
-            lineFeature.setId(i);
-            features.push(lineFeature);
+
+            // i++;
+            // lineFeature.setStyle(lineStyle(color));
+            // lineFeature.setId(i);
+            // features.push(lineFeature);
         }
         if (!this.lineVectorLayer) {
             let vectorSource = new ol.source.Vector({
-                features: features
+                features: this.lineFeatures
             });
 
             let lineVectorLayer = new ol.layer.Vector({
@@ -412,7 +456,8 @@
             this.map.addLayer(this.lineVectorLayer);
         }
         else {
-            this.lineVectorLayer.getSource().addFeatures(features);
+            this.lineVectorLayer.getSource().clear();
+            this.lineVectorLayer.getSource().addFeatures(this.lineFeatures);
             this.lineVectorLayer.changed();
         }
     };
@@ -498,7 +543,8 @@
             initMap,
             getData,
             onMapPointermove,
-            zoomToVectorLayerExtent
+            zoomToVectorLayerExtent,
+            adjustVisibility
         },
 
         mixins: [activate_mixin],
@@ -541,6 +587,9 @@
             mydatachanged: function () {
                 if (!this.mydatachanged)
                     this.getData();
+            },
+            timeInterval: function() {
+                this.adjustVisibility();
             }
         },
 
@@ -584,6 +633,10 @@
                 type: Object,
                 default: () => {return {'points': [], 'connections': []};}
             },
+            timeInterval: {
+                type: Array,
+                default: 0
+            }
         },
 
         components: {
