@@ -96,7 +96,7 @@ export default class TrackStorage {
   adjustVisibility(minTime, maxTime) {
       // let startDateTime = this.startDateTime();
       // let endDateTime = this.endDateTime();
-
+      if(this.dataLength == 0) return;
       let minT = Math.min(Math.max(minTime, this.startDateTime), this.endDateTime);
       let maxT = Math.max(Math.min(maxTime, this.endDateTime), this.startDateTime);
       if(this.startTimeIndex == null) return;

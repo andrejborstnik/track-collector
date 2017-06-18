@@ -167,8 +167,8 @@
         let today = new Date();
         let yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        this.startDate = "2017-06-11";
-        this.endDate = "2017-06-19";
+        this.startDate = "2017-05-07";
+        this.endDate = "2017-05-14";
         this.startTime = "09:00";
         this.endTime = "13:00";
         // ALEN - začasno zakomentirano
@@ -214,7 +214,7 @@
         for(let grp of groups) {
             grp.visible = false;
             for(let user of grp.users) {
-                user.visible = false;
+                user.visible = grp.personalGroupUserId === user.userId;
                 user.style = { color: this.$store.pallete.next()};
             }
         }
@@ -319,6 +319,8 @@
         },
         mounted: function () {
                 this.$store.user.trackStorage.registerMap(this.$refs.map.map);
+                let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
+                tmpStr.visible = true;
                 // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
                 // this.storageChanged += 1;
         },
