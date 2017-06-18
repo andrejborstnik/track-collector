@@ -3,11 +3,51 @@
 const w = require('winston');
 const request = require('request-promise-native');
 const config = require('config');
-
+const secretResetKey = "zamenjajme";
 
 
 exports.resetPassword = function (req, res) {
-    w.info(`Resetting password for: ${req.body.email}`); // delete when read: dont show pw (it is dumped into system logs and a security breach)
-
-    res.status(200).send("");
+    if (typeof req.body.email != 'undefined'){
+        w.info(`Resetting password for: ${req.body.email}`); // delete when read: dont show pw (it is dumped into system logs and a security breach)
+        request({
+            method: "POST",
+            uri: `${config.java_be}/authentication/resetPassword`,
+            json: {
+                "secret": secretResetKey,
+                "userId": req.body.email
+                }
+        }).then((body) => {
+            w.info(body); //print the token until we actually send an email
+            if (body.status!="OK"){
+                res.status(500).send(body.status);
+            }else {
+                res.status(200).send("OK");
+            }
+        }).catch((err) => {
+            w.error(err);
+            res.status(err.status).send(err);
+        });
+    }else if ((typeof req.body.resetToken != 'undefined') && (typeof req.body.password != 'undefined')){
+        request({
+            method: "POST",
+            uri: `${config.java_be}/authentication/resetPassword`,
+            json: {
+                "secret": secretResetKey,
+                "newPassword": req.body.password,
+                "resetToken": req.body.resetToken
+                }
+        }).then((body) => {
+            w.info(body);
+            if (body.status!="OK"){
+                res.status(500).send(body.status);
+            }else {
+                res.status(200).send(body);
+            }
+        }).catch((err) => {
+            w.error(err);
+            res.status(err.status).send(err);
+        });
+    }else {
+        res.status(400).send("Invalid request");
+    }
 };
