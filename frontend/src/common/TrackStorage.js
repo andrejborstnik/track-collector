@@ -15,7 +15,7 @@ export default class TrackStorage {
       this.pointColor = color;
       this.pointStrokeColor = color;
       this.width = 3;
-      this.radius = 6;
+      this.radius = 8;
       this.pointStrokeWidth = 1;
       this.onLineStyle = new ol.style.Style({
                         stroke: new ol.style.Stroke({
@@ -30,7 +30,7 @@ export default class TrackStorage {
                         })
                     });
 
-      this.onPointStyle = ol.style.Style({
+      this.onPointStyle = new ol.style.Style({
           image: new ol.style.Circle({
                radius: this.radius,
                fill: new ol.style.Fill({
@@ -43,7 +43,7 @@ export default class TrackStorage {
                })
              })
       });
-      this.offPointStyle = ol.style.Style({
+      this.offPointStyle = new ol.style.Style({
           image: new ol.style.Circle({
                radius: this.radius,
                fill: new ol.style.Fill({
@@ -63,11 +63,42 @@ export default class TrackStorage {
       this.pointFeatures = [];
       this.lineVectorLayer = null;
       this.pointVectorLayer = null;
+      this.startDateTimeChanged = false;
+      this.endDateTimeChanged = false;
   };
 
+  setColor(color) {
+    if(color != null && color !== this.color) {
+      this.onLineStyle.getStroke().setColor(color);
+      this.onPointStyle.getImage().getFill().setColor(color);
+    }
+  };
+
+  setStartDateTime(date, time, timezone) {
+      this.setStartDateTimeRaw(moment.tz(TrackStorage.buildTimestamp(date, time), timezone).valueOf());
+  }
+
+  setEndDateTime(date, time, timezone) {
+      this.setEndDateTimeRaw(moment.tz(TrackStorage.buildTimestamp(date, time), timezone).valueOf());
+  }
+
+  setStartDateTimeRaw(raw) {
+      let oldSDT = this.startDateTime;
+      this.startDateTime = raw;
+      this.startDateTimeChanged = oldSDT == null ? true : (oldSDT != this.startDateTime);
+  }
+
+  setEndDateTimeRaw(raw) {
+      let oldEDT = this.endDateTime;
+      this.endDateTime = raw;
+      this.endDateTimeChanged = oldEDT == null ? true : (oldEDT != this.endDateTime);
+  }
   adjustVisibility(minTime, maxTime) {
-      let minT = Math.min(Math.max(minTime, this.startTime), this.endTime);
-      let maxT = Math.max(Math.min(maxTime, this.endDate), this.startTime);
+      // let startDateTime = this.startDateTime();
+      // let endDateTime = this.endDateTime();
+
+      let minT = Math.min(Math.max(minTime, this.startDateTime), this.endDateTime);
+      let maxT = Math.max(Math.min(maxTime, this.endDateTime), this.startDateTime);
       if(this.startTimeIndex == null) return;
       for(let i = 0; i < this.dataLength - 1; i++) {
           let lineFeature = this.lineFeatures[i];
@@ -75,19 +106,19 @@ export default class TrackStorage {
           if(this.startTimeIndex[i] >= minT && maxT >= this.endTimeIndex[i]) {
               lineFeature.setStyle(this.onLineStyle);
               pointFeature.setStyle(this.onPointStyle);
+              // pointFeature.getStyle().setZIndex(1);
           } else {
               lineFeature.setStyle(this.offLineStyle);
               pointFeature.setStyle(this.offPointStyle);
           }
       }
-      // debugger
-      // let last = this.dataLength - 1;
-      // let lastPointFeature = this.pointFeatures[last];
-      // if(this.startTimeIndex[last] >= minT && maxT >= this.endTimeIndex[last]) {
-      //     lastPointFeature.setStyle(this.onPointStyle);
-      // } else {
-      //     lastPointFeature.setStyle(this.offPointStyle);
-      // }
+      let last = this.dataLength - 1;
+      let lastPointFeature = this.pointFeatures[last];
+      if(this.startTimeIndex[last] >= minT && maxT >= this.endTimeIndex[last]) {
+          lastPointFeature.setStyle(this.onPointStyle);
+      } else {
+          lastPointFeature.setStyle(this.offPointStyle);
+      }
   };
 
   loadForTimes(startTime, endTime, realTimeGap) {
@@ -102,36 +133,46 @@ export default class TrackStorage {
           this.map.getView().fit(this.lineVectorLayer.getSource().getExtent(), this.map.getSize());
   };
 
-  buildTimestamp (date, time) {
-      return date + "T" + time + ":00";
+  getExtent() {
+      if (this.lineVectorLayer == null) return null;
+      let src = this.lineVectorLayer.getSource();
+      if (src == null) return null;
+      return src.getExtent();
   };
 
   getTrack (token, startCallback, endCallback) {
+      if(!this.startDateTimeChanged && !this.endDateTimeChanged) return;
       let path = `/track`;
       if(startCallback != null) startCallback();
+      console.log(moment(this.startDateTime).toISOString())
       request({
           method: "POST",
           uri: config.paths_api_prefix + path,
           json: {
-              startDate: moment(this.buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString(),
-              endDate: moment(this.buildTimestamp(this.endDate, this.endTime)).tz('Europe/Berlin').toISOString(),
+              // startDate: moment(TrackStorage.buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString(),
+              // endDate: moment(TrackStorage.buildTimestamp(this.endDate, this.endTime)).tz('Europe/Berlin').toISOString(),
+              startDate: moment(this.startDateTime).toISOString(),
+              endDate: moment(this.endDateTime).toISOString(),
               requiredAccuracy: 0,
               singlePointStops: true,
               token: token,
+              userIds: [this.userId]
           }
       }).then((body) => {
           console.log(body.tracks);
           this.mergeData(body.tracks);
+          this.startDateTimeChanged = false;
+          this.endDateTimeChanged = false;
           if(endCallback != null) endCallback();
       });
   };
 
-  transformCoords (coords) {
+  static transformCoords (coords) {
       return ol.proj.transform(coords, 'EPSG:4326', 'EPSG:3857');
   };
 
-  buildTimestamp(date, time) {
-      return date + "T" + time + ":00"
+  static buildTimestamp(date, time) {
+      return date + " " + time
   };
 
   mergeData(output) {
@@ -140,6 +181,7 @@ export default class TrackStorage {
       for (let el of output) {
           len += el.samples.length;
       }
+      this.dataLength = len;
       this.data = new Array(len);
       this.startTimeIndex = new Array(len);
       this.endTimeIndex = new Array(len);
@@ -151,8 +193,8 @@ export default class TrackStorage {
               if(i > 0) {
                   let obj0 = this.data[i - 1];
                   let line = new ol.geom.LineString([
-                                  this.transformCoords([obj0.longitude, obj0.latitude]),
-                                  this.transformCoords([obj.longitude, obj.latitude])
+                                  TrackStorage.transformCoords([obj0.longitude, obj0.latitude]),
+                                  TrackStorage.transformCoords([obj.longitude, obj.latitude])
                                 ]);
                   let lineGeo = new ol.Feature({geometry: line});
                   lineGeo.setId(i);
@@ -160,8 +202,9 @@ export default class TrackStorage {
                   this.startTimeIndex[i] = obj0.intTimestamp;
                   this.endTimeIndex[i] = obj.intTimestamp;
               }
-              let point = new ol.geom.Point(this.transformCoords([obj.longitude, obj.latitude]));
-              let pointGeo = new ol.Feature({labelPoint: point, geometry: point});
+              let point = new ol.geom.Point(TrackStorage.transformCoords([obj.longitude, obj.latitude]));
+              let pointLabel = new ol.geom.Point(TrackStorage.transformCoords([obj.longitude, obj.latitude]));
+              let pointGeo = new ol.Feature({ labelPoint: point, geometry: point});
               pointGeo.setId(i);
               this.pointFeatures.push(pointGeo);
               i++;
@@ -199,9 +242,45 @@ export default class TrackStorage {
           this.pointVectorLayer.getSource().addFeatures(this.pointFeatures);
           this.pointVectorLayer.changed();
       }
-      // set proper styles
-      let minT = moment(this.buildTimestamp(this.startDate, this.startTime)).valueOf();
-      let maxT = moment(this.buildTimestamp(this.endDate, this.endTime)).valueOf();
-      this.adjustVisibility(minT, maxT);
-  }
+      // // set proper styles
+      // let minT = moment(TrackStorage.buildTimestamp(this.startDate, this.startTime)).valueOf();
+      // let maxT = moment(TrackStorage.buildTimestamp(this.endDate, this.endTime)).valueOf();
+      this.adjustVisibility(this.startDateTime, this.endDateTime);
+  };
+
+  get pointLayerVisibility() {
+      if(this.pointVectorLayer) {
+          return this.pointVectorLayer.getVisible();
+      }
+      return false;
+  };
+
+  set pointLayerVisibility(visible) {
+    if(this.pointVectorLayer) {
+        this.pointVectorLayer.setVisible(visible);
+    }
+  };
+
+  get lineLayerVisibility() {
+    if(this.lineVectorLayer) {
+        return this.lineVectorLayer.getVisible();
+    }
+    return false;
+  };
+
+  set lineLayerVisibility(visible) {
+    if(this.lineVectorLayer) {
+        this.lineVectorLayer.setVisible(visible);
+    }
+  };
+
+  get visible() {
+      return this.pointLayerVisibility || this.lineLayerVisibility;
+  };
+
+  set visible(value) {
+      this.pointLayerVisibility = value;
+      this.lineLayerVisibility = value;
+  };
+
 };

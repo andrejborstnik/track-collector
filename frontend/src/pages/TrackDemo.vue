@@ -77,7 +77,7 @@
                                 <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
                               </v-menu>
                               <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
-                              <v-btn primary light v-on:click.native="zoomToData">Zoom</v-btn>
+                              <v-btn primary light v-on:click.native="zoomToExtent">Zoom</v-btn>
                         </v-layout>
 
 
@@ -85,14 +85,15 @@
                 </v-expansion-panel>
 
 
-        <v-dialog persistent v-model="loading" lazy>
+        <v-dialog persistent v-model="isLoading" lazy>
             <v-layout row justify-center>
                 <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7"
                                      class="purple--text"></v-progress-circular>
             </v-layout>
         </v-dialog>
         <v-layout child-flex class="pl-3 pr-3">
-            <vue-slider ref="slider" v-model="sliderValue"
+            <vue-slider ref="slider"
+              v-model="sliderValue"
               :min="minDate"
               :max="maxDate"
               :interval=1000
@@ -101,15 +102,7 @@
             ></vue-slider>
         </v-layout>
         <div v-if="connections"></div>
-
-        <!-- <MyMap v-if="points"
-               ref="map"
-               :mydata="mydata"
-               :timeInterval="sliderValue"
-               source="OSM" width="100%" height="700px"
-               style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap> -->
          <MyMap ref="map"
-                :trackStorage="trackStorage"
                 :storageChanged="storageChanged"
                 :timeInterval="sliderValue"
                 source="OSM" width="100%" height="700px"
@@ -129,7 +122,6 @@
 
 <script type="text/babel">
 
-    import async from 'co';
     const request = require('request-promise-native');
     import * as config from 'config';
 
@@ -140,8 +132,6 @@
     import _ from 'lodash';
 
     import MyMap from 'widgets/Map2.vue';
-
-    import TrackStorage from 'common/TrackStorage';
 
     import {activate_mixin} from 'common/activate-mixin';
 
@@ -177,9 +167,9 @@
         let today = new Date();
         let yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
-        this.startDate = "2017-05-07";
-        this.endDate = "2017-05-14";
-        this.startTime = "08:00";
+        this.startDate = "2017-06-11";
+        this.endDate = "2017-06-19";
+        this.startTime = "09:00";
         this.endTime = "13:00";
         // ALEN - začasno zakomentirano
         // this.startDate = moment(yesterday).format("YYYY-MM-DD")
@@ -191,40 +181,21 @@
     };
 
     const getTrack = function () {
-        this.trackStorage.startDate = this.startDate;
-        this.trackStorage.startTime = this.startTime;
-        this.trackStorage.endDate = this.endDate;
-        this.trackStorage.endTime = this.endTime;
-        this.trackStorage.getTrack(this.$store.user.token, null, null);
-        // let path = `/track`;
-        // this.loading = true;
-        // console.log("time string test:", moment(buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString())
-        // request({
-        //     method: "POST",
-        //     uri: config.paths_api_prefix + path,
-        //     json: {
-        //         endDate: moment(buildTimestamp(this.endDate, this.endTime)).tz('Europe/Berlin').toISOString(),
-        //         groupId: "string",
-        //         requiredAccuracy: 0,
-        //         singlePointStops: true,
-        //         startDate: moment(buildTimestamp(this.startDate, this.startTime)).tz('Europe/Berlin').toISOString(),
-        //         token: this.$store.user.token,
-        //         userIds: [
-        //             "string"
-        //         ]
-        //     }
-        // }).then((body) => {
-        //     console.log(body);
-        //     this.loading = false;
-        //     this.output = body.tracks;
-        // });
-
-
+        this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
+        this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
+        this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoading);
     };
 
+    const startLoading = function() {
+        this.loading++;
+    };
+
+    const endLoading = function() {
+        this.loading--;
+    };
     const getGroups = function () {
         let path = `/group/list`;
-        this.loading = true;
+        this.startLoading();
         request({
             method: "POST",
             uri: config.paths_api_prefix + path,
@@ -232,15 +203,61 @@
                 token: this.$store.user.token,
             }
         }).then((body) => {
-            this.loading = false;
+            this.endLoading();
             if (body.status == "OK") {
-                this.$store.groups = body.groups;
+                this.updateGroups(body.groups);
             }
         });
     };
 
-    const zoomToData = function () {
-        this.$refs.map.zoomToVectorLayerExtent()
+    const initializeGroups = function(groups) {
+        for(let grp of groups) {
+            grp.visible = false;
+            for(let user of grp.users) {
+                user.visible = false;
+                user.style = { color: this.$store.pallete.next()};
+            }
+        }
+        return groups;
+    }
+
+    const updateOrInitializeGroups = function (groups) {
+        if(groups == null) {
+            return;
+        }
+        // initializes non-initialized groups
+        let toGroupNew = new Map();
+        let toUserInGroupNew = new Map();
+        for(let grp of this.$storage.user.groups) {
+            toGroupOld.set(grp.groupId, grp);
+            let tmpMap = new Map();
+            toUserInGroupNew.set(grp.groupId, tmpMap);
+            for(let usr of grp.users) {
+                tmpMap.set(usr.userId, usr);
+            }
+        }
+        for(let grp of groups) {
+            let targetGroup = toGroupOld.get(grp.groupId);
+            if(targetGroup == null) continue;
+            targetGroup.visible = grp.visible;
+            let tmpMap = toUserInGroupNew.get(grp.groupId);
+            if(tmpMap == null) continue;
+            for(usr of grp.users) {
+                let targetUser = tmpMap.get(usr.userId);
+                if(targetUser == null) continue;
+                targetUser.visible = usr.visible;
+                targetUser.style = usr.style;
+            }
+        }
+    };
+    const updateGroups = function(groups) {
+        let old = this.$store.user.groups;
+        this.$store.user.groups = this.initializeGroups(groups);
+        updateOrInitializeGroups(old);
+    };
+
+    const zoomToExtent = function () {
+        this.$refs.map.zoomToExtent()
     };
 
     const activate = function () {
@@ -257,11 +274,16 @@
 
         methods: {
             getTrack,
-            zoomToData,
+            zoomToExtent,
             setDate,
             getGroups,
             activate,
-            formatterFunction
+            formatterFunction,
+            updateGroups,
+            initializeGroups,
+            updateOrInitializeGroups,
+            startLoading,
+            endLoading
         },
 
         mixins: [activate_mixin],
@@ -271,67 +293,6 @@
             vueSlider
         },
         computed: {
-            // points: function () {
-            //     let points = [];
-            //     let j = 0;
-            //     for (let el of this.output) {
-            //         let color = this.colors[j % this.colors.length];
-            //         j++;
-            //         for (let o of el.samples) {
-            //             points.push({
-            //                 longitude: o.longitude,
-            //                 latitude: o.latitude,
-            //                 name: moment(o.timestamp).format('DD MMM YY HH:mm:ss'),
-            //                 marker: "CIRCLE",
-            //                 color
-            //             });
-            //         }
-            //     }
-            //     return points;
-            // },
-            // connections: function () {
-            //     if (!this.output)
-            //         return [];
-            //     let conn = [];
-            //     let j = 0;
-            //     for (let el of this.output) {
-            //         let color = this.colors[j % this.colors.length];
-            //         j++;
-            //         let x = el.samples;
-            //         let last = null;
-            //         for (let current of x) {
-            //             if (last == null) {
-            //                 last = current;
-            //                 continue
-            //             }
-            //             let A = last;
-            //             let B = current;
-            //             last = current;
-            //             conn.push({
-            //                 'A': {
-            //                     longitude: A.longitude,
-            //                     latitude: A.latitude,
-            //                     timestamp: moment(A.timestamp).valueOf(),
-            //                     name: 'test'
-            //                 },
-            //                 'B': {
-            //                     longitude: B.longitude,
-            //                     latitude: B.latitude,
-            //                     timestamp: moment(B.timestamp).valueOf(),
-            //                     name: 'test'
-            //                 },
-            //                 color
-            //             });
-            //         }
-            //     }
-            //     return conn;
-            // },
-            // mydata: function () {
-            //     return {
-            //         points: this.points,
-            //         connections: this.connections
-            //     };
-            // },
             startDateText: function() {
                 return moment(this.startDate).format("D MMM YYYY");
             },
@@ -339,21 +300,27 @@
                 return moment(this.endDate).format("D MMM YYYY");
             },
             minDate: function() {
+                console.log("mindate");
                 if(this.startDate == null) return 0;
                 let x = moment(buildTimestamp(this.startDate, this.startTime)).valueOf();
                 console.log("min", x);
                 return x;
             },
             maxDate: function() {
-                if(this.endDate == null) return 1;
+                console.log("maxdate");
+                if(this.endDate == null) return Number.MAX_VALUE;
                 let x = moment(buildTimestamp(this.endDate, this.endTime)).valueOf();
                 console.log("max", x);
                 return x;
+            },
+            isLoading: function() {
+                return this.loading > 0;
             }
         },
         mounted: function () {
-                this.trackStorage = new TrackStorage(this.$refs.map.map, "USER", 'red');
-                this.storageChanged += 1;
+                this.$store.user.trackStorage.registerMap(this.$refs.map.map);
+                // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
+                // this.storageChanged += 1;
         },
         data () {
             return {
@@ -372,8 +339,7 @@
                 loading: false,
                 sliderValue: [0, Number.MAX_VALUE],
                 panelOpen: true,
-                storageChanged: 0,
-                trackStorage: null
+                storageChanged: 0
             }
         }
     }

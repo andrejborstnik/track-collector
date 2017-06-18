@@ -99,8 +99,8 @@
 
 
 
-    let zoomToVectorLayerExtent = function() {
-        this.trackStorage.zoomToVectorLayerExtent();
+    let zoomToExtent = function() {
+        this.$store.user.trackStorage.zoomToExtent();
     };
 
     let onMapClick = function(evt) {
@@ -193,82 +193,7 @@
     };
 
     let adjustVisibility = function() {
-        this.trackStorage.adjustVisibility(this.timeInterval[0], this.timeInterval[1]);
-    };
-
-    let setConnectionsFromData = function (connections) {
-        if (!connections || !connections.length)
-            return;
-        let len = connections.length;
-        // initializing integer arrays
-        this.startTimeIndex = new Array(len);
-        this.endTimeIndex = new Array(len);
-        for(let i = 0; i < len; i++) {this.startTimeIndex[i] = 0; this.endTimeIndex[i] = 0;}
-
-        // let features = [];
-        this.lineFeatures = [];
-        let lineFeature;
-
-        let i = 0;
-        for (let connection of connections) {
-            let data = fp.clone(connection);
-            if (!data.A.longitude || !data.A.latitude) {
-                // console.log('No coords for ', data.A.name);
-                console.log('No coords for a segment(A).');
-                continue;
-            }
-            if (!data.B.longitude || !data.B.latitude) {
-                // console.log('No coords for ', data.B.name);
-                console.log('No coords for a segment(B).');
-                continue;
-            }
-
-            // let color = connection.color || colorFromLevel(connection.measured_level);
-
-            data.geometry = new ol.geom.LineString([transformCoords([data.A.longitude, data.A.latitude]),
-                transformCoords([data.B.longitude, data.B.latitude])]);
-
-            lineFeature = new ol.Feature(data);
-            this.lineFeatures.push(lineFeature);
-            lineFeature.setId(i + 1);
-            lineFeature.setStyle(onStyle);
-            this.startTimeIndex[i] = data.A.timestamp;
-            this.endTimeIndex[i] = data.B.timestamp;
-            i++;
-
-            // i++;
-            // lineFeature.setStyle(lineStyle(color));
-            // lineFeature.setId(i);
-            // features.push(lineFeature);
-        }
-        if (!this.lineVectorLayer) {
-            let vectorSource = new ol.source.Vector({
-                features: this.lineFeatures
-            });
-
-            let lineVectorLayer = new ol.layer.Vector({
-                source: vectorSource
-            });
-            // todo add style function here. the style can change according to feature properties
-            // http://openlayersbook.github.io/ch11-creating-web-map-apps/example-08.html
-            this.lineVectorLayer = lineVectorLayer;
-            this.map.addLayer(this.lineVectorLayer);
-        }
-        else {
-            this.lineVectorLayer.getSource().clear();
-            this.lineVectorLayer.getSource().addFeatures(this.lineFeatures);
-            this.lineVectorLayer.changed();
-        }
-    };
-
-    let getData = function() {
-        // todo
-        if (this.vectorLayer)
-            this.vectorLayer.getSource().clear();
-        if (this.lineVectorLayer)
-            this.lineVectorLayer.getSource().clear();
-        this.setConnectionsFromData(this.mydata['connections']);
-        this.setLocationsFromData(this.mydata['points']);
+        this.$store.user.trackStorage.adjustVisibility(this.timeInterval[0], this.timeInterval[1]);
     };
 
     let colorFromLevel = function (level) {
@@ -318,7 +243,7 @@
 
     let activate = function () {
         this.initing = true;
-        this.getData();
+        // this.getData();
         this.initing = false;
         this.mydatachanged = false;
     };
@@ -336,9 +261,9 @@
             popupStats,
             onMapClick,
             initMap,
-            getData,
+            // getData,
             onMapPointermove,
-            zoomToVectorLayerExtent,
+            zoomToExtent,
             adjustVisibility
         },
 
@@ -434,10 +359,6 @@
             timeInterval: {
                 type: Array,
                 default: 0
-            },
-            trackStorage: {
-                type: Object,
-                default: null
             },
             storageChanged: {
                 type: Number,
