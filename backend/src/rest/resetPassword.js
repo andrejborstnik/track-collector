@@ -5,6 +5,11 @@ const request = require('request-promise-native');
 const config = require('config');
 const secretResetKey = "zamenjajme";
 
+const generatePasswordResetEmail = function(email,token){
+    var body = `Password reset link: ???/resetPassword?resetToken=${token}`
+    var email = {to: email, subject: "Password reset request", body: body}
+    return email
+}
 
 exports.resetPassword = function (req, res) {
     if (typeof req.body.email != 'undefined'){
@@ -22,6 +27,9 @@ exports.resetPassword = function (req, res) {
                 res.status(500).send(body.status);
             }else {
                 res.status(200).send("OK");
+                var email = generatePasswordResetEmail(req.body.email,body.resetToken);
+                w.info("Outgoing email:");
+                w.info(email);
             }
         }).catch((err) => {
             w.error(err);
