@@ -108,7 +108,7 @@
 
             </v-list>
         </v-navigation-drawer>
-        <v-toolbar fixed light>
+        <v-toolbar fixed light style="z-index: 10;">
             <v-toolbar-side-icon light @click.native.stop="drawerLeft = !drawerLeft"></v-toolbar-side-icon>
             <v-toolbar-title>Tracker</v-toolbar-title>
             <v-spacer></v-spacer>
