@@ -1,88 +1,88 @@
 <template>
     <v-container id="trackShow" fluid class="ma-0 pa-0">
-      <v-expansion-panel>
-        <v-expansion-panel-content v-model="panelOpen">
-                  <div slot="header">Set time</div>
+        <v-expansion-panel>
+            <v-expansion-panel-content v-model="panelOpen">
+                <div slot="header">Set time</div>
 
 
-                        <v-layout row wrap class="ma-0 pa-3">
-                              <v-menu
-                                lazy
-                                :close-on-content-click="false"
-                                v-model="menuFromDate"
-                                transition="v-scale-transition"
-                                offset-y
-                                :nudge-left="40"
-                              >
-                                <v-text-field
-                                  slot="activator"
-                                  label="Start date:"
-                                  v-model="startDateText"
-                                  prepend-icon="event"
-                                  readonly
-                                ></v-text-field>
-                                <v-date-picker v-model="startDate" no-title scrollable actions>
-                                </v-date-picker>
-                              </v-menu>
-                              <v-menu
-                                lazy
-                                :close-on-content-click="false"
-                                v-model="menuFromTime"
-                                transition="v-scale-transition"
-                                offset-y
-                                :nudge-left="40"
-                              >
-                                <v-text-field
-                                  slot="activator"
-                                  label="Start time:"
-                                  v-model="startTime"
-                                  prepend-icon="access_time"
-                                  readonly
-                                ></v-text-field>
-                                <v-time-picker v-model="startTime" format="24hr"></v-time-picker>
-                              </v-menu>
-                              <v-menu
-                                lazy
-                                :close-on-content-click="false"
-                                v-model="menuToDate"
-                                transition="v-scale-transition"
-                                offset-y
-                                :nudge-left="40"
-                              >
-                                <v-text-field
-                                  slot="activator"
-                                  label="End date:"
-                                  v-model="endDateText"
-                                  prepend-icon="event"
-                                  readonly
-                                ></v-text-field>
-                                <v-date-picker v-model="endDate" no-title scrollable actions>
-                                </v-date-picker>
-                              </v-menu>
-                              <v-menu
-                                lazy
-                                :close-on-content-click="false"
-                                v-model="menuToTime"
-                                transition="v-scale-transition"
-                                offset-y
-                                :nudge-left="40"
-                              >
-                                <v-text-field
-                                  slot="activator"
-                                  label="End time:"
-                                  v-model="endTime"
-                                  prepend-icon="access_time"
-                                  readonly
-                                ></v-text-field>
-                                <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
-                              </v-menu>
-                              <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
-                              <v-btn primary light v-on:click.native="zoomToExtent">Zoom</v-btn>
-                        </v-layout>
+                <v-layout row wrap class="ma-0 pa-3">
+                    <v-menu
+                            lazy
+                            :close-on-content-click="false"
+                            v-model="menuFromDate"
+                            transition="v-scale-transition"
+                            offset-y
+                            :nudge-left="40"
+                    >
+                        <v-text-field
+                                slot="activator"
+                                label="Start date:"
+                                v-model="startDateText"
+                                prepend-icon="event"
+                                readonly
+                        ></v-text-field>
+                        <v-date-picker v-model="startDate" no-title scrollable actions>
+                        </v-date-picker>
+                    </v-menu>
+                    <v-menu
+                            lazy
+                            :close-on-content-click="false"
+                            v-model="menuFromTime"
+                            transition="v-scale-transition"
+                            offset-y
+                            :nudge-left="40"
+                    >
+                        <v-text-field
+                                slot="activator"
+                                label="Start time:"
+                                v-model="startTime"
+                                prepend-icon="access_time"
+                                readonly
+                        ></v-text-field>
+                        <v-time-picker v-model="startTime" format="24hr"></v-time-picker>
+                    </v-menu>
+                    <v-menu
+                            lazy
+                            :close-on-content-click="false"
+                            v-model="menuToDate"
+                            transition="v-scale-transition"
+                            offset-y
+                            :nudge-left="40"
+                    >
+                        <v-text-field
+                                slot="activator"
+                                label="End date:"
+                                v-model="endDateText"
+                                prepend-icon="event"
+                                readonly
+                        ></v-text-field>
+                        <v-date-picker v-model="endDate" no-title scrollable actions>
+                        </v-date-picker>
+                    </v-menu>
+                    <v-menu
+                            lazy
+                            :close-on-content-click="false"
+                            v-model="menuToTime"
+                            transition="v-scale-transition"
+                            offset-y
+                            :nudge-left="40"
+                    >
+                        <v-text-field
+                                slot="activator"
+                                label="End time:"
+                                v-model="endTime"
+                                prepend-icon="access_time"
+                                readonly
+                        ></v-text-field>
+                        <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
+                    </v-menu>
+                    <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
+                    <v-btn primary light v-on:click.native="zoomToExtent">Zoom</v-btn>
+                </v-layout>
 
 
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
+            </v-expansion-panel-content>
+        </v-expansion-panel>
 
 
         <v-dialog persistent v-model="isLoading" lazy>
@@ -93,21 +93,21 @@
         </v-dialog>
         <v-layout child-flex class="pl-3 pr-3">
             <vue-slider ref="slider"
-              v-model="sliderValue"
-              :min="minDate"
-              :max="maxDate"
-              :interval=1000
-              lazy=true
-              :dot-size=30
-              :formatter=formatterFunction
+                        v-model="sliderValue"
+                        :min="minDate"
+                        :max="maxDate"
+                        :interval=1000
+                        lazy=true
+                        :dot-size=30
+                        :formatter=formatterFunction
             ></vue-slider>
         </v-layout>
         <div v-if="connections"></div>
-         <MyMap ref="map"
-                :storageChanged="storageChanged"
-                :timeInterval="sliderValue"
-                source="OSM" width="100%" height="700px"
-                style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
+        <MyMap ref="map"
+               :storageChanged="storageChanged"
+               :timeInterval="sliderValue"
+               source="OSM" width="100%" height="700px"
+               style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
 
     </v-container>
 
@@ -154,14 +154,14 @@
     const now = moment();
     const tomorrow = moment().add(1, 'days');
 
-    const formatterFunction = function(v) {
-        if(v == null) return "";
+    const formatterFunction = function (v) {
+        if (v == null) return "";
         return moment(v).format("YYYY-MM-DD k:mm:ss");
     }.bind(this);
 
-    const formatterFunction2 = function(v) {
+    const formatterFunction2 = function (v) {
         let x = v ? v : 0;
-        return moment(now).add(tomorrow.diff(now, "seconds")*v, 'seconds').format("YYYY-MM-DD k:mm:ss");
+        return moment(now).add(tomorrow.diff(now, "seconds") * v, 'seconds').format("YYYY-MM-DD k:mm:ss");
     }.bind(this);
 
     const setDate = function () {
@@ -177,7 +177,7 @@
         // this.endDate = moment(today).format("YYYY-MM-DD")
     };
 
-    const buildTimestamp = function(date, time) {
+    const buildTimestamp = function (date, time) {
         return date + "T" + time + ":00"
     };
 
@@ -187,11 +187,11 @@
         this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoading);
     };
 
-    const startLoading = function() {
+    const startLoading = function () {
         this.loading++;
     };
 
-    const endLoading = function() {
+    const endLoading = function () {
         this.loading--;
     };
     const getGroups = function () {
@@ -211,47 +211,47 @@
         });
     };
 
-    const initializeGroups = function(groups) {
-        for(let grp of groups) {
+    const initializeGroups = function (groups) {
+        for (let grp of groups) {
             grp.visible = false;
-            for(let user of grp.users) {
+            for (let user of grp.users) {
                 user.visible = grp.personalGroupUserId === user.userId;
-                user.style = { color: this.$store.pallete.next()};
+                user.style = {color: this.$store.pallete.next()};
             }
         }
         return groups;
     }
 
     const updateOrInitializeGroups = function (groups) {
-        if(groups == null) {
+        if (groups == null) {
             return;
         }
         // initializes non-initialized groups
         let toGroupNew = new Map();
         let toUserInGroupNew = new Map();
-        for(let grp of this.$storage.user.groups) {
+        for (let grp of this.$storage.user.groups) {
             toGroupOld.set(grp.groupId, grp);
             let tmpMap = new Map();
             toUserInGroupNew.set(grp.groupId, tmpMap);
-            for(let usr of grp.users) {
+            for (let usr of grp.users) {
                 tmpMap.set(usr.userId, usr);
             }
         }
-        for(let grp of groups) {
+        for (let grp of groups) {
             let targetGroup = toGroupOld.get(grp.groupId);
-            if(targetGroup == null) continue;
+            if (targetGroup == null) continue;
             targetGroup.visible = grp.visible;
             let tmpMap = toUserInGroupNew.get(grp.groupId);
-            if(tmpMap == null) continue;
-            for(usr of grp.users) {
+            if (tmpMap == null) continue;
+            for (usr of grp.users) {
                 let targetUser = tmpMap.get(usr.userId);
-                if(targetUser == null) continue;
+                if (targetUser == null) continue;
                 targetUser.visible = usr.visible;
                 targetUser.style = usr.style;
             }
         }
     };
-    const updateGroups = function(groups) {
+    const updateGroups = function (groups) {
         let old = this.$store.user.groups;
         this.$store.user.groups = this.initializeGroups(groups);
         updateOrInitializeGroups(old);
@@ -294,36 +294,36 @@
             vueSlider
         },
         computed: {
-            startDateText: function() {
+            startDateText: function () {
                 return moment(this.startDate).format("D MMM YYYY");
             },
-            endDateText: function() {
+            endDateText: function () {
                 return moment(this.endDate).format("D MMM YYYY");
             },
-            minDate: function() {
+            minDate: function () {
                 console.log("mindate");
-                if(this.startDate == null) return 0;
+                if (this.startDate == null) return 0;
                 let x = moment(buildTimestamp(this.startDate, this.startTime)).valueOf();
                 console.log("min", x);
                 return x;
             },
-            maxDate: function() {
+            maxDate: function () {
                 console.log("maxdate");
-                if(this.endDate == null) return Number.MAX_VALUE;
+                if (this.endDate == null) return Number.MAX_VALUE;
                 let x = moment(buildTimestamp(this.endDate, this.endTime)).valueOf();
                 console.log("max", x);
                 return x;
             },
-            isLoading: function() {
+            isLoading: function () {
                 return this.loading > 0;
             }
         },
         mounted: function () {
-                this.$store.user.trackStorage.registerMap(this.$refs.map.map);
-                let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
-                tmpStr.visible = true;
-                // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
-                // this.storageChanged += 1;
+            this.$store.user.trackStorage.registerMap(this.$refs.map.map);
+            let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
+            tmpStr.visible = true;
+            // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
+            // this.storageChanged += 1;
         },
         data () {
             return {
