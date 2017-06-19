@@ -97,6 +97,7 @@
               :min="minDate"
               :max="maxDate"
               :interval=1000
+              lazy=true
               :dot-size=30
               :formatter=formatterFunction
             ></vue-slider>
