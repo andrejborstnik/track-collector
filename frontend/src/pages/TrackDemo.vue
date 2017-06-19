@@ -100,6 +100,7 @@
                         lazy=true
                         :dot-size=30
                         :formatter=formatterFunction
+                        style="margin-left: 65px; margin-right: 50px;"
             ></vue-slider>
         </v-layout>
         <div v-if="connections"></div>
