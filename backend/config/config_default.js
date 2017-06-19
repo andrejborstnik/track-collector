@@ -23,3 +23,8 @@ exports.cn = {
 };
 
 exports.java_be = 'https://test.goopti.com/tracker';
+
+let jsonfile =require('jsonfile');                        // Reading and writing JSON files.
+let secrets = jsonfile.readFileSync('../../secrets.json');
+
+exports.secretResetKey = secrets.passwordReset;
