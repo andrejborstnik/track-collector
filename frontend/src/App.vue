@@ -67,12 +67,40 @@
                 <v-divider></v-divider>
 
                 <v-list-item>
+                    <v-list-tile v-on:click.native="logout">
+                        <v-list-tile-action>
+                            <!--COMMENT
+                            <v-icon>question_answer</v-icon>
+                            COMMENT-->
+                            <v-icon>eject</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Logout</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-item>
+
+                <v-list-item>
+                    <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
+                        <v-list-tile-action>
+                            <v-icon>notifications</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Notification</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list-item>
+
+                <v-list-item>
                     <v-list-tile v-on:click.native="profile">
                         <v-list-tile-action>
                             <!--COMMENT
                             <v-icon>dashboard</v-icon>
                             COMMENT-->
+                            <!--COMMENT
                             <v-icon>perm_identity</v-icon>
+                            COMMENT-->
+                            <v-icon>person</v-icon>
                         </v-list-tile-action>
                         <v-list-tile-content>
                             <v-list-tile-title>Profile</v-list-tile-title>
@@ -81,12 +109,12 @@
                 </v-list-item>
 
                 <v-list-item>
-                    <v-list-tile v-on:click.native="logout">
+                    <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
                         <v-list-tile-action>
-                            <v-icon>question_answer</v-icon>
+                            <v-icon>group</v-icon>
                         </v-list-tile-action>
                         <v-list-tile-content>
-                            <v-list-tile-title>Logout</v-list-tile-title>
+                            <v-list-tile-title>Groups</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
                 </v-list-item>

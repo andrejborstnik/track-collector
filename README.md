@@ -7,6 +7,11 @@
 3. Zaženes aktivacijsko skripto: ```.alot/bin/activate.sh dev``` (in počakaš da se poloadajo vsi node moduli - če opazite, da sem kakšnega prevec pustil, kar zbrišite)
 4. Zaženeš aplikacijo: ```op-start```
 5. Ko se aplikacija zgradi (par sekund) lahko spreminjaš kodo in ko shraniš se spletna stran sama osvezi. V konzoli, kjer si zagnal ```op-start``` vidiš morebitne napake pri grajenju. Javascript napake pa vidiš v konzoli browserja.
+6. Če so napake jih moraš odstraniti. Preveri če imaš ključ ("Secret za resetiranje gesel:") v '../../secrets.json' kar je v isti mapi kot je track-collector. Če ključa nimaš ga vzemi is skupne beležke. Tam je tudi aktivacijsko ime in geslo. Datoteka secrets.json za enkrat izgleda takole:
+{
+"passwordReset" : "***"
+}
+Tri zvezdice se smiselno nadomesti z "Secret za resetiranje gesel:" iz skupne beležke.
 
 ## Frontend
 

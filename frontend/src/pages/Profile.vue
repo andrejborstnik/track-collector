@@ -19,6 +19,24 @@
                         </v-flex>
                     </v-layout>
                 </v-flex>
+                
+                <v-list-group v-for="group in $store.groups" :value="group.active" :key="group.groupId">
+                    <v-list-tile slot="item">
+                        <v-list-tile-content>
+                            <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                            <v-icon>keyboard_arrow_down</v-icon>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                    <v-list-item v-for="user in group.users" :key="user.userId">
+                        <v-list-tile>
+                            <v-list-tile-content>
+                                <v-list-tile-title>{{ user.userId }}</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-list-item>
+                </v-list-group>
 
                 <v-flex xs4>
                     <v-layout xs6>
