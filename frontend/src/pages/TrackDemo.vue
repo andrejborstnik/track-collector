@@ -94,10 +94,10 @@
         <v-layout child-flex class="pl-3 pr-3">
             <vue-slider ref="slider"
                         v-model="sliderValue"
-                        :min="minDate"
-                        :max="maxDate"
-                        :interval=1000
-                        lazy=true
+                        :min=minDate
+                        :max=maxDate
+                        :interval="1000"
+                        :lazy="true"
                         :dot-size=30
                         :formatter=formatterFunction
                         style="margin-left: 65px; margin-right: 50px;"
@@ -259,7 +259,7 @@
     };
 
     const zoomToExtent = function () {
-        this.$refs.map.zoomToExtent()
+        this.$refs.map.zoomToExtent();
     };
 
     const activate = function () {
@@ -294,6 +294,7 @@
             MyMap,
             vueSlider
         },
+        
         computed: {
             startDateText: function () {
                 return moment(this.startDate).format("D MMM YYYY");
@@ -306,6 +307,7 @@
                 if (this.startDate == null) return 0;
                 let x = moment(buildTimestamp(this.startDate, this.startTime)).valueOf();
                 console.log("min", x);
+                //return Number(x);
                 return x;
             },
             maxDate: function () {
@@ -313,6 +315,9 @@
                 if (this.endDate == null) return Number.MAX_VALUE;
                 let x = moment(buildTimestamp(this.endDate, this.endTime)).valueOf();
                 console.log("max", x);
+                //return Number(x);
+                //to pa ne vem zakaj ne dela
+                //ce na tem mestu return 500000000 je vse ok..
                 return x;
             },
             isLoading: function () {
