@@ -110,6 +110,7 @@
                   lazy=true
                   :dot-size=30
                   :formatter=formatterFunction
+                  style="margin-left: 65px; margin-right: 50px;"
                 ></vue-slider>
         </v-layout>
         <div v-if="connections"></div>
@@ -164,14 +165,14 @@
     const now = moment();
     const tomorrow = moment().add(1, 'days');
 
-    const formatterFunction = function(v) {
-        if(v == null) return "";
+    const formatterFunction = function (v) {
+        if (v == null) return "";
         return moment(v).format("YYYY-MM-DD k:mm:ss");
     }.bind(this);
 
-    const formatterFunction2 = function(v) {
+    const formatterFunction2 = function (v) {
         let x = v ? v : 0;
-        return moment(now).add(tomorrow.diff(now, "seconds")*v, 'seconds').format("YYYY-MM-DD k:mm:ss");
+        return moment(now).add(tomorrow.diff(now, "seconds") * v, 'seconds').format("YYYY-MM-DD k:mm:ss");
     }.bind(this);
 
     const setDate = function () {
@@ -187,7 +188,7 @@
         // this.endDate = moment(today).format("YYYY-MM-DD")
     };
 
-    const buildTimestamp = function(date, time) {
+    const buildTimestamp = function (date, time) {
         return date + "T" + time + ":00"
     };
 
@@ -198,11 +199,11 @@
         this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoading);
     };
 
-    const startLoading = function() {
+    const startLoading = function () {
         this.loading++;
     };
 
-    const endLoading = function() {
+    const endLoading = function () {
         this.loading--;
     };
     const getGroups = function () {
@@ -222,54 +223,54 @@
         });
     };
 
-    const initializeGroups = function(groups) {
-        for(let grp of groups) {
+    const initializeGroups = function (groups) {
+        for (let grp of groups) {
             grp.visible = false;
-            for(let user of grp.users) {
+            for (let user of grp.users) {
                 user.visible = grp.personalGroupUserId === user.userId;
-                user.style = { color: this.$store.pallete.next()};
+                user.style = {color: this.$store.pallete.next()};
             }
         }
         return groups;
     }
 
     const updateOrInitializeGroups = function (groups) {
-        if(groups == null) {
+        if (groups == null) {
             return;
         }
         // initializes non-initialized groups
         let toGroupNew = new Map();
         let toUserInGroupNew = new Map();
-        for(let grp of this.$storage.user.groups) {
+        for (let grp of this.$storage.user.groups) {
             toGroupOld.set(grp.groupId, grp);
             let tmpMap = new Map();
             toUserInGroupNew.set(grp.groupId, tmpMap);
-            for(let usr of grp.users) {
+            for (let usr of grp.users) {
                 tmpMap.set(usr.userId, usr);
             }
         }
-        for(let grp of groups) {
+        for (let grp of groups) {
             let targetGroup = toGroupOld.get(grp.groupId);
-            if(targetGroup == null) continue;
+            if (targetGroup == null) continue;
             targetGroup.visible = grp.visible;
             let tmpMap = toUserInGroupNew.get(grp.groupId);
-            if(tmpMap == null) continue;
-            for(usr of grp.users) {
+            if (tmpMap == null) continue;
+            for (usr of grp.users) {
                 let targetUser = tmpMap.get(usr.userId);
-                if(targetUser == null) continue;
+                if (targetUser == null) continue;
                 targetUser.visible = usr.visible;
                 targetUser.style = usr.style;
             }
         }
     };
-    const updateGroups = function(groups) {
+    const updateGroups = function (groups) {
         let old = this.$store.user.groups;
         this.$store.user.groups = this.initializeGroups(groups);
         updateOrInitializeGroups(old);
     };
 
     const zoomToExtent = function () {
-        this.$refs.map.zoomToExtent()
+        this.$refs.map.zoomToExtent();
     };
 
     const timeZoom = function () {
@@ -330,11 +331,12 @@
             MyMap,
             vueSlider
         },
+
         computed: {
-            startDateText: function() {
+            startDateText: function () {
                 return moment(this.startDate).format("D MMM YYYY");
             },
-            endDateText: function() {
+            endDateText: function () {
                 return moment(this.endDate).format("D MMM YYYY");
             },
             minDate: function() {
@@ -353,7 +355,7 @@
                 }
                 return x;
             },
-            isLoading: function() {
+            isLoading: function () {
                 return this.loading > 0;
             }
         },

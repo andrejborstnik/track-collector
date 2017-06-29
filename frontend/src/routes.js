@@ -16,6 +16,7 @@ import User_update from 'pages/User_update.vue';
 import DisplayTrack from 'pages/DisplayTrack.vue';
 import BrowseComponents from 'pages/BrowseComponents.vue';
 import Profile from 'pages/Profile.vue';
+import Groups from 'pages/Groups.vue';
 
 import App from 'App.vue';
 
@@ -43,17 +44,19 @@ let routes = [
         path: 'index',
         redirect: '/'
     },
+    
+    {
+        path: '/',
+        redirect: 'signin'
+    },
 
     //
     // Pages
     //
-
-    {
-        path: '/',
-        redirect: 'signin'
-        // component: BrowseComponents,
-        // meta: { auth: true }
-    },
+    
+    // Prve tiste, ki rabijo auth
+    
+    // AUTH TRUE
     
     {
         path: 'profile',
@@ -66,12 +69,13 @@ let routes = [
         component: User_update,
         meta: { auth: true }
     },
-
+    
     {
-        path: 'browse',
-        component: BrowseComponents,
+        path: 'groups',
+        component: Groups,
         meta: { auth: true }
     },
+
 
     {
         path: 'track',
@@ -79,11 +83,40 @@ let routes = [
         meta: { auth: true }
     },
 
+    // OLD
+
+    {
+        path: 'test',
+        component: Test,
+        meta: { auth: true }
+    },
+
+    {
+        path: 'db',
+        component: PostGreDemo,
+        meta: { auth: true }
+    },    
+    
+    {
+        path: 'display/:tracks',
+        component: DisplayTrack,
+        meta: { auth: true }
+    },
+
+    {
+        path: 'browse',
+        component: BrowseComponents,
+        meta: { auth: true }
+    },
+
+
     {
         path: 'map',
         component: ExampleMap,
         meta: { auth: true }
     },
+    
+    // NO AUTH
 
     {
         path: 'signin',
@@ -94,39 +127,24 @@ let routes = [
         path: 'registration',
         component: Registration
     },
-
+    
     {
         path: 'resetPassword',
         component: resetPassword
     },
 
-    {
-        path: 'display/:tracks',
-        component: DisplayTrack,
-        meta: { auth: true }
-    },
-
-    {
-        path: 'test',
-        component: Test,
-        meta: { auth: true }
-    },
-
-    {
-        path: 'test2',
-        component: Test2,
-        meta: { auth: true }
-    },
-
-    {
-        path: 'db',
-        component: PostGreDemo,
-        meta: { auth: true }
-    },
 
     {
         path: '*',
         component: _404
+    },
+
+    {
+        path: 'test2',
+        component: Test2 //,
+        //meta: { auth: true }
+        //vedno viden test 2 (nima auth)
+        //za test
     },
 
 ];

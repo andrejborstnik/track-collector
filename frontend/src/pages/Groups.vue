@@ -1,6 +1,6 @@
 <template>
     <v-container fluid class="text-xs-center">
-
+        GROUPS LALLALLA
         <v-container>
             <v-layout>
                 <v-flex xs8>
@@ -41,44 +41,35 @@
                 <v-flex xs4>
                     <v-layout xs6>
                         <v-flex xs3>
-                            <v-btn @click.native="openCPW = !openCPW" class="button">Change password</v-btn>
+                            <v-btn @click.native="openCPW = !openCPW" class="button">Create new group</v-btn>
                         </v-flex>
 
                         <v-flex xs8>
                             <v-layout align-center justify-center v-if="openCPW">
-                                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="update_user">
+                                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="create_group">
                                     <v-layout column>
-                                        <h5>Change Password</h5>
+                                        <h5>Create new group</h5>
                                         <v-text-field
-                                                name="old_password"
-                                                label="Old password"
-                                                id="old_password"
-                                                v-model="old_password"
-                                                type="password"
+                                                name="group_name"
+                                                label="Group name"
+                                                id="group_name"
+                                                v-model="group_name"
+                                                type="text"
                                                 class="ma-0"
                                         ></v-text-field>
 
                                         <v-text-field
-                                                name="new_password"
-                                                label="New password"
-                                                id="password"
-                                                v-model="password"
-                                                type="password"
-                                                class="ma-0"
-                                        ></v-text-field>
-
-                                        <v-text-field
-                                                name="repeat_password"
-                                                label="Repeat password"
-                                                id="password"
-                                                v-model="confirm_password"
-                                                type="password"
+                                                name="group_description"
+                                                label="Description"
+                                                id="group_description"
+                                                v-model="group_description"
+                                                type="text"
                                                 class="ma-0"
                                         ></v-text-field>
 
                                         <v-flex xm4 class="ma-0">
                                             <v-btn
-                                                    @click.native="update_user">Change password
+                                                    @click.native="create_group">Create
                                             </v-btn>
                                         </v-flex>
                                     </v-layout>
@@ -119,46 +110,39 @@
     import request from 'request';
     import * as config from 'config';
 
-    import {activate_mixin} from 'common/activate-mixin';
+    //import {activate_mixin} from 'common/activate-mixin';
 
-    const update_user = function () {
-        if (this.password != this.confirm_password) {
-            this.errorTitle = "Password change failed.";
-            this.errorMessage = "Passwords do not match.";
-            this.showAlert = true;
-            return;
-        }
-
-        let user_update_data = {
-            oldPassword: this.old_password,
-            newPassword: this.password,
+    const create_group = function () {
+        let new_group_data = {
+            groupId: this.group_name,
+            description: this.group_description,
             token: this.$store.user.token,
-            userId: this.$store.user.email
         };
 
         request({
             method: "POST",
-            uri: `${config.paths_api_prefix}/authentication/update`,
-            json: user_update_data
+            uri: `${config.paths_api_prefix}/group/create`,
+            json: new_group_data
         }).then((body) => {
             if (body.status == "OK") {
-                this.errorTitle = "Password changed.";
+                this.errorTitle = "New group created.";
                 this.errorMessage = "";
                 this.showAlert = true;
             }
             else {
-                this.errorTitle = "Password change failed.";
-                this.errorMessage = "Wrong or invaild password.";
+                this.errorTitle = "Failed.";
+                this.errorMessage = "Group creation faild.";
                 this.showAlert = true;
             }
 
         }).catch((err) => {
-            this.errorTitle = "Authentication failure";
+            this.errorTitle = "Failed";
             this.errorMessage = "System error.";
             this.showAlert = true;
         });
     };
 
+    /*
     const activate = function () {
         request({
             method: "POST",
@@ -176,6 +160,7 @@
             this.showAlert = true;
         });
     };
+    */
 
     const setReadonly = function (field, bool) {
         this.readonly[field] = bool;
@@ -183,16 +168,15 @@
 
 
     export default {
-        name: 'Profile',
+        name: 'Groups',
 
-        mixins: [activate_mixin],
+        //mixins: [activate_mixin],
 
         // todo same username on change
         data: () => {
             return {
-                password: null,
-                old_password: null,
-                confirm_password: null,
+                group_name: null,
+                group_description: null,
                 showAlert: null,
                 openCPW: false,
                 userData: {},
@@ -214,8 +198,8 @@
         },
 
         methods: {
-            update_user,
-            activate,
+            create_group,
+            //activate,
             setReadonly
         }
 
