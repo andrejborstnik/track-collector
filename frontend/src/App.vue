@@ -109,7 +109,7 @@
                 </v-list-item>
 
                 <v-list-item>
-                    <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
+                    <v-list-tile v-on:click.native="groups">
                         <v-list-tile-action>
                             <v-icon>group</v-icon>
                         </v-list-tile-action>
@@ -163,15 +163,20 @@
     //
     import * as cookies from 'common/cookies';
 
+    const logout = function () {
+        cookies.remove_session_cookie();
+        this.$router.go(0);
+    };
+
     const profile = function () {
         console.info("Profile function.");
         //this.$router.go('profile');
         this.$router.push('profile');
     };
 
-    const logout = function () {
-        cookies.remove_session_cookie();
-        this.$router.go(0);
+    const groups = function () {
+        console.info("Groups function.");
+        this.$router.push('groups');
     };
 
     const edit_TEMPLATE_ACTION = function () {
@@ -197,8 +202,11 @@
                 ],
                 rightItems: [
                     //{title: 'Profile', icon: 'dashboard', action: "profile"},
-                    {title: 'Profile', icon: 'perm_identity', action: "profile"},
+                    
                     {title: 'Logout', icon: 'question_answer', action: "logout"},
+                    {title: 'Notification', icon: 'perm_identity', action: "edit_TEMPLATE_ACTION"},
+                    {title: 'Profile', icon: 'perm_identity', action: "profile"},
+                    {title: 'Groups', icon: 'perm_identity', action: "groups"},
                     {title: 'Edit_TEMPLATE', icon: 'mode_edit', action: "edit_TEMPLATE_ACTION"}
                 ],
                 mini: true,
@@ -208,6 +216,7 @@
         methods: {
             profile,
             logout,
+            groups,
             edit_TEMPLATE_ACTION,
             toggleVisibility
         }
