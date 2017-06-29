@@ -98,18 +98,14 @@ export default class TrackStorage {
   adjustVisibility(minTime, maxTime) {
       // let startDateTime = this.startDateTime();
       // let endDateTime = this.endDateTime();
-      console.log("xx", moment(minTime).format(), moment(maxTime).format());
       if(this.dataLength == 0) return;
       let minT = Math.min(Math.max(minTime, this.startDateTime), this.endDateTime);
       let maxT = Math.max(Math.min(maxTime, this.endDateTime), this.startDateTime);
-      console.log("yy", moment(minTime).format(), moment(maxTime).format());
-      console.log("datalen", this.dataLength)
       if(this.startTimeIndex == null) return;
       for(let i = 0; i < this.dataLength - 1; i++) {
           let lineFeature = this.lineFeatures[i];
           let pointFeature = this.pointFeatures[i];
           if(this.startTimeIndex[i] >= minT && maxT >= this.endTimeIndex[i]) {
-              if(i % 1000 == 0) console.log("i", i);
               lineFeature.setStyle(this.onLineStyle);
               pointFeature.setStyle(this.onPointStyle);
               // pointFeature.getStyle().setZIndex(1);
@@ -144,7 +140,6 @@ export default class TrackStorage {
       if(!this.startDateTimeChanged && !this.endDateTimeChanged) return;
       let path = `/track`;
       if(startCallback != null) startCallback();
-      console.log(moment(this.startDateTime).toISOString())
       request({
           method: "POST",
           uri: config.paths_api_prefix + path,
@@ -159,7 +154,6 @@ export default class TrackStorage {
               userIds: [this.userId]
           }
       }).then((body) => {
-          console.log(body.tracks);
           this.mergeData(body.tracks);
           this.loadedStartDateTime = this.startDateTime;
           this.loadedEndDateTime = this.endDateTime;

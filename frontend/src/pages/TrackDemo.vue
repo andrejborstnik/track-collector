@@ -107,7 +107,7 @@
                   :min="minDate"
                   :max="maxDate"
                   :interval=1000
-                  lazy=true
+                  :lazy=true
                   :dot-size=30
                   :formatter=formatterFunction
                   style="margin-left: 65px; margin-right: 50px;"
