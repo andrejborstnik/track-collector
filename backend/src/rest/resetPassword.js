@@ -12,7 +12,6 @@ const generatePasswordResetEmail = function (email, token) {
 exports.resetPassword = function (req, res) {
     if (typeof req.body.email != 'undefined') {
         w.info(`Resetting password for: ${req.body.email}`); // delete when read: dont show pw (it is dumped into system logs and a security breach)
-        w.info(config.secretResetKey);
         request({
             method: "POST",
             uri: `${config.java_be}/authentication/resetPassword`,
@@ -40,7 +39,7 @@ exports.resetPassword = function (req, res) {
             method: "POST",
             uri: `${config.java_be}/authentication/resetPassword`,
             json: {
-                "secret": secretResetKey,
+                "secret": config.secretResetKey,
                 "newPassword": req.body.password,
                 "resetToken": req.body.resetToken
             }
