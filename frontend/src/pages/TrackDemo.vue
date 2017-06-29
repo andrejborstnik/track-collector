@@ -76,8 +76,9 @@
                                 ></v-text-field>
                                 <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
                               </v-menu>
-                              <v-btn primary light v-on:click.native="getTrack">Show your tracks</v-btn>
-                              <v-btn primary light v-on:click.native="zoomToExtent">Zoom</v-btn>
+                              <v-btn primary light v-on:click.native="getTrack">Load tracks</v-btn>
+                              <v-btn primary light v-on:click.native="zoomToExtent">Fit tracks</v-btn>
+
                         </v-layout>
 
 
@@ -92,25 +93,32 @@
             </v-layout>
         </v-dialog>
         <v-layout child-flex class="pl-3 pr-3">
-            <vue-slider ref="slider"
-              v-model="sliderValue"
-              :min="minDate"
-              :max="maxDate"
-              :interval=1000
-              lazy=true
-              :dot-size=30
-              :formatter=formatterFunction
-            ></vue-slider>
+            <v-btn xs1 icon v-on:click.native="timeZoomOut">
+                <v-icon light>remove_circle_outline</v-icon>
+            </v-btn >
+            <v-btn icon v-on:click.native="timeZoom">
+                  <v-icon light>add_circle_outline</v-icon>
+            </v-btn>
+
+        </v-layout>
+        <v-layout child-flex class="pl-3 pr-3">
+                <vue-slider ref="slider"
+                  v-model="sliderValue"
+                  :min="minDate"
+                  :max="maxDate"
+                  :interval=1000
+                  lazy=true
+                  :dot-size=30
+                  :formatter=formatterFunction
+                ></vue-slider>
         </v-layout>
         <div v-if="connections"></div>
          <MyMap ref="map"
                 :storageChanged="storageChanged"
                 :timeInterval="sliderValue"
-                source="OSM" width="100%" height="700px"
-                style="padding-top: 1rem; padding-bottom: 1rem;"></MyMap>
-
+                source="OSM"
+                ></MyMap>
     </v-container>
-
 </template>
 
 
@@ -131,6 +139,8 @@
     import vueSlider from 'vue-slider-component/src/vue2-slider.vue';
 
     import _ from 'lodash';
+
+    import * as cookies from 'common/cookies';
 
     import MyMap from 'widgets/Map2.vue';
 
@@ -184,6 +194,7 @@
     const getTrack = function () {
         this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
         this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
+        this.sliderValue = [0, Number.MAX_VALUE];
         this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoading);
     };
 
@@ -261,9 +272,33 @@
         this.$refs.map.zoomToExtent()
     };
 
+    const timeZoom = function () {
+        this.minSliderDate = this.sliderValue[0];
+        this.maxSliderDate = this.sliderValue[1];
+        //this.$refs.map.zoomToExtent()
+    };
+
+    const timeZoomOut = function () {
+        this.minSliderDate = this.startDateTime;
+        this.maxSliderDate = this.endDateTime;
+        //this.$refs.map.zoomToExtent()
+    };
+
     const activate = function () {
         this.setDate();
         this.getGroups();
+        this.$store.user.trackStorage.registerMap(this.$refs.map.map);
+        let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
+        tmpStr.visible = true;
+        // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
+        // this.storageChanged += 1;
+        let cookie = cookies.get_session_cookie();
+        if(cookie) {
+            this.startDate = cookie.startDate != null ? cookie.startDate : this.startDate;
+            this.endDate = cookie.endDate != null ? cookie.endDate : this.endDate;
+            this.startTime = cookie.startTime != null ? cookie.startTime : this.startTime;
+            this.endTime = cookie.endTime != null ? cookie.endTime : this.endTime;
+        }
     };
 
     //
@@ -284,7 +319,9 @@
             initializeGroups,
             updateOrInitializeGroups,
             startLoading,
-            endLoading
+            endLoading,
+            timeZoom,
+            timeZoomOut
         },
 
         mixins: [activate_mixin],
@@ -301,29 +338,53 @@
                 return moment(this.endDate).format("D MMM YYYY");
             },
             minDate: function() {
-                console.log("mindate");
                 if(this.startDate == null) return 0;
                 let x = moment(buildTimestamp(this.startDate, this.startTime)).valueOf();
-                console.log("min", x);
+                if(this.minSliderDate != null && this.minSliderDate > x) {
+                    x = this.minSliderDate;
+                }
                 return x;
             },
             maxDate: function() {
-                console.log("maxdate");
                 if(this.endDate == null) return Number.MAX_VALUE;
                 let x = moment(buildTimestamp(this.endDate, this.endTime)).valueOf();
-                console.log("max", x);
+                if(this.maxSliderDate != null && this.maxSliderDate < x) {
+                  x = this.maxSliderDate;
+                }
                 return x;
             },
             isLoading: function() {
                 return this.loading > 0;
             }
         },
-        mounted: function () {
-                this.$store.user.trackStorage.registerMap(this.$refs.map.map);
-                let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
-                tmpStr.visible = true;
-                // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
-                // this.storageChanged += 1;
+        // mounted: function () {
+        //         this.$store.user.trackStorage.registerMap(this.$refs.map.map);
+        //         let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
+        //         tmpStr.visible = true;
+        //         // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
+        //         // this.storageChanged += 1;
+        //         let cookie = cookies.get_session_cookie();
+        //         console.log(cookie);
+        //         if(cookie) {
+        //             this.startDate = cookie.startDate != null ? cookie.startDate : this.startDate;
+        //             this.endDate = cookie.endDate != null ? cookie.endDate : this.endDate;
+        //             this.startTime = cookie.startTime != null ? cookie.startTime : this.startTime;
+        //             this.endTime = cookie.endTime != null ? cookie.endTime : this.endTime;
+        //         }
+        // },
+        watch: {
+                startDate: function () {
+                    cookies.update_session_cookie({startDate: this.startDate});
+                },
+                endDate: function() {
+                    cookies.update_session_cookie({endDate: this.endDate});
+                },
+                startTime: function () {
+                    cookies.update_session_cookie({startTime: this.startTime});
+                },
+                endTime: function() {
+                    cookies.update_session_cookie({endTime: this.endTime});
+                }
         },
         data () {
             return {
@@ -342,7 +403,9 @@
                 loading: false,
                 sliderValue: [0, Number.MAX_VALUE],
                 panelOpen: true,
-                storageChanged: 0
+                storageChanged: 0,
+                minSliderDate: null,
+                maxSliderDate: null
             }
         }
     }

@@ -1,7 +1,7 @@
 <template>
     <section>
         <Popup :title="popupTitle" :content="popupContent" :coords="popupCoords" ref="popup"></Popup>
-        <div ref="map" class="map" :style="{ width: width, height: height }"></div>
+        <div ref="map" class="map"></div>
     </section>
 </template>
 

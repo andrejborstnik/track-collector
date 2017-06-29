@@ -65,6 +65,8 @@ export default class TrackStorage {
       this.pointVectorLayer = null;
       this.startDateTimeChanged = false;
       this.endDateTimeChanged = false;
+      this.loadedStartDateTime = null;
+      this.loadedEndDateTime = null;
   };
 
   setColor(color) {
@@ -96,14 +98,18 @@ export default class TrackStorage {
   adjustVisibility(minTime, maxTime) {
       // let startDateTime = this.startDateTime();
       // let endDateTime = this.endDateTime();
+      console.log("xx", moment(minTime).format(), moment(maxTime).format());
       if(this.dataLength == 0) return;
       let minT = Math.min(Math.max(minTime, this.startDateTime), this.endDateTime);
       let maxT = Math.max(Math.min(maxTime, this.endDateTime), this.startDateTime);
+      console.log("yy", moment(minTime).format(), moment(maxTime).format());
+      console.log("datalen", this.dataLength)
       if(this.startTimeIndex == null) return;
       for(let i = 0; i < this.dataLength - 1; i++) {
           let lineFeature = this.lineFeatures[i];
           let pointFeature = this.pointFeatures[i];
           if(this.startTimeIndex[i] >= minT && maxT >= this.endTimeIndex[i]) {
+              if(i % 1000 == 0) console.log("i", i);
               lineFeature.setStyle(this.onLineStyle);
               pointFeature.setStyle(this.onPointStyle);
               // pointFeature.getStyle().setZIndex(1);
@@ -119,12 +125,6 @@ export default class TrackStorage {
       } else {
           lastPointFeature.setStyle(this.offPointStyle);
       }
-  };
-
-  loadForTimes(startTime, endTime, realTimeGap) {
-      // load missing data
-      // calculate time gaps
-      // load missing data
   };
 
   zoomToVectorLayerExtent() {
@@ -161,6 +161,8 @@ export default class TrackStorage {
       }).then((body) => {
           console.log(body.tracks);
           this.mergeData(body.tracks);
+          this.loadedStartDateTime = this.startDateTime;
+          this.loadedEndDateTime = this.endDateTime;
           this.startDateTimeChanged = false;
           this.endDateTimeChanged = false;
           if(endCallback != null) endCallback();
@@ -185,6 +187,8 @@ export default class TrackStorage {
       this.data = new Array(len);
       this.startTimeIndex = new Array(len);
       this.endTimeIndex = new Array(len);
+      this.pointFeatures = [];
+      this.lineFeatures = [];
       let i = 0;
       for(let el of output) {
           for(let obj of el.samples) {
