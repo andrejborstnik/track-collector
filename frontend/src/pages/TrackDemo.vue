@@ -17,7 +17,13 @@
                                   prepend-icon="event"
                                   readonly
                                 ></v-text-field>
-                                <v-date-picker v-model="startDate" no-title scrollable actions>
+                                <v-date-picker
+                                      v-model="startDate"
+                                      no-title
+                                      scrollable
+                                      actions
+                                      :allowed-dates="allowedStartDate"
+                                      >
                                 </v-date-picker>
                               </v-menu>
                               <v-menu
@@ -42,8 +48,8 @@
                                 :close-on-content-click="false"
                                 v-model="menuToDate"
                                 transition="v-scale-transition"
-                                offset-y
-                                :nudge-left="40"
+                                :nudge-top="100"
+                                :nudge-left="0"
                               >
                                 <v-text-field
                                   slot="activator"
@@ -52,7 +58,13 @@
                                   prepend-icon="event"
                                   readonly
                                 ></v-text-field>
-                                <v-date-picker v-model="endDate" no-title scrollable actions>
+                                <v-date-picker
+                                      v-model="endDate"
+                                      no-title
+                                      scrollable
+                                      actions
+                                      :allowed-dates="allowedEndDate"
+                                      >
                                 </v-date-picker>
                               </v-menu>
                               <v-menu
@@ -60,8 +72,8 @@
                                 :close-on-content-click="false"
                                 v-model="menuToTime"
                                 transition="v-scale-transition"
-                                offset-y
-                                :nudge-left="40"
+                                :nudge-top="200"
+                                :nudge-left="0"
                               >
                                 <v-text-field
                                   slot="activator"
@@ -85,9 +97,38 @@
 
         <v-dialog v-model="zoomSettings" hide-overlay persistent>
           <v-layout column class="pl-3 pr-3" style="background-color: white">
-              <v-btn primary light v-on:click.native="zoomToExtent">Fit tracks</v-btn>
-              <v-btn primary light v-on:click.native="timeZoomOut">Time zoom out</v-btn>
-              <v-btn primary light v-on:click.native="timeZoom">Time zoom in</v-btn>
+            <v-list>
+                  <v-list-item>
+                      <v-list-tile v-on:click.native="zoomToExtent">
+                          <v-list-tile-action>
+                              <v-icon>filter</v-icon>
+                          </v-list-tile-action>
+                          <v-list-tile-content>
+                              <v-list-tile-title>Fit tracks</v-list-tile-title>
+                          </v-list-tile-content>
+                      </v-list-tile>
+                  </v-list-item>
+                  <v-list-item>
+                      <v-list-tile v-on:click.native="timeZoomOut">
+                          <v-list-tile-action>
+                              <v-icon>zoom_out</v-icon>
+                          </v-list-tile-action>
+                          <v-list-tile-content>
+                              <v-list-tile-title>Time zoom out</v-list-tile-title>
+                          </v-list-tile-content>
+                      </v-list-tile>
+                  </v-list-item>
+                  <v-list-item>
+                      <v-list-tile v-on:click.native="timeZoom">
+                          <v-list-tile-action>
+                              <v-icon>zoom_in</v-icon>
+                          </v-list-tile-action>
+                          <v-list-tile-content>
+                              <v-list-tile-title>Time zoom in</v-list-tile-title>
+                          </v-list-tile-content>
+                      </v-list-tile>
+                  </v-list-item>
+            </v-list>
           </v-layout>
         </v-dialog>
         <div style="position: absolute; bottom: 60px; left: 0px; right: 0px">
@@ -98,7 +139,7 @@
                       :max="maxDate"
                       :interval=1000
                       :lazy=true
-                      :dot-size=30
+                      :dot-size=44
                       :formatter=formatterFunction
                       style="margin-left: 30px; margin-right: 30px;"
                     ></vue-slider>
@@ -113,6 +154,19 @@
                     style="display: flex; flex-grow: 1;"
                     ></MyMap>
         </div>
+        <v-dialog v-model="showAlert" persistent lazy>
+            <v-card>
+                <v-card-row>
+                    <v-card-title>{{errorTitle}}</v-card-title>
+                </v-card-row>
+                <v-card-row>
+                    <v-card-text>{{errorMessage}}</v-card-text>
+                </v-card-row>
+                <v-card-row actions>
+                    <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
+                </v-card-row>
+            </v-card>
+        </v-dialog>
     </v-container>
 </template>
 
@@ -201,6 +255,7 @@
     const endLoading = function () {
         this.loading--;
     };
+
     const getGroups = function () {
         let path = `/group/list`;
         this.startLoading();
@@ -301,25 +356,35 @@
                     break;
             }
         }
-    }
+    };
+
     const toggleTimeSettings = function() {
         this.timeSettings = !this.timeSettings;
         this.zoomSettings = false;
-        refreshBottomNavigation();
+        this.refreshBottomNavigation();
         // this.$store.user.bottomNavigation[0].value = this.timeSettings;
     };
 
     const toggleZoomSettings = function() {
         this.zoomSettings = !this.zoomSettings;
         this.timeSettings = false;
-        refreshBottomNavigation();
+        this.refreshBottomNavigation();
         // this.$store.user.bottomNavigation[1].value = this.zoomSettings;
     };
 
     const toggleSliderSettings = function() {
         this.sliderSettings = !this.sliderSettings;
-
+        this.refreshBottomNavigation();
         // this.$store.user.bottomNavigation[1].value = this.zoomSettings;
+    };
+
+    const allowedStartDate = function(date) {
+        return true;
+        // return moment(date).isAfter(moment())
+    };
+
+    const allowedEndDate = function(date) {
+        return moment(date).isAfter(moment(this.startDate));
     };
 
     const activate = function () {
@@ -387,7 +452,9 @@
             toggleTimeSettings,
             toggleZoomSettings,
             toggleSliderSettings,
-            refreshBottomNavigation
+            refreshBottomNavigation,
+            allowedStartDate,
+            allowedEndDate
         },
 
         mixins: [activate_mixin],
@@ -424,23 +491,14 @@
                 return this.loading > 0;
             }
         },
-        // mounted: function () {
-        //         this.$store.user.trackStorage.registerMap(this.$refs.map.map);
-        //         let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
-        //         tmpStr.visible = true;
-        //         // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
-        //         // this.storageChanged += 1;
-        //         let cookie = cookies.get_session_cookie();
-        //         console.log(cookie);
-        //         if(cookie) {
-        //             this.startDate = cookie.startDate != null ? cookie.startDate : this.startDate;
-        //             this.endDate = cookie.endDate != null ? cookie.endDate : this.endDate;
-        //             this.startTime = cookie.startTime != null ? cookie.startTime : this.startTime;
-        //             this.endTime = cookie.endTime != null ? cookie.endTime : this.endTime;
-        //         }
-        // },
         watch: {
                 startDate: function () {
+                    if(moment(this.endDate).isBefore(moment(this.startDate))) {
+                        this.endDate = this.startDate;
+                        if(this.startTime > this.endTime) {
+                            this.endTime = this.startTime;
+                        }
+                    }
                     cookies.update_session_cookie({startDate: this.startDate});
                 },
                 endDate: function() {
@@ -450,6 +508,23 @@
                     cookies.update_session_cookie({startTime: this.startTime});
                 },
                 endTime: function() {
+                    let startTM = moment(buildTimestamp(this.startDate, this.startTime));
+                    let endTM = moment(buildTimestamp(this.endDate, this.endTime));
+                    console.log("here", startTM, endTM);
+
+                    if(endTM.isBefore(startTM)) {
+                        this.errorTitle = "Time error.";
+                        this.errorMessage = "End time too early.";
+                        this.showAlert = true;
+
+                        let cookie = cookies.get_session_cookie();
+                        if(cookie) {
+                            this.endTime = cookie.endTime != null ? cookie.endTime : this.endTime;
+                        } else {
+                            this.endTime = this.startTime;
+                        }
+
+                    }
                     cookies.update_session_cookie({endTime: this.endTime});
                 }
         },
@@ -475,7 +550,10 @@
                 maxSliderDate: null,
                 timeSettings: false,
                 zoomSettings: false,
-                sliderSettings: false
+                sliderSettings: false,
+                showAlert: null,
+                errorTitle: '',
+                errorMessage: ''
             }
         }
     }
