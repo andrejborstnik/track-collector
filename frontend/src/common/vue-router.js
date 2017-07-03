@@ -26,7 +26,27 @@ let store = {
         token: null,
         admin: false,
         groups: null,
-        trackStorage: new MultiTrackStorage()
+        trackStorage: new MultiTrackStorage(),
+        bottomNavigation: [
+            {
+              action: function() {console.log("f1");},
+              text: "Recents",
+              icon: "history",
+              key: 1
+            },
+            {
+              action: function() {console.log("f2");},
+              text: "Favorites",
+              icon: "favorite",
+              key: 2
+            },
+            {
+              action: function() {console.log("f3");},
+              text: "Nearby",
+              icon: "place",
+              key: 3
+            }
+        ]
     },
     state: {
         path_to: null,

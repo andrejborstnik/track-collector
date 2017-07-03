@@ -1,11 +1,7 @@
 <template>
-    <v-container id="trackShow" fluid class="ma-0 pa-0">
-      <v-expansion-panel>
-        <v-expansion-panel-content v-model="panelOpen">
-                  <div slot="header">Set time</div>
-
-
-                        <v-layout row wrap class="ma-0 pa-3">
+    <v-container id="trackShow" fluid class="ma-0 pa-0" style="display: flex">
+          <v-dialog v-model="timeSettings" hide-overlay persistent>
+                        <v-layout row wrap class="ma-0 pa-3" style="background-color: white">
                               <v-menu
                                 lazy
                                 :close-on-content-click="false"
@@ -77,48 +73,46 @@
                                 <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
                               </v-menu>
                               <v-btn primary light v-on:click.native="getTrack">Load tracks</v-btn>
-                              <v-btn primary light v-on:click.native="zoomToExtent">Fit tracks</v-btn>
 
                         </v-layout>
-
-
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-
-
+        </v-dialog>
         <v-dialog persistent v-model="isLoading" lazy>
             <v-layout row justify-center>
                 <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7"
                                      class="purple--text"></v-progress-circular>
             </v-layout>
         </v-dialog>
-        <v-layout child-flex class="pl-3 pr-3">
-            <v-btn xs1 icon v-on:click.native="timeZoomOut">
-                <v-icon light>remove_circle_outline</v-icon>
-            </v-btn >
-            <v-btn icon v-on:click.native="timeZoom">
-                  <v-icon light>add_circle_outline</v-icon>
-            </v-btn>
 
-        </v-layout>
-        <v-layout child-flex class="pl-3 pr-3">
-                <vue-slider ref="slider"
-                  v-model="sliderValue"
-                  :min="minDate"
-                  :max="maxDate"
-                  :interval=1000
-                  :lazy=true
-                  :dot-size=30
-                  :formatter=formatterFunction
-                  style="margin-left: 65px; margin-right: 50px;"
-                ></vue-slider>
-        </v-layout>
-        <div v-if="connections"></div>
-         <MyMap ref="map"
-                :storageChanged="storageChanged"
-                :timeInterval="sliderValue"
-                source="OSM"
-                ></MyMap>
+        <v-dialog v-model="zoomSettings" hide-overlay persistent>
+          <v-layout column class="pl-3 pr-3" style="background-color: white">
+              <v-btn primary light v-on:click.native="zoomToExtent">Fit tracks</v-btn>
+              <v-btn primary light v-on:click.native="timeZoomOut">Time zoom out</v-btn>
+              <v-btn primary light v-on:click.native="timeZoom">Time zoom in</v-btn>
+          </v-layout>
+        </v-dialog>
+        <div style="position: absolute; bottom: 60px; left: 0px; right: 0px">
+            <v-layout v-if="sliderSettings" child-flex class="pl-3 pr-3">
+                    <vue-slider ref="slider"
+                      v-model="sliderValue"
+                      :min="minDate"
+                      :max="maxDate"
+                      :interval=1000
+                      :lazy=true
+                      :dot-size=30
+                      :formatter=formatterFunction
+                      style="margin-left: 30px; margin-right: 30px;"
+                    ></vue-slider>
+            </v-layout>
+        </div>
+        <div style="display: flex; flex-grow: 1;">
+            <div v-if="connections"></div>
+             <MyMap ref="map"
+                    :storageChanged="storageChanged"
+                    :timeInterval="sliderValue"
+                    source="OSM"
+                    style="display: flex; flex-grow: 1;"
+                    ></MyMap>
+        </div>
     </v-container>
 </template>
 
@@ -167,7 +161,7 @@
 
     const formatterFunction = function (v) {
         if (v == null) return "";
-        return moment(v).format("YYYY-MM-DD k:mm:ss");
+        return moment(v).format("D[.]M[.] k:mm:ss");
     }.bind(this);
 
     const formatterFunction2 = function (v) {
@@ -197,6 +191,7 @@
         this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
         this.sliderValue = [0, Number.MAX_VALUE];
         this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoading);
+        this.toggleTimeSettings();
     };
 
     const startLoading = function () {
@@ -271,18 +266,60 @@
 
     const zoomToExtent = function () {
         this.$refs.map.zoomToExtent();
+        this.toggleZoomSettings();
     };
 
     const timeZoom = function () {
         this.minSliderDate = this.sliderValue[0];
         this.maxSliderDate = this.sliderValue[1];
+        this.toggleZoomSettings();
+
         //this.$refs.map.zoomToExtent()
     };
 
     const timeZoomOut = function () {
         this.minSliderDate = this.startDateTime;
         this.maxSliderDate = this.endDateTime;
+        this.toggleZoomSettings();
+
         //this.$refs.map.zoomToExtent()
+    };
+
+    const refreshBottomNavigation = function() {
+        for(let el of this.$store.user.bottomNavigation) {
+            switch(el.key) {
+                case "timeSettings":
+                    el.value = this.timeSettings;
+                    break;
+                case "zoomSettings":
+                    el.value = this.zoomSettings;
+                    break;
+                case "sliderSettings":
+                    el.value = this.sliderSettings;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    const toggleTimeSettings = function() {
+        this.timeSettings = !this.timeSettings;
+        this.zoomSettings = false;
+        refreshBottomNavigation();
+        // this.$store.user.bottomNavigation[0].value = this.timeSettings;
+    };
+
+    const toggleZoomSettings = function() {
+        this.zoomSettings = !this.zoomSettings;
+        this.timeSettings = false;
+        refreshBottomNavigation();
+        // this.$store.user.bottomNavigation[1].value = this.zoomSettings;
+    };
+
+    const toggleSliderSettings = function() {
+        this.sliderSettings = !this.sliderSettings;
+
+        // this.$store.user.bottomNavigation[1].value = this.zoomSettings;
     };
 
     const activate = function () {
@@ -300,6 +337,30 @@
             this.startTime = cookie.startTime != null ? cookie.startTime : this.startTime;
             this.endTime = cookie.endTime != null ? cookie.endTime : this.endTime;
         }
+        let bottomNavigation = [
+                    {
+                      action: this.toggleTimeSettings.bind(this),
+                      text: "Time interval",
+                      icon: "schedule",
+                      key: "timeSettings",
+                      value: false
+                    },
+                    {
+                      action: this.toggleZoomSettings.bind(this),
+                      text: "Zoom",
+                      icon: "search",
+                      key: "zoomSettings",
+                      value: false
+                    },
+                    {
+                      action: this.toggleSliderSettings.bind(this),
+                      text: "Time slider",
+                      icon: "settings_ethernet",
+                      key: "sliderSettings",
+                      value: false
+                    }
+                ];
+         this.$store.user.bottomNavigation = bottomNavigation;
     };
 
     //
@@ -322,7 +383,11 @@
             startLoading,
             endLoading,
             timeZoom,
-            timeZoomOut
+            timeZoomOut,
+            toggleTimeSettings,
+            toggleZoomSettings,
+            toggleSliderSettings,
+            refreshBottomNavigation
         },
 
         mixins: [activate_mixin],
@@ -407,7 +472,10 @@
                 panelOpen: true,
                 storageChanged: 0,
                 minSliderDate: null,
-                maxSliderDate: null
+                maxSliderDate: null,
+                timeSettings: false,
+                zoomSettings: false,
+                sliderSettings: false
             }
         }
     }
