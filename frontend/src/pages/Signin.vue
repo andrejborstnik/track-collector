@@ -2,15 +2,9 @@
     <v-container fluid class="text-xs-center">
         <v-dialog v-model="showAlert" persistent lazy>
             <v-card>
-                <v-card-row>
                     <v-card-title>{{errorTitle}}</v-card-title>
-                </v-card-row>
-                <v-card-row>
                     <v-card-text>{{errorMessage}}</v-card-text>
-                </v-card-row>
-                <v-card-row actions>
                     <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
-                </v-card-row>
             </v-card>
         </v-dialog>
         <v-layout align-center justify-center>
@@ -91,7 +85,7 @@
     const login = function () {
         let user_mail = this.user_mail; // zadeve v this se lahko spremenijo sredi izvajanja funkcije, zato si jih zapomnimo.
         let password = this.password;
-        let provider = this.provider == null || this.provider.text == this.systemProvider ? null : this.provider.text;
+        let provider = this.provider == this.systemProvider ? null : this.provider;
 
         if (!password || !user_mail) {
             this.errorTitle = "Sign in failure";
@@ -142,9 +136,9 @@
             uri: config.paths_api_prefix + path,
         }).then((body) => {
             if (body.status == "OK") {
-                let providers = [{text: this.systemProvider, value: this.systemProvider}];
+                let providers = [this.systemProvider];
                 for (let p of body.providers) {
-                    providers.push({text: p, value: p});
+                    providers.push(p);
                 }
                 this.$store.providers = providers;
             } else {
@@ -170,7 +164,7 @@
                 user_mail: '',
                 showAlert: null,
                 systemProvider: "System",
-                provider: {text: "System"},
+                provider: "System",
                 errorTitle: '',
                 errorMessage: ''
             }

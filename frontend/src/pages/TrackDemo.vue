@@ -482,7 +482,6 @@
                 return x;
             },
             isLoading: function () {
-                console.log("ll", this.loading > 0);
                 return this.loading > 0;
             }
         },
@@ -505,7 +504,6 @@
                 endTime: function() {
                     let startTM = moment(buildTimestamp(this.startDate, this.startTime));
                     let endTM = moment(buildTimestamp(this.endDate, this.endTime));
-                    console.log("here", startTM, endTM);
 
                     if(endTM.isBefore(startTM)) {
                         this.errorTitle = "Time error.";
