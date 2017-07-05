@@ -19,7 +19,8 @@ exports.paths_sass = [
 exports.node_vendor_modules = {
     "bowser" : ["bowser.min.js"],
     "jquery" : ["dist/jquery.min.js"],
-    "foundation-sites": ["dist/css/foundation.css"]
+    "foundation-sites": ["dist/css/foundation.css"],
+    "vuetify": ["dist/vuetify.min.css"]
 };
 
 

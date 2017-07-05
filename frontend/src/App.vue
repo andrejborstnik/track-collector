@@ -164,7 +164,7 @@
 
 
 <style lang="scss">
-
+    @import "vendor/vuetify/dist/vuetify.min.css";
 </style>
 
 
