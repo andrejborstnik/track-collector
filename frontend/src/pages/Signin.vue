@@ -24,7 +24,7 @@
                             v-model="user_mail"
                             class="ma-0"
                     ></v-text-field>
-                    
+
                     <v-text-field
                             name="password"
                             label="Password"
@@ -33,29 +33,29 @@
                             type="password"
                             class="ma-0"
                     ></v-text-field>
-                    
+
                     <!--COMMENT
                     Animacija pri Auth provider je zelo cudna.
-                    Vsaj ob prvem kliku na mojem brovserju meni 
-                    kar prileti iz leve strani. 
+                    Vsaj ob prvem kliku na mojem brovserju meni
+                    kar prileti iz leve strani.
                     Verjetno bo treba to popraviti.
                     COMMENT-->
-                    
-                    <v-btn-dropdown
+
+
+                    <v-select
                             label="Auth provider"
                             v-model="provider"
-                            :options="this.$store.providers"
+                            :items="this.$store.providers"
                             max-height="auto"
-                            overflow="overflow"
+                            overflow
                             class="ma-0 pa-0"
-                    ></v-btn-dropdown>
-                    
+                    ></v-select>
                     <v-flex xm4 class="ma-0">
 
                         <v-btn
                                 @click.native="login">Login
                         </v-btn>
-                        
+
                         <table style="width:100%">
                           <tr>
                             <td><router-link to="resetPassword">Forgot password?</router-link></td>
@@ -142,7 +142,7 @@
             uri: config.paths_api_prefix + path,
         }).then((body) => {
             if (body.status == "OK") {
-                let providers = [{text: this.systemProvider, value: null}];
+                let providers = [{text: this.systemProvider, value: this.systemProvider}];
                 for (let p of body.providers) {
                     providers.push({text: p, value: p});
                 }

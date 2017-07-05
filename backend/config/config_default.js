@@ -28,3 +28,4 @@ let jsonfile =require('jsonfile');                        // Reading and writing
 let secrets = jsonfile.readFileSync('../../secrets.json');
 
 exports.secretResetKey = secrets.passwordReset;
+// exports.servicesRoot = secrets.servicesRoot ||  'https://test.goopti.com/tracker/';
