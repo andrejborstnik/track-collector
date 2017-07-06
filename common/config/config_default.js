@@ -8,6 +8,15 @@
 //
 
 
+let jsonfile =require('jsonfile');                        // Reading and writing JSON files.
+let localconf = jsonfile.readFileSync('../../local.config');
+
+exports.java_be = localconf.java_be;
+exports.java_be_path = localconf.be_path;
+exports.fe_url = localconf.url;
+exports.path_prefix = localconf.fe_path;
+
+
 // Backend port.
 exports.be_port = 3102;
 
@@ -51,13 +60,4 @@ exports.babel = {
 
 // Bing api key
 exports.bing_key = "Ag6kChdDWwxxcllA1_-GIHV67Fsux7SYWs8Mk5LOL7s4qJC4z3u5Nf567MYgDwm3";
-
-let jsonfile =require('jsonfile');                        // Reading and writing JSON files.
-let localconf = jsonfile.readFileSync('../../local.config');
-
-exports.java_be = localconf.java_be;
-exports.java_be_path = localconf.be_path;
-exports.fe_url = localconf.url;
-exports.path_prefix = localconf.fe_path;
-
 

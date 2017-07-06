@@ -1,8 +1,7 @@
 <template>
-    <v-app id="example-2">
+    <v-app id="example-2" standalone>
         <v-navigation-drawer temporary hide-overlay v-model="drawerLeft" v-bind:close-on-click="false" light>
             <v-list class="pa-0">
-                <v-list-item>
                     <v-list-tile avatar tag="div">
                         <v-list-tile-avatar>
                             <v-icon :class="['amber white--text']">{{ 'call_to_action' }}</v-icon>
@@ -16,7 +15,6 @@
                             </v-btn>
                         </v-list-tile-action>
                     </v-list-tile>
-                </v-list-item>
             </v-list>
             <v-list>
                 <v-list-group v-for="group in $store.user.groups" :value="group.active" :key="group.groupId">
@@ -28,26 +26,23 @@
                             <v-icon>keyboard_arrow_down</v-icon>
                         </v-list-tile-action>
                     </v-list-tile>
-                    <v-list-item v-for="user in group.users" :key="user.userId">
-                        <v-list-tile>
-                            <v-list-tile-content>
-                                <v-list-tile-title v-bind:style="user.style">{{ user.userId }}</v-list-tile-title>
-                            </v-list-tile-content>
-                            <v-list-tile-action>
-                              <v-btn icon v-on:click.native="toggleVisibility(user)">
-                                  <v-icon v-if="user.visible" light>visibility</v-icon>
-                                  <v-icon v-if="!user.visible" light>visibility_off</v-icon>
-                              </v-btn>
-                            </v-list-tile-action>
-                        </v-list-tile>
-                    </v-list-item>
+                    <v-list-tile v-for="user in group.users" :key="user.userId">
+                        <v-list-tile-content>
+                            <v-list-tile-title v-bind:style="user.style">{{ user.userId }}</v-list-tile-title>
+                        </v-list-tile-content>
+                        <v-list-tile-action>
+                          <v-btn icon v-on:click.native="toggleVisibility(user)">
+                              <v-icon v-if="user.visible" light>visibility</v-icon>
+                              <v-icon v-if="!user.visible" light>visibility_off</v-icon>
+                          </v-btn>
+                        </v-list-tile-action>
+                    </v-list-tile>
                 </v-list-group>
             </v-list>
         </v-navigation-drawer>
 
         <v-navigation-drawer temporary hide-overlay v-model="drawerRight" :close-on-click="false" right light>
             <v-list class="pa-0">
-                <v-list-item>
                     <v-list-tile avatar tag="div">
                         <v-list-tile-avatar>
                             <v-icon v-bind:class="['amber white--text']">{{ 'call_to_action' }}</v-icon>
@@ -61,12 +56,10 @@
                             </v-btn>
                         </v-list-tile-action>
                     </v-list-tile>
-                </v-list-item>
             </v-list>
             <v-list class="pt-0" dense>
                 <v-divider></v-divider>
 
-                <v-list-item>
                     <v-list-tile v-on:click.native="logout">
                         <v-list-tile-action>
                             <!--COMMENT
@@ -78,9 +71,6 @@
                             <v-list-tile-title>Logout</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                </v-list-item>
-
-                <v-list-item>
                     <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
                         <v-list-tile-action>
                             <v-icon>notifications</v-icon>
@@ -89,9 +79,6 @@
                             <v-list-tile-title>Notification</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                </v-list-item>
-
-                <v-list-item>
                     <v-list-tile v-on:click.native="profile">
                         <v-list-tile-action>
                             <!--COMMENT
@@ -106,9 +93,6 @@
                             <v-list-tile-title>Profile</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                </v-list-item>
-
-                <v-list-item>
                     <v-list-tile v-on:click.native="groups">
                         <v-list-tile-action>
                             <v-icon>group</v-icon>
@@ -117,9 +101,6 @@
                             <v-list-tile-title>Groups</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                </v-list-item>
-
-                <v-list-item>
                     <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
                         <v-list-tile-action>
                             <!--COMMENT
@@ -131,17 +112,14 @@
                             <v-list-tile-title>Edit_TEMPLATE</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                </v-list-item>
-
-
             </v-list>
         </v-navigation-drawer>
-        <v-toolbar fixed light style="z-index: 10;">
-            <v-toolbar-side-icon light @click.native.stop="drawerLeft = !drawerLeft"></v-toolbar-side-icon>
-            <v-toolbar-title>Tracker</v-toolbar-title>
+        <v-toolbar dark class="primary" >
+            <v-toolbar-side-icon @click.native.stop="drawerLeft = !drawerLeft"></v-toolbar-side-icon>
+            <v-toolbar-title class="white--text">Tracker</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn icon light @click.native.stop="drawerRight = !drawerRight">
-                <v-icon>account_circle</v-icon>
+            <v-btn icon @click.native.stop="drawerRight = !drawerRight">
+                <v-icon >account_circle</v-icon>
             </v-btn>
         </v-toolbar>
         <main>
@@ -153,9 +131,12 @@
           <v-btn v-for="btn in $store.user.bottomNavigation"
             :value="btn.value"
             :key="btn.key"
-            flat dark class="teal--text" @click.native="btn.action" >
+            flat dark class="teal--text" @click.native="btn.action"
+            style="width: 96px"
+            >
             <span>{{btn.text}}</span>
             <v-icon>{{btn.icon}}</v-icon>
+
           </v-btn>
         </v-bottom-nav>
 

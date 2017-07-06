@@ -2,15 +2,9 @@
     <v-container fluid class="text-xs-center">
         <v-dialog v-model="showAlert" persistent lazy>
             <v-card>
-                <v-card-row>
                     <v-card-title>{{errorTitle}}</v-card-title>
-                </v-card-row>
-                <v-card-row>
                     <v-card-text>{{errorMessage}}</v-card-text>
-                </v-card-row>
-                <v-card-row actions>
                     <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
-                </v-card-row>
             </v-card>
         </v-dialog>
         <v-layout align-center justify-center>
@@ -24,7 +18,7 @@
                             v-model="user_mail"
                             class="ma-0"
                     ></v-text-field>
-                    
+
                     <v-text-field
                             name="password"
                             label="Password"
@@ -33,29 +27,29 @@
                             type="password"
                             class="ma-0"
                     ></v-text-field>
-                    
+
                     <!--COMMENT
                     Animacija pri Auth provider je zelo cudna.
-                    Vsaj ob prvem kliku na mojem brovserju meni 
-                    kar prileti iz leve strani. 
+                    Vsaj ob prvem kliku na mojem brovserju meni
+                    kar prileti iz leve strani.
                     Verjetno bo treba to popraviti.
                     COMMENT-->
-                    
-                    <v-btn-dropdown
+
+
+                    <v-select
                             label="Auth provider"
                             v-model="provider"
-                            :options="this.$store.providers"
+                            :items="this.$store.providers"
                             max-height="auto"
-                            overflow="overflow"
+                            overflow
                             class="ma-0 pa-0"
-                    ></v-btn-dropdown>
-                    
+                    ></v-select>
                     <v-flex xm4 class="ma-0">
 
                         <v-btn
                                 @click.native="login">Login
                         </v-btn>
-                        
+
                         <table style="width:100%">
                           <tr>
                             <td><router-link to="resetPassword">Forgot password?</router-link></td>
@@ -91,7 +85,7 @@
     const login = function () {
         let user_mail = this.user_mail; // zadeve v this se lahko spremenijo sredi izvajanja funkcije, zato si jih zapomnimo.
         let password = this.password;
-        let provider = this.provider == null || this.provider.text == this.systemProvider ? null : this.provider.text;
+        let provider = this.provider == this.systemProvider ? null : this.provider;
 
         if (!password || !user_mail) {
             this.errorTitle = "Sign in failure";
@@ -142,9 +136,9 @@
             uri: config.paths_api_prefix + path,
         }).then((body) => {
             if (body.status == "OK") {
-                let providers = [{text: this.systemProvider, value: null}];
+                let providers = [this.systemProvider];
                 for (let p of body.providers) {
-                    providers.push({text: p, value: p});
+                    providers.push(p);
                 }
                 this.$store.providers = providers;
             } else {
@@ -170,7 +164,7 @@
                 user_mail: '',
                 showAlert: null,
                 systemProvider: "System",
-                provider: {text: "System"},
+                provider: "System",
                 errorTitle: '',
                 errorMessage: ''
             }

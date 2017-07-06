@@ -38,7 +38,9 @@
         color: white;
     }
     #olpopup {
-        width: 100px;
+        width: 130px;
+        height: 30px;
+        padding-left: 10px;
     }
     .ol-popup {
         position: absolute;

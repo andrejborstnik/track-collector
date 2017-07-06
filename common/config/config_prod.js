@@ -15,4 +15,4 @@ exports.url_prefix = `${exports.path_prefix == '/' ? '' : exports.path_prefix}`;
 exports.base_uri = `${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
 
 // Frontend API prefix.
-exports.paths_api_prefix = `${exports.fe_url}{exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
+exports.paths_api_prefix = `${exports.fe_url}${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;

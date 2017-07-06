@@ -1,5 +1,5 @@
 <template>
-    <v-container id="trackShow" fluid class="ma-0 pa-0" style="display: flex">
+    <v-container id="trackShow" fluid class="ma-0 pa-0" style="display: flex; position: absolute; top: 48px; bottom: 56px">
           <v-dialog v-model="timeSettings" hide-overlay persistent>
                         <v-layout row wrap class="ma-0 pa-3" style="background-color: white">
                               <v-menu
@@ -84,11 +84,11 @@
                                 ></v-text-field>
                                 <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
                               </v-menu>
-                              <v-btn primary light v-on:click.native="getTrack">Load tracks</v-btn>
+                              <v-btn light v-on:click.native="getTrack">Load tracks</v-btn>
 
                         </v-layout>
         </v-dialog>
-        <v-dialog persistent v-model="isLoading" lazy>
+        <v-dialog v-model="loading" hide-overlay persistent>
             <v-layout row justify-center>
                 <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7"
                                      class="purple--text"></v-progress-circular>
@@ -98,7 +98,6 @@
         <v-dialog v-model="zoomSettings" hide-overlay persistent>
           <v-layout column class="pl-3 pr-3" style="background-color: white">
             <v-list>
-                  <v-list-item>
                       <v-list-tile v-on:click.native="zoomToExtent">
                           <v-list-tile-action>
                               <v-icon>filter</v-icon>
@@ -107,8 +106,6 @@
                               <v-list-tile-title>Fit tracks</v-list-tile-title>
                           </v-list-tile-content>
                       </v-list-tile>
-                  </v-list-item>
-                  <v-list-item>
                       <v-list-tile v-on:click.native="timeZoomOut">
                           <v-list-tile-action>
                               <v-icon>zoom_out</v-icon>
@@ -117,8 +114,6 @@
                               <v-list-tile-title>Time zoom out</v-list-tile-title>
                           </v-list-tile-content>
                       </v-list-tile>
-                  </v-list-item>
-                  <v-list-item>
                       <v-list-tile v-on:click.native="timeZoom">
                           <v-list-tile-action>
                               <v-icon>zoom_in</v-icon>
@@ -127,11 +122,10 @@
                               <v-list-tile-title>Time zoom in</v-list-tile-title>
                           </v-list-tile-content>
                       </v-list-tile>
-                  </v-list-item>
             </v-list>
           </v-layout>
         </v-dialog>
-        <div style="position: absolute; bottom: 60px; left: 0px; right: 0px">
+        <div style="position: absolute; bottom: 0px; left: 0px; right: 0px">
             <v-layout v-if="sliderSettings" child-flex class="pl-3 pr-3">
                     <vue-slider ref="slider"
                       v-model="sliderValue"
@@ -141,7 +135,7 @@
                       :lazy=true
                       :dot-size=44
                       :formatter=formatterFunction
-                      style="margin-left: 30px; margin-right: 30px;"
+                      style="margin-left: 12px; margin-right: 12px;"
                     ></vue-slider>
             </v-layout>
         </div>
@@ -249,11 +243,11 @@
     };
 
     const startLoading = function () {
-        this.loading++;
+        this.loading = true;
     };
 
     const endLoading = function () {
-        this.loading--;
+        this.loading = false;
     };
 
     const getGroups = function () {
@@ -510,7 +504,6 @@
                 endTime: function() {
                     let startTM = moment(buildTimestamp(this.startDate, this.startTime));
                     let endTM = moment(buildTimestamp(this.endDate, this.endTime));
-                    console.log("here", startTM, endTM);
 
                     if(endTM.isBefore(startTM)) {
                         this.errorTitle = "Time error.";

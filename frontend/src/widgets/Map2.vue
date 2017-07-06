@@ -104,35 +104,39 @@
     };
 
     let onMapClick = function(evt) {
-        // todo save clone last hovered and use it to compare
-        if (!this.lastHoveredFeature) {
-            // Add feature to last hovered in case our touchy friends click
+        // // todo save clone last hovered and use it to compare
+        // if (!this.lastHoveredFeature) {
+        //     // Add feature to last hovered in case our touchy friends click
             let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-                this.lastHoveredFeature = feature;
+                this.lastClickedFeature = feature;
+                this.lastPointLayer = layer;
                 return true;
             }.bind(this), {
                 layerFilter: function (layer) {
-                    return layer == this.vectorLayer;
+                    for(let lay of this.$store.user.trackStorage.pointLayers) {
+                        if(layer == lay) return true;
+                    }
+                    return false;
                 }.bind(this)
             });
-            if (!hit)
-                return;
-        }
+            // if (!hit)
+            //     return;
+        // }
 
-        let lastHovered = this.lastHoveredFeature.getId();
-        let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-            // if (this.lastHoveredFeature) {
-            //   this.$refs.popup.lastClickedFeature = this.lastHoveredFeature
-            // }
-            // else {
-            // this.$refs.popup.lastClickedFeature = feature
-            this.lastClickedFeature = this.vectorLayer.getSource().getFeatureById(lastHovered);
-            return true;
-        }.bind(this), {
-            filterLayer: function (layer) {
-                return layer == this.vectorLayer;
-            }.bind(this)
-        });
+        // let lastHovered = this.lastHoveredFeature.getId();
+        // let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+        //     // if (this.lastHoveredFeature) {
+        //     //   this.$refs.popup.lastClickedFeature = this.lastHoveredFeature
+        //     // }
+        //     // else {
+        //     // this.$refs.popup.lastClickedFeature = feature
+        //     this.lastClickedFeature = this.vectorLayer.getSource().getFeatureById(lastHovered);
+        //     return true;
+        // }.bind(this), {
+        //     filterLayer: function (layer) {
+        //         return layer == this.vectorLayer;
+        //     }.bind(this)
+        // });
 
         if (hit) {
             this.popupStats(this.lastClickedFeature, evt.coordinate);
