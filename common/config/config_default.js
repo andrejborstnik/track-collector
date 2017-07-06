@@ -26,14 +26,6 @@ exports.app_title = "GPS";
 // Winston verbosity level.
 exports.log_level = 'debug';
 
-exports.url_prefix = `${exports.path_prefix == '/' ? '' : exports.path_prefix}`;
-
-// Base URI for ALL backend services.
-exports.base_uri = `${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
-
-// Backend API prefix.
-exports.paths_api_prefix = `http://localhost:${exports.be_port}${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
-
 
 // Babel.
 exports.babel = {
