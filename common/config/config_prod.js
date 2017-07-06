@@ -9,12 +9,10 @@
 // CONFIG
 //
 
-exports.path_prefix = '/trackcollector';
-
 exports.url_prefix = `${exports.path_prefix == '/' ? '' : exports.path_prefix}`;
 
 // Base URI for ALL backend services.
 exports.base_uri = `${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
 
 // Frontend API prefix.
-exports.paths_api_prefix = `https://test.goopti.com${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
+exports.paths_api_prefix = `${exports.fe_url}{exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
