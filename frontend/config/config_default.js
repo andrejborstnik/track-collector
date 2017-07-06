@@ -8,6 +8,12 @@
 //
 
 
+let jsonfile =require('jsonfile');                        // Reading and writing JSON files.
+let localconf = jsonfile.readFileSync('../../local.config');
+
+exports.fe_url = localconf.url;
+exports.path_prefix = localconf.fe_path;
+
 // SASS.
 exports.paths_sass = [
     "node_modules/foundation-sites/scss",
