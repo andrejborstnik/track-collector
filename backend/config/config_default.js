@@ -14,6 +14,8 @@ let localconf = jsonfile.readFileSync('../../local.config');
 exports.secretResetKey = secrets.passwordReset;
 exports.java_be = localconf.java_be;
 exports.java_be_path = localconf.be_path;
+exports.be_port = localconf.be_port;
+exports.fe_port = localconf.fe_port;
 
 exports.url_prefix = `${exports.path_prefix == '/' ? '' : exports.path_prefix}`;
 

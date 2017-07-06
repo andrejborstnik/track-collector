@@ -8,12 +8,6 @@
 //
 
 
-// Backend port.
-exports.be_port = 3102;
-
-// Frontend port.
-exports.fe_port = 3002;
-
 // Browsersync port.
 exports.port = 4080;
 

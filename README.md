@@ -20,7 +20,9 @@
         "java_be": "https://test.goopti.com",
         "be_path": "/tracker",
         "url": "https://test.goopti.com",
-        "fe_path": "/trackcollector"
+        "fe_path": "/trackcollector",
+        "be_port": "3102",
+        "fe_port": "3002"
 }
 ```
 
