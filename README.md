@@ -14,7 +14,7 @@
 }
 ```
 
-7. Podobno velja za datoteko '../../local.config', ki izgleda npr. takole (na serverju). Pri sebi si raje nastavite fe_path na ''':
+7. Podobno velja za datoteko '../../local.config', ki izgleda npr. takole (na serverju). Pri sebi si raje nastavite fe_path na '/':
 ```json
 {
         "java_be": "https://test.goopti.com",

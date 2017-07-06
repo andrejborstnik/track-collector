@@ -11,8 +11,17 @@
 let jsonfile =require('jsonfile');                        // Reading and writing JSON files.
 let localconf = jsonfile.readFileSync('../../local.config');
 
+console.log(localconf)
 exports.fe_url = localconf.url;
 exports.path_prefix = localconf.fe_path;
+
+exports.url_prefix = `${exports.path_prefix == '/' ? '' : exports.path_prefix}`;
+
+// Base URI for ALL backend services.
+exports.base_uri = `${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
+
+// Backend API prefix.
+exports.paths_api_prefix = `http://localhost:${exports.be_port}${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
 
 // SASS.
 exports.paths_sass = [

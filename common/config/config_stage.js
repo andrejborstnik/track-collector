@@ -10,8 +10,6 @@
 //
 
 
-exports.path_prefix = '/trackcollector';
-
 // Base URI for ALL backend services.
 exports.base_uri = `${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
 

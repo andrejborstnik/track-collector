@@ -32,8 +32,6 @@ exports.app_title = "GPS";
 // Winston verbosity level.
 exports.log_level = 'debug';
 
-exports.path_prefix = '/';
-
 exports.url_prefix = `${exports.path_prefix == '/' ? '' : exports.path_prefix}`;
 
 // Base URI for ALL backend services.
