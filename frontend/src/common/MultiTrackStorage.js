@@ -76,4 +76,12 @@ export default class MultiTrackStorage {
             this.toStorage.get(userId).getTrack(token, startCallback, endCallback);
         }
     };
+
+    get pointLayers() {
+        let lst = [];
+        for(let key of this.toStorage.keys()) {
+            lst.push(this.toStorage.get(key).pointLayer);
+        }
+        return lst;
+    }
 }

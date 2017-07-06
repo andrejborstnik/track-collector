@@ -202,7 +202,7 @@ export default class TrackStorage {
               }
               let point = new ol.geom.Point(TrackStorage.transformCoords([obj.longitude, obj.latitude]));
               let pointLabel = new ol.geom.Point(TrackStorage.transformCoords([obj.longitude, obj.latitude]));
-              let pointGeo = new ol.Feature({ labelPoint: point, geometry: point});
+              let pointGeo = new ol.Feature({ labelPoint: point, geometry: point, name: moment(obj.timestamp).format("D[.]M[.] k:mm:ss")});
               pointGeo.setId(i);
               this.pointFeatures.push(pointGeo);
               i++;
@@ -245,6 +245,10 @@ export default class TrackStorage {
       // let maxT = moment(TrackStorage.buildTimestamp(this.endDate, this.endTime)).valueOf();
       this.adjustVisibility(this.startDateTime, this.endDateTime);
   };
+
+  get pointLayer() {
+      return this.pointVectorLayer;
+  }
 
   get pointLayerVisibility() {
       if(this.pointVectorLayer) {
