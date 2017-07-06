@@ -55,7 +55,7 @@ router.post('/api/track', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri:'https://test.goopti.com/tracker/tracker/gpsQuery',
+        uri: `${config.java_be}/tracker/gpsQuery`,
         body: {
             endDate: moment(params.endDate).format(),
             groupId: params.groupId,
@@ -82,7 +82,7 @@ router.post('/api/group/list', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri:'https://test.goopti.com/tracker/group/list',
+        uri: `${config.java_be}/group/list`,
         body: {
             token: params.token,
         }
@@ -103,7 +103,7 @@ router.post('/api/group/create', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri:'https://test.goopti.com/tracker/group/list',
+        uri: `${config.java_be}/group/create`,
         body: {
             token: params.token,
         }
@@ -120,7 +120,7 @@ router.get('/api/authentication/providers/list', function (req, res) {
         headers: {
             'Accept': 'application/json',
         },
-        uri:'https://test.goopti.com/tracker/authentication/providers/list',
+        uri: `${config.java_be}/authentication/providers/list`
     }).then((body) => {
         res.send(body);
     }).catch((err) => {
@@ -137,7 +137,7 @@ router.post('/api/authentication/update', function (req, res) {
             'Content-Type': 'application/json'
         },
         body: req.body,
-        uri:'https://test.goopti.com/tracker/authentication/update',
+        uri: `${config.java_be}/authentication/update`
     }).then((body) => {
         res.send(body);
     }).catch((err) => {
@@ -154,7 +154,7 @@ router.post('/api/authentication/profile', function (req, res) {
             'Content-Type': 'application/json'
         },
         body: req.body,
-        uri:'https://test.goopti.com/tracker/authentication/profile',
+        uri: `${config.java_be}/authentication/profile`
     }).then((body) => {
         res.send(body);
     }).catch((err) => {
@@ -176,7 +176,7 @@ router.post('/api/signin', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri:'https://test.goopti.com/tracker/authentication/authenticate',
+        uri: `${config.java_be}/authentication/authenticate`,
         body: req.body
     }).then((body) => {
         res.send(body);
