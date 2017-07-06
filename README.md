@@ -11,6 +11,14 @@
 {
 "passwordReset" : "***"
 }
+7. Podobno velja za datoteko '../../local.config', ki izgleda npr. takole:
+{
+        "java_be": "https://test.goopti.com",
+        "be_path": "/tracker",
+        "url": "https://test.goopti.com",
+        "fe_path": "/trackcollector"
+}
+
 Tri zvezdice se smiselno nadomesti z "Secret za resetiranje gesel:" iz skupne beležke.
 
 ## Frontend
@@ -39,3 +47,4 @@ V ```backend/config/config_default.js``` je potrebno napisati kje se nahaja baza
 2. Uporabis v ```routes.js```. Tam in v ```backend.js``` lahko tudi konfiguriras express.
 
 Vec o Vue frameworku najdes na [https://vuejs.org/]('https://vuejs.org/').
+
