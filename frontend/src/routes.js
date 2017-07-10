@@ -17,7 +17,6 @@ import DisplayTrack from 'pages/DisplayTrack.vue';
 import BrowseComponents from 'pages/BrowseComponents.vue';
 import Profile from 'pages/Profile.vue';
 import Groups from 'pages/Groups.vue';
-import Follow from 'pages/Follow.vue';
 
 import App from 'App.vue';
 
@@ -121,33 +120,23 @@ let routes = [
 
     {
         path: 'signin',
-        component: Signin,
-        meta: { auth: false }
+        component: Signin
     },
 
     {
         path: 'registration',
-        component: Registration,
-        meta: { auth: false }
+        component: Registration
     },
 
     {
         path: 'resetPassword',
-        component: resetPassword,
-        meta: { auth: false }
-    },
-
-    {
-        path: 'follow/:token',
-        component: Follow,
-        meta: { auth: false }
+        component: resetPassword
     },
 
 
     {
         path: '*',
-        component: _404,
-        meta: { auth: false }
+        component: _404
     },
 
     {
@@ -168,8 +157,7 @@ routes = [
     },
     {
         path: '*',
-        component: _404,
-        meta: { auth: false }
+        component: _404
     }
 ];
 

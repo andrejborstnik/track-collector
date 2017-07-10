@@ -250,6 +250,7 @@
         // this.getData();
         this.initing = false;
         this.mydatachanged = false;
+        setTimeout( function() { console.log("x"); this.map.updateSize();}.bind(this), 300); 
     };
 
 

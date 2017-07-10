@@ -2,7 +2,7 @@
     <section>
         <div class="ol-popup" id="olpopup" >
             <a @click="closePopup" id="popup-closer" class="ol-popup-closer"></a>
-            <div>
+            <div style="margin-top: 1px;">
                 <p>
                     {{title}}
                 </p>
@@ -49,7 +49,7 @@
         filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
         padding: 3px;
         border-radius: 10px;
-        border: 1px solid #cccccc;
+        border: 2px solid red;
         bottom: 12px;
         left: -50px;
     }
