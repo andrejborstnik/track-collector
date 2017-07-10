@@ -53,7 +53,7 @@ env.profile = {
         'environment' : "dev prod exit",
         'backup_dir' : '/backup/trackcollector-stage',
         'branch': 'master',
-        'url': 'https://test.goopti.com//trackcollector/browse'
+        'url': 'https://test.goopti.com/trackcollector/browse'
     },
 
     'prod' : {
@@ -66,6 +66,6 @@ env.profile = {
         'environment' : 'dev prod exit',
         'backup_dir' : '/backup/trackcollector',
         'branch': 'prod',
-        'url': 'https://test.goopti.com//trackcollector/browse'
+        'url': 'https://test.goopti.com/trackcollector/browse'
     },
 }

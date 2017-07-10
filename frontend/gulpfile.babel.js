@@ -355,7 +355,7 @@ const find_vendor_deps = function () {
             pattern: "**/config.js"
         })
         .transform(configurify, {
-            pattern: "**/data/i18n-locales.js"
+            pattern: "**/i18n-locales.js"
         })
         .transform(babelify, clone(config.babel))
         .transform(vueify, {
@@ -631,11 +631,6 @@ gulp.task('split-bundler-main', function () {
         vendor_files);
     stream.add(frontend_rebundler());
 
-    // Watch .i18n.js files.
-    watch('src/**/*.i18n.js', function () {
-        frondent_bundler.emit('invalidate', require.resolve('src/data/i18n-locales.js'));
-    });
-
     return stream;
 });
 
@@ -670,7 +665,7 @@ const prepare_bundler = function () {
             pattern: "**/config.js"
         })
         .transform(configurify, {
-            pattern: "**/data/i18n-locales.js"
+            pattern: "**/i18n-locales.js"
         })
         .transform(babelify, clone(config.babel))
         .transform(vueify, {

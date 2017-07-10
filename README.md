@@ -8,9 +8,24 @@
 4. Zaženeš aplikacijo: ```op-start```
 5. Ko se aplikacija zgradi (par sekund) lahko spreminjaš kodo in ko shraniš se spletna stran sama osvezi. V konzoli, kjer si zagnal ```op-start``` vidiš morebitne napake pri grajenju. Javascript napake pa vidiš v konzoli browserja.
 6. Če so napake jih moraš odstraniti. Preveri če imaš ključ ("Secret za resetiranje gesel:") v '../../secrets.json' kar je v isti mapi kot je track-collector. Če ključa nimaš ga vzemi is skupne beležke. Tam je tudi aktivacijsko ime in geslo. Datoteka secrets.json za enkrat izgleda takole:
+```json
 {
-"passwordReset" : "***"
+  "passwordReset" : "***"
 }
+```
+
+7. Podobno velja za datoteko '../../local.config', ki izgleda npr. takole (na serverju). Pri sebi si raje nastavite fe_path na '/':
+```json
+{
+        "java_be": "https://test.goopti.com",
+        "be_path": "/tracker",
+        "url": "https://test.goopti.com",
+        "fe_path": "/trackcollector",
+        "be_port": "3102",
+        "fe_port": "3002"
+}
+```
+
 Tri zvezdice se smiselno nadomesti z "Secret za resetiranje gesel:" iz skupne beležke.
 
 ## Frontend
@@ -39,3 +54,4 @@ V ```backend/config/config_default.js``` je potrebno napisati kje se nahaja baza
 2. Uporabis v ```routes.js```. Tam in v ```backend.js``` lahko tudi konfiguriras express.
 
 Vec o Vue frameworku najdes na [https://vuejs.org/]('https://vuejs.org/').
+

@@ -55,7 +55,7 @@ router.post('/api/track', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri: `${config.java_be}/tracker/gpsQuery`,
+        uri:`${config.java_be}${config.java_be_path}/tracker/gpsQuery`,
         body: {
             endDate: moment(params.endDate).format(),
             groupId: params.groupId,
@@ -82,7 +82,7 @@ router.post('/api/group/list', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri: `${config.java_be}/group/list`,
+        uri:`${config.java_be}${config.java_be_path}/group/list`,
         body: {
             token: params.token,
         }
@@ -103,7 +103,7 @@ router.post('/api/group/create', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri: `${config.java_be}/group/create`,
+        uri:`${config.java_be}${config.java_be_path}/group/list`,
         body: {
             token: params.token,
         }
@@ -120,7 +120,7 @@ router.get('/api/authentication/providers/list', function (req, res) {
         headers: {
             'Accept': 'application/json',
         },
-        uri: `${config.java_be}/authentication/providers/list`
+        uri:`${config.java_be}${config.java_be_path}/authentication/providers/list`,
     }).then((body) => {
         res.send(body);
     }).catch((err) => {
@@ -137,7 +137,7 @@ router.post('/api/authentication/update', function (req, res) {
             'Content-Type': 'application/json'
         },
         body: req.body,
-        uri: `${config.java_be}/authentication/update`
+        uri:`${config.java_be}${config.java_be_path}/authentication/update`,
     }).then((body) => {
         res.send(body);
     }).catch((err) => {
@@ -154,7 +154,24 @@ router.post('/api/authentication/profile', function (req, res) {
             'Content-Type': 'application/json'
         },
         body: req.body,
-        uri: `${config.java_be}/authentication/profile`
+        uri:`${config.java_be}${config.java_be_path}/authentication/profile`,
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
+
+router.post('/api/authentication/oneTimeToken', function (req, res) {
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: req.body,
+        uri:`${config.java_be}${config.java_be_path}/authentication/authenticate`,
     }).then((body) => {
         res.send(body);
     }).catch((err) => {
@@ -176,7 +193,7 @@ router.post('/api/signin', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri: `${config.java_be}/authentication/authenticate`,
+        uri:`${config.java_be}${config.java_be_path}/authentication/authenticate`,
         body: req.body
     }).then((body) => {
         res.send(body);

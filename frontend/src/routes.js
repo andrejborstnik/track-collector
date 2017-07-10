@@ -17,6 +17,7 @@ import DisplayTrack from 'pages/DisplayTrack.vue';
 import BrowseComponents from 'pages/BrowseComponents.vue';
 import Profile from 'pages/Profile.vue';
 import Groups from 'pages/Groups.vue';
+import Follow from 'pages/Follow.vue';
 
 import App from 'App.vue';
 
@@ -44,7 +45,7 @@ let routes = [
         path: 'index',
         redirect: '/'
     },
-    
+
     {
         path: '/',
         redirect: 'signin'
@@ -53,11 +54,11 @@ let routes = [
     //
     // Pages
     //
-    
+
     // Prve tiste, ki rabijo auth
-    
+
     // AUTH TRUE
-    
+
     {
         path: 'profile',
         component: Profile,
@@ -69,7 +70,7 @@ let routes = [
         component: User_update,
         meta: { auth: true }
     },
-    
+
     {
         path: 'groups',
         component: Groups,
@@ -95,8 +96,8 @@ let routes = [
         path: 'db',
         component: PostGreDemo,
         meta: { auth: true }
-    },    
-    
+    },
+
     {
         path: 'display/:tracks',
         component: DisplayTrack,
@@ -115,28 +116,38 @@ let routes = [
         component: ExampleMap,
         meta: { auth: true }
     },
-    
+
     // NO AUTH
 
     {
         path: 'signin',
-        component: Signin
+        component: Signin,
+        meta: { auth: false }
     },
 
     {
         path: 'registration',
-        component: Registration
+        component: Registration,
+        meta: { auth: false }
     },
-    
+
     {
         path: 'resetPassword',
-        component: resetPassword
+        component: resetPassword,
+        meta: { auth: false }
+    },
+
+    {
+        path: 'follow/:token',
+        component: Follow,
+        meta: { auth: false }
     },
 
 
     {
         path: '*',
-        component: _404
+        component: _404,
+        meta: { auth: false }
     },
 
     {
@@ -157,7 +168,8 @@ routes = [
     },
     {
         path: '*',
-        component: _404
+        component: _404,
+        meta: { auth: false }
     }
 ];
 

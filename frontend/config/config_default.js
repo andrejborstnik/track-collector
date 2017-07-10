@@ -8,6 +8,22 @@
 //
 
 
+let jsonfile =require('jsonfile');                        // Reading and writing JSON files.
+let localconf = jsonfile.readFileSync('../../local.config');
+
+exports.fe_url = localconf.url;
+exports.path_prefix = localconf.fe_path;
+exports.be_port = localconf.be_port;
+exports.fe_port = localconf.fe_port;
+
+exports.url_prefix = `${exports.path_prefix == '/' ? '' : exports.path_prefix}`;
+
+// Base URI for ALL backend services.
+exports.base_uri = `${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
+
+// Backend API prefix.
+exports.paths_api_prefix = `http://localhost:${exports.be_port}${exports.path_prefix == '/' ? '' : exports.path_prefix}/api`;
+
 // SASS.
 exports.paths_sass = [
     "node_modules/foundation-sites/scss",
@@ -26,3 +42,7 @@ exports.node_vendor_modules = {
 
 // Frontend application.
 exports.main_application_file = "frontend.js";
+
+exports.language = 'en';
+
+exports.fallback_language = 'si';

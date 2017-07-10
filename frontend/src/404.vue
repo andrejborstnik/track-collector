@@ -1,7 +1,7 @@
 <template>
 
     <div class="paint-me">
-        I am 404.
+        {{ $t("A404.A404_text") }}
     </div>
 
 </template>
