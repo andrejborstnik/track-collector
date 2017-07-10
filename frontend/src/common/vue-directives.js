@@ -31,7 +31,6 @@ import _ from 'lodash';
 // });
 
 
-
 // Focuser
 //
 // Example:

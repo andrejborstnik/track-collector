@@ -42,3 +42,7 @@ exports.node_vendor_modules = {
 
 // Frontend application.
 exports.main_application_file = "frontend.js";
+
+exports.language = 'en';
+
+exports.fallback_language = 'si';

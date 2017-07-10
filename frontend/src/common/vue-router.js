@@ -48,6 +48,9 @@ Object.defineProperty(Vue.prototype, '$store', {
 import Vuetify from 'vuetify';
 Vue.use(Vuetify);
 
+// i18n configuration
+import i18n from 'common/vue-translation'
+
 // Import main application.
 import main_app from 'src/App.vue';
 
@@ -122,6 +125,7 @@ router.beforeEach((to, from, next) => { // Check authentication before each tran
 new Vue({
   el: 'app',
   router: router,
+  i18n,
   data: function () {
       return {
           store
