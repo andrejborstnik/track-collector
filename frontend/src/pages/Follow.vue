@@ -42,7 +42,7 @@
                 this.$store.user.token = body.token;
 
                 // todo user data
-                cookies.set_session_cookie('insert email', body.token, false, true); // todo admin and cookies
+                cookies.set_session_cookie(body.userId, body.token, false, true); // todo admin and cookies
 
                 this.$router.push(`${config.url_prefix}/track`);
             }
