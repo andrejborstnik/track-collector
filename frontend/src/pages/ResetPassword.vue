@@ -122,6 +122,9 @@
 
     import * as config from 'config';
     const request = require('request-promise-native');
+    import isemail from 'isemail';
+
+
     const resetPassword = function () {
         let email = this.mail;
         if (validateEmail(email)) {
@@ -168,9 +171,10 @@
 
 
     const validateEmail = function (email) {
-        let re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(email);
+        return isemail.validate(email);
     };
+
+
     export default {
         name: 'ResetPassword',
 
