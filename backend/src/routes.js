@@ -162,6 +162,23 @@ router.post('/api/authentication/profile', function (req, res) {
     });
 });
 
+router.post('/api/authentication/oneTimeToken', function (req, res) {
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: req.body,
+        uri:`${config.java_be}${config.java_be_path}/authentication/authenticate`,
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
+
 
 router.post('/api/register', register.register_new_user);
 router.post('/api/resetPassword', resetPassword.resetPassword);
