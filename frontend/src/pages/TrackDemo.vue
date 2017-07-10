@@ -420,6 +420,7 @@
                     }
                 ];
          this.$store.user.bottomNavigation = bottomNavigation;
+         setTimeout( function() { this.$refs.map.map.updateSize();}.bind(this), 300);        
     };
 
     //
