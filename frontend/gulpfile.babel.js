@@ -536,7 +536,7 @@ const create_rebundler_function = function (bundler, rel_path, opts, entries, ex
             // Sourcemap transformations.
             .pipe( gulpif(is_dev && bundle_opts['is-sourcemap'], sourcemaps.init({loadMaps: true})) )
             // Add transformation tasks to the pipeline here.
-            .pipe( gulpif(is_prod || bundle_opts['uglify'], uglify().on('error', gutil.log)) )
+            // .pipe( gulpif(is_prod || bundle_opts['uglify'], uglify().on('error', gutil.log)) )
             .pipe( gulpif(is_dev && bundle_opts['is-sourcemap'], sourcemaps.write()) )
 
             .pipe( rename({suffix: '.min'}) )
@@ -695,7 +695,7 @@ const create_bundler_function = function (bundler) {
             // Sourcemap transformations.
             .pipe( gulpif(is_dev, sourcemaps.init({loadMaps: true})) )
             // Add transformation tasks to the pipeline here.
-            .pipe( gulpif(is_prod, uglify().on('error', gutil.log)) )
+            // .pipe( gulpif(is_prod, uglify().on('error', gutil.log)) )
             .pipe( gulpif(is_dev, sourcemaps.write()) )
 
             .pipe( rename({suffix: '.min'}) )
