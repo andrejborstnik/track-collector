@@ -154,7 +154,6 @@ export default class TrackStorage {
               userIds: [this.userId]
           }
       }).then((body) => {
-          console.log("body", body);
           this.mergeData(body.tracks);
           if(endCallback != null) endCallback();
       });
