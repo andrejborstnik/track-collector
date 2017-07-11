@@ -1,6 +1,7 @@
 <template>
     <section>
         The token you tried to use is expired. Please request a new link.
+        <v-btn flat dark disabled>Disabled</v-btn>
     </section>
 </template>
 

@@ -2,14 +2,15 @@
     <v-container id="trackShow" fluid class="ma-0 pa-0" style="display: flex; position: absolute; top: 48px; bottom: 56px">
           <v-dialog v-model="timeSettings" hide-overlay persistent>
                         <v-layout row wrap class="ma-0 pa-3" style="background-color: white">
-                              <v-menu
+                              <!-- <v-menu
                                 lazy
-                                :close-on-content-click="false"
+                                :close-on-content-click="true"
                                 v-model="menuFromDate"
                                 transition="v-scale-transition"
                                 offset-y
                                 :nudge-left="40"
-                              >
+                              > -->
+                              <v-dialog v-model="menuFromDate">
                                 <v-text-field
                                   slot="activator"
                                   label="Start date:"
@@ -25,15 +26,17 @@
                                       :allowed-dates="allowedStartDate"
                                       >
                                 </v-date-picker>
-                              </v-menu>
-                              <v-menu
+                              </v-dialog>
+                              <!-- </v-menu> -->
+                              <!-- <v-menu
                                 lazy
                                 :close-on-content-click="false"
                                 v-model="menuFromTime"
                                 transition="v-scale-transition"
                                 offset-y
                                 :nudge-left="40"
-                              >
+                              > -->
+                              <v-dialog v-model="menuFromTime">
                                 <v-text-field
                                   slot="activator"
                                   label="Start time:"
@@ -42,15 +45,17 @@
                                   readonly
                                 ></v-text-field>
                                 <v-time-picker v-model="startTime" format="24hr"></v-time-picker>
-                              </v-menu>
-                              <v-menu
+                              <!-- </v-menu> -->
+                            </v-dialog>
+                              <!-- <v-menu
                                 lazy
                                 :close-on-content-click="false"
                                 v-model="menuToDate"
                                 transition="v-scale-transition"
                                 :nudge-top="100"
                                 :nudge-left="0"
-                              >
+                              > -->
+                            <v-dialog v-model="menuToDate">
                                 <v-text-field
                                   slot="activator"
                                   label="End date:"
@@ -66,15 +71,17 @@
                                       :allowed-dates="allowedEndDate"
                                       >
                                 </v-date-picker>
-                              </v-menu>
-                              <v-menu
+                            </v-dialog>
+                              <!-- </v-menu> -->
+                              <!-- <v-menu
                                 lazy
                                 :close-on-content-click="false"
                                 v-model="menuToTime"
                                 transition="v-scale-transition"
                                 :nudge-top="200"
                                 :nudge-left="0"
-                              >
+                              > -->
+                              <v-dialog v-model="menuToTime">
                                 <v-text-field
                                   slot="activator"
                                   label="End time:"
@@ -83,7 +90,12 @@
                                   readonly
                                 ></v-text-field>
                                 <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
-                              </v-menu>
+                              <!-- </v-menu> -->
+                            </v-dialog>
+                              <v-layout row>
+                                <v-btn flat primary v-on:click.native="setYesterday">Yesterday</v-btn>
+                                <v-btn flat primary v-on:click.native="setToday">Today</v-btn>
+                              </v-layout>
                               <v-btn light v-on:click.native="getTrack">Load tracks</v-btn>
 
                         </v-layout>
@@ -166,9 +178,7 @@
 
 
 <style lang="scss">
-    #rangeCard {
-        padding: 0px
-    }
+    // @import "vendor/vuetify/dist/vuetify.min.css";
 </style>
 
 
@@ -228,6 +238,20 @@
         // ALEN - začasno zakomentirano
         // this.startDate = moment(yesterday).format("YYYY-MM-DD")
         // this.endDate = moment(today).format("YYYY-MM-DD")
+    };
+
+    const setToday = function() {
+      this.startDate = moment().format("YYYY-MM-DD");;
+      this.endDate = this.startDate;
+      this.startTime = "00:00";
+      this.endTime = "23:59";
+    };
+
+    const setYesterday = function() {
+      this.startDate = moment().subtract(1, "days").format("YYYY-MM-DD");;
+      this.endDate = this.startDate;
+      this.startTime = "00:00";
+      this.endTime = "23:59";
     };
 
     const buildTimestamp = function (date, time) {
@@ -420,7 +444,7 @@
                     }
                 ];
          this.$store.user.bottomNavigation = bottomNavigation;
-        //  setTimeout( function() { this.$refs.map.map.updateSize();}.bind(this), 300);        
+         setTimeout( function() { this.$refs.map.map.updateSize();}.bind(this), 300);
     };
 
     //
@@ -449,7 +473,9 @@
             toggleSliderSettings,
             refreshBottomNavigation,
             allowedStartDate,
-            allowedEndDate
+            allowedEndDate,
+            setToday,
+            setYesterday
         },
 
         mixins: [activate_mixin],

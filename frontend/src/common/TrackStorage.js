@@ -154,11 +154,8 @@ export default class TrackStorage {
               userIds: [this.userId]
           }
       }).then((body) => {
+          console.log("body", body);
           this.mergeData(body.tracks);
-          this.loadedStartDateTime = this.startDateTime;
-          this.loadedEndDateTime = this.endDateTime;
-          this.startDateTimeChanged = false;
-          this.endDateTimeChanged = false;
           if(endCallback != null) endCallback();
       });
   };
@@ -172,6 +169,11 @@ export default class TrackStorage {
   };
 
   mergeData(output) {
+      this.loadedStartDateTime = this.startDateTime;
+      this.loadedEndDateTime = this.endDateTime;
+      this.startDateTimeChanged = false;
+      this.endDateTimeChanged = false;
+
       let len = 0;
       let j = 0;
       for (let el of output) {
