@@ -145,7 +145,7 @@
 
 
 <style lang="scss">
-    @import "static/vendor/vuetify/dist/vuetify.min.css";
+    @import "static/vendor/vuetify/dist/vuetify.min.css"
 </style>
 
 

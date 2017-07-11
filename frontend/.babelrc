@@ -6,7 +6,7 @@
         "transform-runtime",
         ["module-resolver", {
             "root": ["."]
-        }]        
+        }]
     ]
 
 }
