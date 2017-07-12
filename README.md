@@ -13,6 +13,7 @@
   "passwordReset" : "***"
 }
 ```
+Tri zvezdice se smiselno nadomesti z "Secret za resetiranje gesel:" iz skupne beležke.
 
 7. Podobno velja za datoteko '../../local.config', ki izgleda npr. takole (na serverju). Pri sebi si raje nastavite fe_path na '/':
 ```json
@@ -26,7 +27,15 @@
 }
 ```
 
-Tri zvezdice se smiselno nadomesti z "Secret za resetiranje gesel:" iz skupne beležke.
+8. Če program op-start javi napako naredi še znotraj mape:
+track-collector/frontend/build/.cache
+datoteko z imenom:
+dependencies.json
+in vsebino:
+```json
+{}
+```
+
 
 ## Frontend
 
