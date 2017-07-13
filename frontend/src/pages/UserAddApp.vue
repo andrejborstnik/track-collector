@@ -24,17 +24,18 @@
                 <v-card flat>
                     <v-card-text>
                         <!-- ADD A USER -->
+                        <!--Mozne ikone se pogleda na https://material.io/icons/-->
                         <input v-model="search" placeholder="search">
                         <v-list-tile twoline v-for="user in filteredList" v-bind:key="user.name">
                             <v-list-tile-avatar>
-                                <v-icon>face</v-icon>
+                                <v-icon>person</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="user.name"></v-list-tile-title>
                                 <v-list-tile-sub-title>{{user.status}}</v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-avatar v-if="user.status=='Nothing'">
-                                <v-icon>add</v-icon>
+                                <v-icon>group_add</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar v-if="user.status=='Participating'">
                                 <v-icon>delete</v-icon>
