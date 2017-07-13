@@ -25,13 +25,26 @@
                     <v-card-text>
                         <!-- ADD A USER -->
                         <input v-model="search" placeholder="search">
-                        <v-list-tile avatar v-for="user in filteredList" v-bind:key="user.name">
+                        <v-list-tile twoline v-for="user in filteredList" v-bind:key="user.name">
                             <v-list-tile-avatar>
-                                <img src="https://image.flaticon.com/icons/png/512/1/1247.png"/>
+                                <v-icon>face</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="user.name"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{user.status}}</v-list-tile-sub-title>
                             </v-list-tile-content>
+                            <v-list-tile-avatar v-if="user.status=='Nothing'">
+                                <v-icon>add</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-avatar v-if="user.status=='Participating'">
+                                <v-icon>delete</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-avatar v-if="user.status=='Requested'">
+                                <v-icon>done</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-avatar v-if="user.status=='Invited' || user.status=='Requested'">
+                                <v-icon>clear</v-icon>
+                            </v-list-tile-avatar>
                         </v-list-tile>
 
 
@@ -77,15 +90,19 @@
                 dummyList: [
                     {
                         name: "Alen",
-                        status: 0
+                        status: "Participating"
                     },
                     {
                         name: "Alja",
-                        status: 1
+                        status: "Invited"
                     },
                     {
                         name: "Ales",
-                        status: 2
+                        status: "Requested"
+                    },
+                    {
+                        name: "Joze",
+                        status: "Nothing"
                     }
                 ],
                 search: ""
