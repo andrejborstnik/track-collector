@@ -18,6 +18,7 @@ import BrowseComponents from 'pages/BrowseComponents.vue';
 import Profile from 'pages/Profile.vue';
 import Groups from 'pages/Groups.vue';
 import Follow from 'pages/Follow.vue';
+import UserAddApp from 'pages/UserAddApp.vue';
 
 import App from 'App.vue';
 
@@ -143,6 +144,11 @@ let routes = [
         meta: { auth: false }
     },
 
+    {
+        path: 'useraddapp',
+        component: UserAddApp,
+        meta: { auth: false }
+    },
 
     {
         path: '*',
