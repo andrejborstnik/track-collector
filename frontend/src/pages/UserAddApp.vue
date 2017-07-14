@@ -35,16 +35,24 @@
                                 <v-list-tile-sub-title>{{user.status}}</v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-avatar v-if="user.status=='Nothing'">
-                                <v-icon>group_add</v-icon>
+                                <v-btn icon>
+                                    <v-icon>group_add</v-icon>
+                                </v-btn>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar v-if="user.status=='Participating'">
-                                <v-icon>delete</v-icon>
+                                <v-btn icon>
+                                    <v-icon>delete</v-icon>
+                                </v-btn>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar v-if="user.status=='Requested'">
-                                <v-icon>done</v-icon>
+                                <v-btn icon>
+                                    <v-icon>done</v-icon>
+                                </v-btn>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar v-if="user.status=='Invited' || user.status=='Requested'">
-                                <v-icon>clear</v-icon>
+                                <v-btn icon>
+                                    <v-icon>clear</v-icon>
+                                </v-btn>
                             </v-list-tile-avatar>
                         </v-list-tile>
 
