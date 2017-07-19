@@ -7,11 +7,12 @@ import TrackStorage from './TrackStorage';
 export default class MultiTrackStorage {
     constructor() {
         this.toStorage = new Map();
-    };
+    }
 
     registerMap(aMap) {
         this.map = aMap;
-    };
+    }
+    
     registerUser(userId, color) {
         if(this.toStorage.has(userId)) {
            let tmpStr = this.toStorage.get(userId);
@@ -32,7 +33,7 @@ export default class MultiTrackStorage {
         for(let key of this.toStorage.keys()) {
             this.toStorage.get(key).adjustVisibility(minTime, maxTime);
         }
-    };
+    }
 
     zoomToExtent() {
       let bounds = null;
@@ -70,13 +71,13 @@ export default class MultiTrackStorage {
         for(let key of this.toStorage.keys()) {
             this.toStorage.get(key).setEndDateTimeRaw(this.endDateTime);
         }
-    };
+    }
 
     getTrack (token, startCallback, endCallback) {
         for(let userId of this.toStorage.keys()) {
             this.toStorage.get(userId).getTrack(token, startCallback, endCallback);
         }
-    };
+    }
 
     get pointLayers() {
         let lst = [];

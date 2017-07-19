@@ -32,11 +32,11 @@
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
-                                <v-list-tile-sub-title>{{ group.creatorId }} {{ group.isAdmin }} aaaBBB </v-list-tile-sub-title>
+                                <v-list-tile-sub-title>{{ group.creatorId }} {{ group.isAdmin }} </v-list-tile-sub-title>
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="is_admin()==true">
+                            <v-list-tile-avatar v-if="is_admin(group)">
                                 <v-btn icon v-on:click.native.stop="admin_action(group)">
-                                    <v-icon>transfer_within_a_station</v-icon>
+                                    <v-icon>bubble_chart</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar>
@@ -122,8 +122,22 @@
         this.$store.user.bottomNavigation = [];
     };
 
-    const is_admin = function () {
-        return false;
+    const is_admin = function (group) {
+        console.info("GROUP ADMIN");
+        for (let user of group.users) {
+            //POZOR
+            //tole je sedaj nekonsisteno
+            //enkrat ..user.email enkrat pa userId
+            //ko bo konsistentno drugje je treba se tu
+            //console.info(user);
+            //console.info(this.$store.user.email);
+            //console.info(user.userId);
+            if(this.$store.user.email == user.userId) {
+                //console.info(user);
+                //console.info(user.isAdmin);
+                return user.isAdmin;
+            }
+        }
     };
 
     const leave_group = function () {
