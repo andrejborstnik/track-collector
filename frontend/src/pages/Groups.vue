@@ -19,7 +19,7 @@
                         </v-flex>
                     </v-layout>
                 </v-flex>
-                
+
                 <v-list-group v-for="group in $store.groups" :value="group.active" :key="group.groupId">
                     <v-list-tile slot="item">
                         <v-list-tile-content>
@@ -110,7 +110,7 @@
     import request from 'request';
     import * as config from 'config';
 
-    //import {activate_mixin} from 'common/activate-mixin';
+    import {activate_mixin} from 'common/activate-mixin';
 
     const create_group = function () {
         let new_group_data = {
@@ -142,25 +142,11 @@
         });
     };
 
-    /*
     const activate = function () {
-        request({
-            method: "POST",
-            uri: `${config.paths_api_prefix}/authentication/profile`,
-            json: {
-                token: this.$store.user.token
-            }
-        }).then((body) => {
-            if (body.status == "OK") {
-                this.userData = body;
-            }
-        }).catch((err) => {
-            this.errorTitle = "Authentication failure";
-            this.errorMessage = "System error.";
-            this.showAlert = true;
-        });
+      this.$store.user.leftMenuEnabled = false;
+      this.$store.user.rightMenuEnabled = true;
+      this.$store.user.bottomNavigation = [];
     };
-    */
 
     const setReadonly = function (field, bool) {
         this.readonly[field] = bool;
@@ -170,7 +156,7 @@
     export default {
         name: 'Groups',
 
-        //mixins: [activate_mixin],
+        mixins: [activate_mixin],
 
         // todo same username on change
         data: () => {
@@ -199,7 +185,7 @@
 
         methods: {
             create_group,
-            //activate,
+            activate,
             setReadonly
         }
 

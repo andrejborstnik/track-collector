@@ -18,7 +18,8 @@ export default class MultiTrackStorage {
            tmpStr.setColor(color);
            return tmpStr;
         }
-        let newStorage = new TrackStorage(this.map, userId, color);
+        // let newStorage = new TrackStorage(this.map, userId, color);
+        let newStorage = new TrackStorage(this.map, userId, '#0000FF');
         this.toStorage.set(userId, newStorage);
         return newStorage;
     }

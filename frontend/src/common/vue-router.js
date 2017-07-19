@@ -27,7 +27,10 @@ let store = {
         admin: false,
         groups: null,
         trackStorage: new MultiTrackStorage(),
-        bottomNavigation: []
+        bottomNavigation: [],
+        groupFilter: '',
+        leftMenuEnabled: false,
+        rightMenuEnable: false
     },
     state: {
         path_to: null,

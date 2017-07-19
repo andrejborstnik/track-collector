@@ -150,6 +150,8 @@
     const activate = function () {
         // Se izvede vsakic, ko se stran aktivira. Mounted se izvede le, ko se komponenta prvic skreira (in v Vue nikoli ne umre, razen, ce ji reces).
         // Na primer, ce se odlogiras in nazaj logiras z drugim racunom, bi ti z mounted kazalo providerje prvega uporabnika.
+        this.$store.user.leftMenuEnabled = false;
+        this.$store.user.rightMenuEnabled = false;
         this.getProviders();
     };
 

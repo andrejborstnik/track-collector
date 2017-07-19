@@ -1,12 +1,14 @@
 <template>
     <section>
-        <div class="ol-popup" id="olpopup" >
-            <a @click="closePopup" id="popup-closer" class="ol-popup-closer"></a>
-            <div style="margin-top: 1px;">
-                <p>
-                    {{title}}
-                </p>
+        <div class="ol-popup" id="olpopup" :style="{ 'background-color': borderColor }">
+            <!-- <a @click="closePopup" id="popup-closer" class="ol-popup-closer"></a> -->
+            <div style="flex-grow: 1;">
+                    Time: {{title}}
+                    <br/>
+                    Speed: {{speed}} km/h
             </div>
+            <div class="ol-popup-triangle" :style="{ 'border-top-color': borderColor}"></div>
+
             <!--
             <code>{{coords}}</code>
             <div>
@@ -38,9 +40,10 @@
         color: white;
     }
     #olpopup {
-        width: 130px;
-        height: 30px;
+        width: 180px;
         padding-left: 10px;
+        display: flex;
+
     }
     .ol-popup {
         position: absolute;
@@ -49,7 +52,7 @@
         filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
         padding: 3px;
         border-radius: 10px;
-        border: 2px solid red;
+        // border: 2px solid red;
         bottom: 12px;
         left: -50px;
     }
@@ -62,18 +65,33 @@
         position: absolute;
         pointer-events: none;
     }
-    .ol-popup:after {
-        border-top-color: white;
+    .ol-popup-triangle {
+        top: 100%;
+        border: solid transparent;
+        content: "u";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+
+        border-top-color: black;
         border-width: 10px;
         left: 48px;
         margin-left: -10px;
     }
-    .ol-popup:before {
-        border-top-color: #cccccc;
-        border-width: 11px;
-        left: 48px;
-        margin-left: -11px;
-    }
+
+    // .ol-popup:after {
+    //     border-top-color: this.borderColor;
+    //     border-width: 10px;
+    //     left: 48px;
+    //     margin-left: -10px;
+    // }
+    // .ol-popup:before {
+    //     border-top-color: "borderColor";
+    //     border-width: 12px;
+    //     left: 48px;
+    //     margin-left: -12px;
+    // }
     .ol-popup-closer {
         text-decoration: none;
         position: absolute;
@@ -100,14 +118,26 @@
 
   export default {
       name: "MapPopup",
-	  props: {
+	     props: {
           title: {
-              type: String,
-			  default: null
-		  },
-		  content: {
-              type: Object
-		  },
+                type: String,
+			          default: null
+		      },
+          borderColor: {
+                type: String,
+                default: 'blue'
+          },
+          speed: {
+                type: Number,
+                default: null
+          },
+          orientation: {
+                type: String,
+                default: "up"
+          },
+    		  content: {
+                  type: Object
+    		  },
           coords: {
               type: String
           },
@@ -127,6 +157,9 @@
           closePopup: function() {
               this.$parent.overlay.setPosition();
               return false;
+          },
+          isUp: function() {
+              return orientation == "up";
           }
 	  }
   }

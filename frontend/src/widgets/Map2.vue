@@ -1,6 +1,20 @@
 <template>
     <section>
-        <Popup :title="popupTitle" :content="popupContent" :coords="popupCoords" ref="popup"></Popup>
+        <Popup :title="popupTitle"
+            :content="popupContent"
+            :coords="popupCoords"
+            ref="popup"
+            borderColor="white"
+            :speed="popupSpeed"
+            ></Popup>
+
+        <!-- <Popup :title="previousPopupTitle"
+            :content="previousPopupContent"
+            :coords="previousPopupCoords"
+            ref="popup2"
+            borderColor="white"
+            :speed="20"
+            ></Popup> -->
         <div ref="map" style="flex: 1; min-height: 0"></div>
     </section>
 </template>
@@ -18,6 +32,7 @@
     import ol from 'openlayers';
     import fp from 'lodash/fp';
     import Vue from 'vue';
+    import moment from 'moment-timezone';
 
     import config from 'config';
 
@@ -44,21 +59,40 @@
         return ol.proj.transform(coords, 'EPSG:4326', 'EPSG:3857');
     };
 
-    let popupStats = function(feature, coordinate) {
+    let popupStats = function(feature, previousFeature, coordinate) {
         let coordinate1 = feature.getGeometry().getClosestPoint([0,0]);
         let hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate1, 'EPSG:3857', 'EPSG:4326'));
 
         let data = feature.getProperties();
-        this.popupTitle = data.name;
+        this.popupTitle = moment(data.time).format("D[.]M[.]YYYY k:mm:ss");
+        this.popupSpeed = Math.round(data.speed*3.6);
 
         delete data.geometry;
         delete data.labelPoint;
-        delete data.name;
+        delete data.time;
+        delete data.speed;
 
         this.popupContent = data;
         this.popupCoords = hdms;
-
         this.overlay.setPosition(coordinate1);
+        // if(previousFeature != null) {
+        //     let coordinateP = previousFeature.getGeometry().getClosestPoint([0,0]);
+        //     let hdmsP = ol.coordinate.toStringHDMS(ol.proj.transform(coordinateP, 'EPSG:3857', 'EPSG:4326'));
+        //
+        //     let dataP = previousFeature.getProperties();
+        //     this.previousPopupTitle = dataP.name;
+        //
+        //     delete dataP.geometry;
+        //     delete dataP.labelPoint;
+        //     delete dataP.name;
+        //
+        //     this.previousPopupContent = dataP;
+        //     this.previousPopupCoords = hdmsP;
+        //     this.previousOverlay.setPosition(coordinateP);
+        //     console.log(coordinate1, coordinateP);
+        // } else {
+        //     console.log(coordinate1, null);
+        // }
     };
 
     let hideMarker = function (feature) {
@@ -108,6 +142,7 @@
         // if (!this.lastHoveredFeature) {
         //     // Add feature to last hovered in case our touchy friends click
             let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+                this.previousClickedFeature = this.lastClickedFeature;
                 this.lastClickedFeature = feature;
                 this.lastPointLayer = layer;
                 return true;
@@ -139,7 +174,12 @@
         // });
 
         if (hit) {
-            this.popupStats(this.lastClickedFeature, evt.coordinate);
+            this.popupStats(this.lastClickedFeature, this.previousClickedFeature, evt.coordinate);
+        } else {
+            this.overlay.setPosition();
+            // this.previousOverlay.setPosition();
+            this.previousClickedFeature = null;
+            this.lastClickedFeature = null;
         }
     };
 
@@ -177,7 +217,8 @@
                     collapsible: false
                 })
             }),
-            overlays: [this.overlay],
+            renderer: 'webgl',
+            overlays: [this.overlay], //, this.previousOverlay],
             view: new ol.View({
                 center: [this.centerCoords[0], this.centerCoords[1]],
                 zoom: 9,
@@ -210,39 +251,60 @@
     };
 
     let onMapPointermove = function(e) {
-        //todo currently index is raising to inf. if it becomes an issue fix it
-        let i;
-        this.unHover();
+        return;  // too slow. Maybe enable if not too many pixels
+        // let hit = this.map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+        //     this.lastClickedFeature = feature;
+        //     this.lastPointLayer = layer;
+        //     return true;
+        // }.bind(this), {
+        //     layerFilter: function (layer) {
+        //         for(let lay of this.$store.user.trackStorage.pointLayers) {
+        //             if(layer == lay) return true;
+        //         }
+        //         return false;
+        //     }.bind(this)
+        // });
+        //
+        // if (hit) {
+        //     this.popupStats(this.lastClickedFeature, e.coordinate);
+        // } else {
+        //     this.overlay.setPosition();
+        //     this.previousOverlay.setPosition();
+        // }
 
-        let hit = this.map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
-            if (!!this.lastHoveredFeature) {
-                // module.exports.lastHoveredFeature.getStyle().setZIndex(1)
-                i = this.lastHoveredFeature.getStyle().getZIndex();
-                if (!i) {
-                    i = 1;
-                }
-                scaleMarker(this.lastHoveredFeature)
-            }
-            this.lastHoveredFeature = feature;
-            return true;
-        }.bind(this), {
-            layerFilter: function (layer) {
-                return layer == this.vectorLayer;
-            }.bind(this)
-        });
-        if (hit) {
-            this.$refs.map.style.cursor = "pointer";
-            if (i != this.maxDepth) {
-                i = this.maxDepth;
-                this.maxDepth = i + 1;
-                this.lastHoveredFeature.getStyle().setZIndex(i + 1);
-            }
-            scaleMarker(this.lastHoveredFeature, 0.015);
-        }
-        else {
-            this.$refs.map.style.cursor = "";
-            this.unHover();
-        }
+        // //todo currently index is raising to inf. if it becomes an issue fix it
+        // let i;
+        // this.unHover();
+        //
+        // let hit = this.map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
+        //     if (!!this.lastHoveredFeature) {
+        //         // module.exports.lastHoveredFeature.getStyle().setZIndex(1)
+        //         i = this.lastHoveredFeature.getStyle().getZIndex();
+        //         if (!i) {
+        //             i = 1;
+        //         }
+        //         scaleMarker(this.lastHoveredFeature)
+        //     }
+        //     this.lastHoveredFeature = feature;
+        //     return true;
+        // }.bind(this), {
+        //     layerFilter: function (layer) {
+        //         return layer == this.vectorLayer;
+        //     }.bind(this)
+        // });
+        // if (hit) {
+        //     this.$refs.map.style.cursor = "pointer";
+        //     if (i != this.maxDepth) {
+        //         i = this.maxDepth;
+        //         this.maxDepth = i + 1;
+        //         this.lastHoveredFeature.getStyle().setZIndex(i + 1);
+        //     }
+        //     scaleMarker(this.lastHoveredFeature, 0.015);
+        // }
+        // else {
+        //     this.$refs.map.style.cursor = "";
+        //     this.unHover();
+        // }
     };
 
     let activate = function () {
@@ -250,7 +312,7 @@
         // this.getData();
         this.initing = false;
         this.mydatachanged = false;
-        // setTimeout( function() { console.log("x"); this.map.updateSize();}.bind(this), 300); 
+        // setTimeout( function() { console.log("x"); this.map.updateSize();}.bind(this), 300);
     };
 
 
@@ -277,6 +339,8 @@
         data: function () {
             return {
                 lastClickedFeature: undefined,
+                previousClickedFeature: undefined,
+                previousOverlay: undefined,
                 overlay: undefined,
                 lastHoveredFeature: undefined,
                 centerCoords1: [14.5, 46],
@@ -288,8 +352,12 @@
                 alreadyAdded: {},
                 addMode: false,
                 popupTitle: '',
+                popupSpeed: null,
+                previousPopupTitle: '',
                 popupContent: null,
+                previousPopupContent: null,
                 popupCoords: '',
+                previousPopupCoords: '',
                 initing: false,
                 mydatachanged: false
             }
@@ -332,6 +400,14 @@
                     duration: 250
                 }
             }));
+            // let popup2 = this.$refs.popup2.$el;
+            // this.previousOverlay = new ol.Overlay(({
+            //     element: popup2,
+            //     autoPan: true,
+            //     autoPanAnimation: {
+            //         duration: 250
+            //     }
+            // }));
 
             // todo empty map:
             // new ol.layer.Vector({

@@ -7,6 +7,7 @@ export default class TrackStorage {
 
   constructor(map, userId, color) {
       this.map = map;
+      this.maxSpeed = 120/3.6;
       this.data = [];
       this.userId = userId;
       this.blankColor = "rgba(255,0,0,0)";
@@ -14,7 +15,8 @@ export default class TrackStorage {
       this.pointBlankColor = "rgba(255,0,0,0)";
       this.pointColor = color;
       this.pointStrokeColor = color;
-      this.width = 3;
+      this.alertPointColor = '#FF0000';
+      this.width = 5;
       this.radius = 8;
       this.pointStrokeWidth = 1;
       this.onLineStyle = new ol.style.Style({
@@ -35,6 +37,19 @@ export default class TrackStorage {
                radius: this.radius,
                fill: new ol.style.Fill({
                  color: this.pointColor
+               })
+               ,
+               stroke: new ol.style.Stroke({
+                 color: this.pointStrokeColor,
+                 width: this.pointStrokeWidth
+               })
+             })
+      });
+      this.onPointAlertStyle = new ol.style.Style({
+          image: new ol.style.Circle({
+               radius: this.radius,
+               fill: new ol.style.Fill({
+                 color: this.alertPointColor
                })
                ,
                stroke: new ol.style.Stroke({
@@ -107,7 +122,11 @@ export default class TrackStorage {
           let pointFeature = this.pointFeatures[i];
           if(this.startTimeIndex[i] >= minT && maxT >= this.endTimeIndex[i]) {
               lineFeature.setStyle(this.onLineStyle);
-              pointFeature.setStyle(this.onPointStyle);
+              if(this.data[i].speed > this.maxSpeed) {
+                  pointFeature.setStyle(this.onPointAlertStyle);
+              } else {
+                  pointFeature.setStyle(this.onPointStyle);
+              }
               // pointFeature.getStyle().setZIndex(1);
           } else {
               lineFeature.setStyle(this.offLineStyle);
@@ -203,7 +222,12 @@ export default class TrackStorage {
               }
               let point = new ol.geom.Point(TrackStorage.transformCoords([obj.longitude, obj.latitude]));
               let pointLabel = new ol.geom.Point(TrackStorage.transformCoords([obj.longitude, obj.latitude]));
-              let pointGeo = new ol.Feature({ labelPoint: point, geometry: point, name: moment(obj.timestamp).format("D[.]M[.] k:mm:ss")});
+              let pointGeo = new ol.Feature({
+                   labelPoint: point,
+                   geometry: point,
+                   time: obj.timestamp,
+                   speed: obj.speed
+              });
               pointGeo.setId(i);
               this.pointFeatures.push(pointGeo);
               i++;
@@ -230,9 +254,10 @@ export default class TrackStorage {
           });
 
           this.pointVectorLayer = new ol.layer.Vector({
-              source: vectorSource,
-              minResolution: 0.001,
-              maxResolution: 10
+              source: vectorSource
+              // ,
+              // minResolution: 0.001,
+              // maxResolution: 10
           });
           this.map.addLayer(this.pointVectorLayer);
       }

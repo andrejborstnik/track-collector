@@ -2,14 +2,6 @@
     <v-container id="trackShow" fluid class="ma-0 pa-0" style="display: flex; position: absolute; top: 48px; bottom: 56px">
           <v-dialog v-model="timeSettings" hide-overlay persistent>
                         <v-layout row wrap class="ma-0 pa-3" style="background-color: white">
-                              <!-- <v-menu
-                                lazy
-                                :close-on-content-click="true"
-                                v-model="menuFromDate"
-                                transition="v-scale-transition"
-                                offset-y
-                                :nudge-left="40"
-                              > -->
                               <v-dialog v-model="menuFromDate">
                                 <v-text-field
                                   slot="activator"
@@ -27,15 +19,6 @@
                                       >
                                 </v-date-picker>
                               </v-dialog>
-                              <!-- </v-menu> -->
-                              <!-- <v-menu
-                                lazy
-                                :close-on-content-click="false"
-                                v-model="menuFromTime"
-                                transition="v-scale-transition"
-                                offset-y
-                                :nudge-left="40"
-                              > -->
                               <v-dialog v-model="menuFromTime">
                                 <v-text-field
                                   slot="activator"
@@ -45,16 +28,7 @@
                                   readonly
                                 ></v-text-field>
                                 <v-time-picker v-model="startTime" format="24hr"></v-time-picker>
-                              <!-- </v-menu> -->
                             </v-dialog>
-                              <!-- <v-menu
-                                lazy
-                                :close-on-content-click="false"
-                                v-model="menuToDate"
-                                transition="v-scale-transition"
-                                :nudge-top="100"
-                                :nudge-left="0"
-                              > -->
                             <v-dialog v-model="menuToDate">
                                 <v-text-field
                                   slot="activator"
@@ -72,15 +46,6 @@
                                       >
                                 </v-date-picker>
                             </v-dialog>
-                              <!-- </v-menu> -->
-                              <!-- <v-menu
-                                lazy
-                                :close-on-content-click="false"
-                                v-model="menuToTime"
-                                transition="v-scale-transition"
-                                :nudge-top="200"
-                                :nudge-left="0"
-                              > -->
                               <v-dialog v-model="menuToTime">
                                 <v-text-field
                                   slot="activator"
@@ -90,7 +55,6 @@
                                   readonly
                                 ></v-text-field>
                                 <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
-                              <!-- </v-menu> -->
                             </v-dialog>
                               <v-layout row>
                                 <v-btn flat primary v-on:click.native="setYesterday">Yesterday</v-btn>
@@ -102,8 +66,7 @@
         </v-dialog>
         <v-dialog v-model="loading" hide-overlay persistent>
             <v-layout row justify-center>
-                <v-progress-circular indeterminate v-bind:size="70" v-bind:width="7"
-                                     class="purple--text"></v-progress-circular>
+                <v-progress-linear v-bind:indeterminate="true"></v-progress-linear>
             </v-layout>
         </v-dialog>
 
@@ -295,7 +258,12 @@
         for (let grp of groups) {
             grp.visible = false;
             for (let user of grp.users) {
-                user.visible = grp.personalGroupUserId === user.userId;
+                if(grp.personalGroupUserId === user.userId) {
+                    user.visible = true;
+                    grp.withVisibleUser = true;
+                } else {
+                    user.visible = false;
+                }
                 user.style = {color: this.$store.pallete.next()};
             }
         }
@@ -406,6 +374,8 @@
     };
 
     const activate = function () {
+        this.$store.user.leftMenuEnabled = true;
+        this.$store.user.rightMenuEnabled = true;
         this.setDate();
         this.getGroups();
         this.$store.user.trackStorage.registerMap(this.$refs.map.map);
