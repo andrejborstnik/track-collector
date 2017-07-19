@@ -116,10 +116,15 @@
     import * as config from 'config';
     import {activate_mixin} from 'common/activate-mixin';
     import UserAddApp from 'pages/UserAddApp.vue';
+    import GroupsStorage from 'common/GroupsStorage';
+
+
 
     const activate = function () {
         this.$store.user.leftMenuEnabled = false;
         this.$store.user.bottomNavigation = [];
+        var grpStr = new GroupsStorage(this.$store);
+        grpStr.getGroups();
     };
 
     const is_admin = function (group) {
