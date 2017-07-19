@@ -95,7 +95,9 @@
         </v-tabs>
 
         <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable>
-            <UserAddApp :group="UserAddAppGroup"></UserAddApp>
+            <v-card>
+                <UserAddApp :group="UserAddAppGroup"></UserAddApp>
+            </v-card>
         </v-dialog>
     </v-container>
 
