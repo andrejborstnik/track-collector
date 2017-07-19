@@ -35,7 +35,7 @@
                                 <v-list-tile-sub-title>{{ group.creatorId }} {{ group.isAdmin }}</v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-avatar v-if="is_admin()">
-                                <v-btn icon v-on:click.native="admin_action">
+                                <v-btn icon v-on:click.native.stop="admin_action">
                                     <v-icon>transfer_within_a_station</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -94,7 +94,7 @@
 
         </v-tabs>
 
-        <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable persistent>
+        <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable>
             <UserAddApp></UserAddApp>
         </v-dialog>
     </v-container>
