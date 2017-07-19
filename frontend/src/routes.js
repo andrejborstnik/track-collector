@@ -19,6 +19,7 @@ import Profile from 'pages/Profile.vue';
 import Groups from 'pages/Groups.vue';
 import Follow from 'pages/Follow.vue';
 import UserAddApp from 'pages/UserAddApp.vue';
+import GroupsTest from 'pages/GroupsTest.vue';
 
 import App from 'App.vue';
 
@@ -148,6 +149,11 @@ let routes = [
         path: 'useraddapp',
         component: UserAddApp,
         meta: { auth: false }
+    },
+   
+    {
+        path: 'groupstest',
+        component: GroupsTest,
     },
 
     {

@@ -20,11 +20,25 @@
                 <v-list-group v-for="group in $store.user.groups" :value="group.active" :key="group.groupId">
                     <v-list-tile slot="item">
                         <v-list-tile-content>
-                            <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
+                            <v-list-tile-title>
+                            {{ group.groupId }}
+                            </v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
                             <v-icon>keyboard_arrow_down</v-icon>
                         </v-list-tile-action>
+                        <v-list-tile-avatar>
+                            <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
+                                <v-icon>label</v-icon>
+                            </v-btn>
+                            <!--COMMENT
+                            ##prva za admin, ta pa za klasicnega uporabnika
+                            ##tole vseskupaj izgleda cudno (kako bo link na grupo v resnici?)
+                            <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
+                                <v-icon>label_outline</v-icon>
+                            </v-btn>
+                            COMMENT-->
+                        </v-list-tile-avatar>
                     </v-list-tile>
                     <v-list-tile v-for="user in group.users" :key="user.userId">
                         <v-list-tile-content>
@@ -101,6 +115,15 @@
                             <v-list-tile-title>Groups</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
+                    <v-list-tile v-on:click.native="go_to_map">
+                        <v-list-tile-action>
+                            <v-icon>explore</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Map</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                                        
                     <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
                         <v-list-tile-action>
                             <!--COMMENT
@@ -112,6 +135,7 @@
                             <v-list-tile-title>Edit_TEMPLATE</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
+                    
             </v-list>
         </v-navigation-drawer>
         <v-toolbar dark class="primary" >
@@ -171,6 +195,10 @@
         console.info("Groups function.");
         this.$router.push('groups');
     };
+    
+    const go_to_map = function () {
+        this.$router.push('track');
+    };
 
     const edit_TEMPLATE_ACTION = function () {
         console.info("EDIT_TEMPLATE spremeni vse te oblike za nov meni.");
@@ -200,6 +228,7 @@
                     {title: 'Notification', icon: 'perm_identity', action: "edit_TEMPLATE_ACTION"},
                     {title: 'Profile', icon: 'perm_identity', action: "profile"},
                     {title: 'Groups', icon: 'perm_identity', action: "groups"},
+                    {title: 'Map', icon: 'explore', action: "go_to_map"},
                     {title: 'Edit_TEMPLATE', icon: 'mode_edit', action: "edit_TEMPLATE_ACTION"}
                 ],
                 mini: true,
@@ -211,6 +240,7 @@
             logout,
             groups,
             edit_TEMPLATE_ACTION,
+            go_to_map,
             toggleVisibility
         }
     }
