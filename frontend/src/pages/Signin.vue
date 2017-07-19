@@ -39,10 +39,9 @@
                     <v-select
                             label="Auth provider"
                             v-model="provider"
-                            :items="this.$store.providers"
-                            max-height="auto"
-                            overflow
-                            class="ma-0 pa-0"
+                            v-bind:items="this.$store.providers"
+                            single-line
+                            bottom
                     ></v-select>
                     <v-flex xm4 class="ma-0">
 
@@ -166,7 +165,7 @@
                 user_mail: '',
                 showAlert: null,
                 systemProvider: "System",
-                provider: "System",
+                provider: "GOOPTI",
                 errorTitle: '',
                 errorMessage: ''
             }
