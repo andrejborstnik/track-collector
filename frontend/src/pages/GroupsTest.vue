@@ -22,6 +22,7 @@
             </v-tabs-bar>
 
 
+
             <v-tabs-content id="aau">
                 <v-card flat>
                     <v-card-text>
@@ -32,10 +33,11 @@
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
-                                <v-list-tile-sub-title>{{ group.creatorId }} {{ group.isAdmin }} aaaBBB </v-list-tile-sub-title>
+                                <v-list-tile-sub-title>{{ group.creatorId }}
+                                </v-list-tile-sub-title>
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="is_admin()==true">
-                                <v-btn icon v-on:click.native.stop="admin_action(group)">
+                            <v-list-tile-avatar v-if="is_admin(group)">
+                                <v-btn icon v-on:click.native="admin_action">
                                     <v-icon>transfer_within_a_station</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -44,7 +46,7 @@
                                     <v-icon>directions_run</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
-
+                            
                         </v-list-tile>
                     </v-card-text>
                 </v-card>
@@ -56,6 +58,7 @@
                 </v-card>
                 {{ $store.user.groups }}
 
+                
 
             </v-tabs-content>
 
@@ -93,13 +96,7 @@
             </v-tabs-content>
 
         </v-tabs>
-
-        <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable>
-            <UserAddApp :group="UserAddAppGroup"></UserAddApp>
-        </v-dialog>
     </v-container>
-
-
 </template>
 
 
@@ -113,29 +110,32 @@
     import request from 'request';
     import * as config from 'config';
     import {activate_mixin} from 'common/activate-mixin';
-    import UserAddApp from 'pages/UserAddApp.vue';
 
     const activate = function () {
         this.$store.user.leftMenuEnabled = false;
         this.$store.user.bottomNavigation = [];
     };
 
-    const is_admin = function () {
-        return false;
+    const is_admin = function (group) {
+        console.info("GROUP ADMIN");
+        console.info(user.isAdmin);
+        for (let user of group.users) {
+            if(this.$store.user == user.userId) {
+                return user.isAdmin;
+            }
+        }
     };
 
     const leave_group = function () {
         console.info("you left group");
     };
 
-    const admin_action = function (group) {
+    const admin_action = function () {
         console.info("admin_action");
-        this.UserAddAppGroup = group;
-        this.UserAddAppVisible = !this.UserAddAppVisible;
     };
 
     export default {
-        name: 'Groups',
+        name: 'UserAddApp',
 
         mixins: [activate_mixin],
 
@@ -160,21 +160,18 @@
                         status: "Nothing"
                     }
                 ],
-                search: "",
-                UserAddAppVisible: false,
-                UserAddAppGroup: ""
-
+                search: ""
             }
         },
         computed: {
             filteredList() {
                 /*
-                 return this.dummyList.filter(item => {
-                 return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+                return this.dummyList.filter(item => {
+                        return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
 
-                 }
-                 )
-                 /*/
+                    }
+                )
+                /*/
                 this.activate()
                 console.info("AAAA");
                 console.info(this.$store.user.email);
@@ -195,9 +192,6 @@
             is_admin,
             leave_group,
             admin_action
-        },
-        components: {
-            UserAddApp
         }
     }
 

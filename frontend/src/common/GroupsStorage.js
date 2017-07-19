@@ -1,7 +1,11 @@
 import * as config from 'config';
 
 export default class GroupsStorage {
-    getGroups = function () {
+    constructor(str) {
+        this.store = str
+    };
+    
+    getGroups () {
         let path = `/group/list`;
         this.startLoading();
         request({
@@ -18,13 +22,13 @@ export default class GroupsStorage {
         });
     };
     
-    updateGroups = function (groups) {
+    updateGroups (groups) {
         let old = this.$store.user.groups;
         this.$store.user.groups = this.initializeGroups(groups);
         updateOrInitializeGroups(old);
     };
     
-    updateOrInitializeGroups = function (groups) {
+    updateOrInitializeGroups (groups) {
         if (groups == null) {
             return;
         }
@@ -54,7 +58,7 @@ export default class GroupsStorage {
         }
     };
     
-    initializeGroups = function (groups) {
+    initializeGroups (groups) {
         for (let grp of groups) {
             grp.visible = false;
             for (let user of grp.users) {
