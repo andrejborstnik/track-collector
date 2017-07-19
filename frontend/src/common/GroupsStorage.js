@@ -1,34 +1,35 @@
 import * as config from 'config';
+const request = require('request-promise-native');
 
 export default class GroupsStorage {
     constructor(str) {
-        this.store = str
-    };
-    
-    getGroups () {
+        this.store = str;
+    }
+
+    getGroups() {
         let path = `/group/list`;
-        this.startLoading();
+        //this.startLoading();
         request({
             method: "POST",
             uri: config.paths_api_prefix + path,
             json: {
-                token: this.$store.user.token,
+                token: this.store.user.token,
             }
         }).then((body) => {
-            this.endLoading();
+            //this.endLoading();
             if (body.status == "OK") {
                 this.updateGroups(body.groups);
             }
         });
+    }
+
+    updateGroups(groups) {
+        let old = this.store.user.groups;
+        this.store.user.groups = this.initializeGroups(groups);
+        this.updateOrInitializeGroups(old);
     };
-    
-    updateGroups (groups) {
-        let old = this.$store.user.groups;
-        this.$store.user.groups = this.initializeGroups(groups);
-        updateOrInitializeGroups(old);
-    };
-    
-    updateOrInitializeGroups (groups) {
+
+    updateOrInitializeGroups(groups) {
         if (groups == null) {
             return;
         }
@@ -57,18 +58,18 @@ export default class GroupsStorage {
             }
         }
     };
-    
-    initializeGroups (groups) {
+
+    initializeGroups(groups) {
         for (let grp of groups) {
             grp.visible = false;
             for (let user of grp.users) {
-                if(grp.personalGroupUserId === user.userId) {
+                if (grp.personalGroupUserId === user.userId) {
                     user.visible = true;
                     grp.withVisibleUser = true;
                 } else {
                     user.visible = false;
                 }
-                user.style = {color: this.$store.pallete.next()};
+                user.style = {color: this.store.pallete.next()};
             }
         }
         return groups;
