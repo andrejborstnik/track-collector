@@ -282,6 +282,7 @@
             profile,
             logout,
             groups,
+            go_to_map,
             edit_TEMPLATE_ACTION,
             toggleVisibility,
             toggleGroupVisibility,
