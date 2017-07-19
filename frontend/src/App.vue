@@ -117,6 +117,15 @@
                             <v-list-tile-title>Groups</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
+                    <v-list-tile v-on:click.native="go_to_map">
+                        <v-list-tile-action>
+                            <v-icon>explore</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Map</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+
                     <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
                         <v-list-tile-action>
                             <!--COMMENT
@@ -189,6 +198,10 @@
         this.$router.push('groups');
     };
 
+    const go_to_map = function () {
+        this.$router.push('track');
+    };
+
     const edit_TEMPLATE_ACTION = function () {
         console.info("EDIT_TEMPLATE spremeni vse te oblike za nov meni.");
     };
@@ -257,6 +270,7 @@
                     {title: 'Notification', icon: 'perm_identity', action: "edit_TEMPLATE_ACTION"},
                     {title: 'Profile', icon: 'perm_identity', action: "profile"},
                     {title: 'Groups', icon: 'perm_identity', action: "groups"},
+                    {title: 'Map', icon: 'explore', action: "go_to_map"},
                     {title: 'Edit_TEMPLATE', icon: 'mode_edit', action: "edit_TEMPLATE_ACTION"}
                 ],
                 mini: true,
