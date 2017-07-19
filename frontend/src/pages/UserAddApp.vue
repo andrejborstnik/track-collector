@@ -1,5 +1,6 @@
 <template>
     <v-container fluid class="text-xs-center">
+        <v-subheader>{{group.groupId}}</v-subheader>
         <v-tabs dark fixed centered>
             <v-tabs-bar slot="activators" class="blue">
                 <v-tabs-slider class="orange"></v-tabs-slider>
@@ -88,9 +89,10 @@
     import request from 'request';
     import * as config from 'config';
 
-
     export default {
         name: 'UserAddApp',
+
+        props: ['group'],
 
 
         data () {
@@ -114,7 +116,7 @@
                         status: "Nothing"
                     }
                 ],
-                search: ""
+                search: "",
             }
         },
         computed: {
@@ -127,9 +129,6 @@
             }
         }
 
-        // methods: {
-        //     create_group,
-        // }
 
     }
 
