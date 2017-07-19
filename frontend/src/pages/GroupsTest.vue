@@ -6,7 +6,7 @@
                 <v-tabs-item
                         href="aau"
                         ripple>
-                    Add a user
+                    List groups
                 </v-tabs-item>
                 <v-tabs-item
                         href="ei"
@@ -23,40 +23,25 @@
             <v-tabs-content id="aau">
                 <v-card flat>
                     <v-card-text>
-                        <!-- ADD A USER -->
-                        <!--Mozne ikone se pogleda na https://material.io/icons/-->
-                        <input v-model="search" placeholder="search">
-                        <v-list-tile twoline v-for="user in filteredList" v-bind:key="user.name">
-                            <v-list-tile-avatar>
-                                <v-icon>person</v-icon>
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title v-html="user.name"></v-list-tile-title>
-                                <v-list-tile-sub-title>{{user.status}}</v-list-tile-sub-title>
-                            </v-list-tile-content>
-                            <v-list-tile-avatar v-if="user.status=='Nothing'">
-                                <v-btn icon>
-                                    <v-icon>group_add</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Participating'">
-                                <v-btn icon>
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Requested'">
-                                <v-btn icon>
-                                    <v-icon>done</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Invited' || user.status=='Requested'">
-                                <v-btn icon>
-                                    <v-icon>clear</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                        </v-list-tile>
-
-
+                        <v-list-group v-for="group in $store.user.groups" :value="group.active" :key="group.groupId">
+                            <v-list-tile slot="item">
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
+                                </v-list-tile-content>
+                                <v-list-tile-avatar>
+                                    <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
+                                        <v-icon>label</v-icon>
+                                    </v-btn>
+                                    <!--COMMENT
+                                    ##prva za admin, ta pa za klasicnega uporabnika
+                                    ##tole vseskupaj izgleda cudno (kako bo link na grupo v resnici?)
+                                    <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
+                                        <v-icon>label_outline</v-icon>
+                                    </v-btn>
+                                    COMMENT-->
+                                </v-list-tile-avatar>
+                            </v-list-tile>
+                        </v-list-group>
                     </v-card-text>
                 </v-card>
             </v-tabs-content>
@@ -65,29 +50,6 @@
                 <v-card flat>
                     <v-card-text>Drugi text</v-card-text>
                 </v-card>
-                    
-
-                <v-list-group v-for="group in $store.user.groups" :value="group.active" :key="group.groupId">
-                    <v-list-tile slot="item">
-                        <v-list-tile-content>
-                            <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
-                        </v-list-tile-content>
-                        <v-list-tile-action>
-                            <v-icon>keyboard_arrow_down</v-icon>
-                        </v-list-tile-action>
-                    </v-list-tile>
-                    <v-list-tile v-for="user in group.users" :key="user.userId">
-                        <v-list-tile-content>
-                            <v-list-tile-title v-bind:style="user.style">{{ user.userId }}</v-list-tile-title>
-                        </v-list-tile-content>
-                        <v-list-tile-action>
-                          <v-btn icon v-on:click.native="toggleVisibility(user)">
-                              <v-icon v-if="user.visible" light>visibility</v-icon>
-                              <v-icon v-if="!user.visible" light>visibility_off</v-icon>
-                          </v-btn>
-                        </v-list-tile-action>
-                    </v-list-tile>
-                </v-list-group>
                 babkdbadj $store.user.groups {{ $store.user.groups }}
             
 
@@ -114,10 +76,9 @@
     import request from 'request';
     import * as config from 'config';
     import {activate_mixin} from 'common/activate-mixin';
-    
-    const activate = function () {
-        console.info("CCCCC");
-        
+
+    const edit_TEMPLATE_ACTION = function () {
+        console.info("EDIT_TEMPLATE spremeni vse te oblike za nov meni.");
     };
 
     export default {
@@ -151,6 +112,13 @@
         },
         computed: {
             filteredList() {
+                /*
+                return this.dummyList.filter(item => {
+                        return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+
+                    }
+                )
+                /*/
                 this.activate()
                 console.info("AAAA");
                 console.info(this.$store.user.email);
@@ -162,11 +130,12 @@
 
                     }
                 )
+                //*/
             }
         },
 
         methods: {
-            activate
+            edit_TEMPLATE_ACTION
         }
     }
 
