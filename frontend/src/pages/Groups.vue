@@ -4,35 +4,99 @@
             <v-tabs-bar slot="activators" class="blue">
                 <v-tabs-slider class="orange"></v-tabs-slider>
                 <v-tabs-item
-                        href="aau"
+                        href="listgroups"
                         ripple>
                     List groups
                 </v-tabs-item>
                 <v-tabs-item
-                        href="ei"
+                        href="infogroups"
                         ripple>
-                    Extended invitations
+                    Info groups
                 </v-tabs-item>
 
                 <v-tabs-item
-                        href="pr"
+                        href="searchgroups"
                         ripple>
-                    Pending requests
+                    Search groups
                 </v-tabs-item>
             </v-tabs-bar>
 
 
-            <v-tabs-content id="aau">
+            <v-tabs-content id="listgroups">
+
+                <v-flex xs4>
+                    <v-layout xs6>
+                        <v-flex xs3>
+                            <v-btn @click.native="openCPW = !openCPW" class="button">Create new group</v-btn>
+                        </v-flex>
+                    </v-layout>
+                </v-flex>
+                <v-dialog v-model="openCPW" hide-overlay scrollable>
+                    <v-flex xs8>
+                        <v-layout align-center justify-center v-if="openCPW">
+                            <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="create_group">
+                                <v-layout column>
+                                    <h5>Create new group</h5>
+                                    <v-text-field
+                                            name="group_name"
+                                            label="Group name"
+                                            id="group_name"
+                                            v-model="group_name"
+                                            type="text"
+                                            class="ma-0"
+                                    ></v-text-field>
+
+                                    <v-text-field
+                                            name="group_description"
+                                            label="Description"
+                                            id="group_description"
+                                            v-model="group_description"
+                                            type="text"
+                                            class="ma-0"
+                                    ></v-text-field>
+
+                                    <v-flex xm4 class="ma-0">
+                                        <v-btn
+                                                @click.native="create_group">Create
+                                        </v-btn>
+                                    </v-flex>
+                                </v-layout>
+                            </v-card>
+                        </v-layout>
+                    </v-flex>
+                </v-dialog>
+                <v-dialog v-model="showAlert" persistent lazy>
+                    <v-card>
+                        <v-card-title>{{errorTitle}}</v-card-title>
+                        <v-card-text>{{errorMessage}}</v-card-text>
+                        <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
+                        <!--COMMENT  
+                        <v-card-row>
+                            <v-card-title>{{errorTitle}}</v-card-title>
+                        </v-card-row>
+                        <v-card-row>
+                            <v-card-text>{{errorMessage}}</v-card-text>
+                        </v-card-row>
+                        <v-card-row actions>
+                            <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
+                        </v-card-row>
+                        COMMENT -->
+                    </v-card>
+                </v-dialog>
+
+                <v-card flat>
+                    <v-card-text>Prvi text</v-card-text>
+                </v-card>
+
                 <v-card flat>
                     <v-card-text>
-                        <input v-model="search" placeholder="search">
                         <v-list-tile twoline v-for="group in $store.user.groups" v-bind:key="group.groupId">
                             <v-list-tile-avatar>
-                                <v-icon>person</v-icon>
+                                <v-icon>group</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
-                                <v-list-tile-sub-title>{{ group.creatorId }} {{ group.isAdmin }} </v-list-tile-sub-title>
+                                <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
                             </v-list-tile-content>
                             <v-list-tile-avatar v-if="is_admin(group)">
                                 <v-btn icon v-on:click.native.stop="admin_action(group)">
@@ -50,7 +114,7 @@
                 </v-card>
             </v-tabs-content>
 
-            <v-tabs-content id="ei">
+            <v-tabs-content id="infogroups">
                 <v-card flat>
                     <v-card-text>Drugi text</v-card-text>
                 </v-card>
@@ -59,11 +123,36 @@
 
             </v-tabs-content>
 
-            <v-tabs-content id="pr">
+            <v-tabs-content id="searchgroups">
                 <v-card flat>
                     <v-card-text>Tretji text</v-card-text>
                 </v-card>
 
+                <v-card flat>
+                    <v-card-text>
+                        <input v-model="search" placeholder="search">
+                        <v-list-tile twoline v-for="group in filteredList" v-bind:key="group.groupId">
+                            <v-list-tile-avatar>
+                                <v-icon>group</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                                <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                            <v-list-tile-avatar v-if="is_admin(group)">
+                                <v-btn icon v-on:click.native.stop="admin_action(group)">
+                                    <v-icon>bubble_chart</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
+                            <v-list-tile-avatar>
+                                <v-btn icon v-on:click.native="leave_group">
+                                    <v-icon>directions_run</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
+
+                        </v-list-tile>
+                    </v-card-text>
+                </v-card>
 
                 <!--COMMENT                                    
                 <v-card flat>
@@ -122,13 +211,14 @@
 
     const activate = function () {
         this.$store.user.leftMenuEnabled = false;
+        this.$store.user.rightMenuEnabled = true;
         this.$store.user.bottomNavigation = [];
         var grpStr = new GroupsStorage(this.$store);
         grpStr.getGroups();
     };
 
     const is_admin = function (group) {
-        console.info("GROUP ADMIN");
+        //console.info("GROUP ADMIN");
         for (let user of group.users) {
             //POZOR
             //tole je sedaj nekonsisteno
@@ -155,14 +245,51 @@
         this.UserAddAppVisible = !this.UserAddAppVisible;
     };
 
+    const create_group = function () {
+        console.info("create group");
+        let new_group_data = {
+            groupId: this.group_name,
+            description: this.group_description,
+            token: this.$store.user.token,
+        };
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/create`,
+            json: new_group_data
+        }).then((body) => {
+            if (body.status == "OK") {
+                console.info("BODY");
+                //POZOR
+                //tole nima smisla, ne naredi grupe
+                //pomoje je treba nekaj na backend
+                console.info(body);
+                console.info("BODY KONEC");
+                this.errorTitle = "New group created.";
+                this.errorMessage = "";
+                this.showAlert = true;
+            }
+            else {
+                this.errorTitle = "Failed.";
+                this.errorMessage = "Group creation faild.";
+                this.showAlert = true;
+            }
+        }).catch((err) => {
+            this.errorTitle = "Failed";
+            this.errorMessage = "System error.";
+            this.showAlert = true;
+        });
+        console.info("create group end");
+    };
+
     export default {
         name: 'Groups',
 
         mixins: [activate_mixin],
 
-
         data () {
             return {
+                openCPW: false,
+                showAlert: false,
                 dummyList: [
                     {
                         name: "Alen",
@@ -189,22 +316,19 @@
         },
         computed: {
             filteredList() {
-                /*
-                 return this.dummyList.filter(item => {
-                 return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-
-                 }
-                 )
-                 /*/
-                this.activate()
-                console.info("AAAA");
-                console.info(this.$store.user.email);
-                console.info(this.$store.user.token);
-                console.info(this.$store.user.groups);
-                console.info("BBBBB");
-                return this.dummyList.filter(item => {
-                        return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-
+                //console.info("AAAA");
+                //console.info(this.$store.user.email);
+                //console.info(this.$store.user.token);
+                //console.info(this.$store.user.groups);
+                console.info("filteredList");
+                //POZOR
+                //to je nujno treba narediti na backend tu nima smisla
+                //bomo iskali tudi po grupah, ki se niso nase (nismo clani)
+                if (this.$store.user.groups==null) {
+                    return null;
+                }
+                return this.$store.user.groups.filter(group => {
+                        return group.groupId.toLowerCase().indexOf(this.search.toLowerCase()) > -1
                     }
                 )
                 //*/
@@ -215,7 +339,8 @@
             activate,
             is_admin,
             leave_group,
-            admin_action
+            admin_action,
+            create_group
         },
         components: {
             UserAddApp
