@@ -16,10 +16,9 @@ import User_update from 'pages/User_update.vue';
 import DisplayTrack from 'pages/DisplayTrack.vue';
 import BrowseComponents from 'pages/BrowseComponents.vue';
 import Profile from 'pages/Profile.vue';
-import Groups from 'pages/Groups.vue';
 import Follow from 'pages/Follow.vue';
 import UserAddApp from 'pages/UserAddApp.vue';
-import GroupsTest from 'pages/GroupsTest.vue';
+import Groups from 'pages/Groups.vue';
 
 
 import App from 'App.vue';
@@ -74,15 +73,10 @@ let routes = [
         meta: { auth: true }
     },
 
-    {
-        path: 'groupstest',
-        component: Groups,
-        meta: { auth: true }
-    },
 
     {
         path: 'groups',
-        component: GroupsTest,
+        component: Groups,
         meta: { auth: false }
     },
 

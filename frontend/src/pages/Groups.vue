@@ -1,104 +1,107 @@
 <template>
     <v-container fluid class="text-xs-center">
-        GROUPS LALLALLA
-        <v-container>
-            <v-layout>
-                <v-flex xs8>
-                    <v-layout row wrap v-for="(pretty, field) in showFields">
-                        <v-flex xs2>
-                            <v-subheader>{{pretty}}</v-subheader>
-                        </v-flex>
-                        <v-flex xs9>
-                            <v-text-field
-                                    :readonly="readonly[field]"
-                                    type="text"
-                                    v-model="userData[field]"
-                                    @dblclick.native="setReadonly(field, false)"
-                                    @keyup.enter.prevent="setReadonly(field, true)"
-                            ></v-text-field>
-                        </v-flex>
-                    </v-layout>
-                </v-flex>
+        <v-tabs dark fixed centered>
+            <v-tabs-bar slot="activators" class="blue">
+                <v-tabs-slider class="orange"></v-tabs-slider>
+                <v-tabs-item
+                        href="aau"
+                        ripple>
+                    List groups
+                </v-tabs-item>
+                <v-tabs-item
+                        href="ei"
+                        ripple>
+                    Extended invitations
+                </v-tabs-item>
 
-                <v-list-group v-for="group in $store.groups" :value="group.active" :key="group.groupId">
-                    <v-list-tile slot="item">
-                        <v-list-tile-content>
-                            <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
-                        </v-list-tile-content>
-                        <v-list-tile-action>
-                            <v-icon>keyboard_arrow_down</v-icon>
-                        </v-list-tile-action>
-                    </v-list-tile>
-                    <v-list-item v-for="user in group.users" :key="user.userId">
-                        <v-list-tile>
+                <v-tabs-item
+                        href="pr"
+                        ripple>
+                    Pending requests
+                </v-tabs-item>
+            </v-tabs-bar>
+
+
+            <v-tabs-content id="aau">
+                <v-card flat>
+                    <v-card-text>
+                        <input v-model="search" placeholder="search">
+                        <v-list-tile twoline v-for="group in $store.user.groups" v-bind:key="group.groupId">
+                            <v-list-tile-avatar>
+                                <v-icon>person</v-icon>
+                            </v-list-tile-avatar>
                             <v-list-tile-content>
-                                <v-list-tile-title>{{ user.userId }}</v-list-tile-title>
+                                <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ group.creatorId }} {{ group.isAdmin }}</v-list-tile-sub-title>
                             </v-list-tile-content>
+                            <v-list-tile-avatar v-if="is_admin()">
+                                <v-btn icon v-on:click.native="admin_action">
+                                    <v-icon>transfer_within_a_station</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
+                            <v-list-tile-avatar>
+                                <v-btn icon v-on:click.native="leave_group">
+                                    <v-icon>directions_run</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
+
                         </v-list-tile>
-                    </v-list-item>
-                </v-list-group>
+                    </v-card-text>
+                </v-card>
+            </v-tabs-content>
 
-                <v-flex xs4>
-                    <v-layout xs6>
-                        <v-flex xs3>
-                            <v-btn @click.native="openCPW = !openCPW" class="button">Create new group</v-btn>
-                        </v-flex>
-
-                        <v-flex xs8>
-                            <v-layout align-center justify-center v-if="openCPW">
-                                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="create_group">
-                                    <v-layout column>
-                                        <h5>Create new group</h5>
-                                        <v-text-field
-                                                name="group_name"
-                                                label="Group name"
-                                                id="group_name"
-                                                v-model="group_name"
-                                                type="text"
-                                                class="ma-0"
-                                        ></v-text-field>
-
-                                        <v-text-field
-                                                name="group_description"
-                                                label="Description"
-                                                id="group_description"
-                                                v-model="group_description"
-                                                type="text"
-                                                class="ma-0"
-                                        ></v-text-field>
-
-                                        <v-flex xm4 class="ma-0">
-                                            <v-btn
-                                                    @click.native="create_group">Create
-                                            </v-btn>
-                                        </v-flex>
-                                    </v-layout>
-                                </v-card>
-                            </v-layout>
-                        </v-flex>
-                    </v-layout>
-                </v-flex>
-            </v-layout>
-        </v-container>
+            <v-tabs-content id="ei">
+                <v-card flat>
+                    <v-card-text>Drugi text</v-card-text>
+                </v-card>
+                {{ $store.user.groups }}
 
 
-        <v-dialog v-model="showAlert" persistent lazy>
-            <v-card>
-                <v-card-row>
-                    <v-card-title>{{errorTitle}}</v-card-title>
-                </v-card-row>
-                <v-card-row>
-                    <v-card-text>{{errorMessage}}</v-card-text>
-                </v-card-row>
-                <v-card-row actions>
-                    <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
-                </v-card-row>
-            </v-card>
+            </v-tabs-content>
+
+            <v-tabs-content id="pr">
+                <v-card flat>
+                    <v-card-text>Tretji text</v-card-text>
+                </v-card>
+
+
+                <!--COMMENT                                    
+                <v-card flat>
+                    <v-card-text>
+                        <v-list-group v-for="group in $store.user.groups" :value="group.active" :key="group.groupId">
+                            <v-list-tile slot="item">
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{ group.groupId }}</v-list-tile-title>
+                                </v-list-tile-content>
+                                <v-list-tile-avatar>
+                                    <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
+                                        <v-icon>label</v-icon>
+                                    </v-btn>
+                                    COMMENT
+                                    ##prva za admin, ta pa za klasicnega uporabnika
+                                    ##tole vseskupaj izgleda cudno (kako bo link na grupo v resnici?)
+                                    <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
+                                        <v-icon>label_outline</v-icon>
+                                    </v-btn>
+                                    COMMENT
+                                </v-list-tile-avatar>
+                            </v-list-tile>
+                        </v-list-group>
+                    </v-card-text>
+                </v-card>
+                COMMENT-->
+            </v-tabs-content>
+
+        </v-tabs>
+
+        <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable persistent>
+            <UserAddApp></UserAddApp>
         </v-dialog>
-
     </v-container>
 
+
 </template>
+
 
 <style lang="scss">
 
@@ -109,86 +112,91 @@
 
     import request from 'request';
     import * as config from 'config';
-
     import {activate_mixin} from 'common/activate-mixin';
-
-    const create_group = function () {
-        let new_group_data = {
-            groupId: this.group_name,
-            description: this.group_description,
-            token: this.$store.user.token,
-        };
-
-        request({
-            method: "POST",
-            uri: `${config.paths_api_prefix}/group/create`,
-            json: new_group_data
-        }).then((body) => {
-            if (body.status == "OK") {
-                this.errorTitle = "New group created.";
-                this.errorMessage = "";
-                this.showAlert = true;
-            }
-            else {
-                this.errorTitle = "Failed.";
-                this.errorMessage = "Group creation faild.";
-                this.showAlert = true;
-            }
-
-        }).catch((err) => {
-            this.errorTitle = "Failed";
-            this.errorMessage = "System error.";
-            this.showAlert = true;
-        });
-    };
+    import UserAddApp from 'pages/UserAddApp.vue';
 
     const activate = function () {
-      this.$store.user.leftMenuEnabled = false;
-      this.$store.user.rightMenuEnabled = true;
-      this.$store.user.bottomNavigation = [];
+        this.$store.user.leftMenuEnabled = false;
+        this.$store.user.bottomNavigation = [];
     };
 
-    const setReadonly = function (field, bool) {
-        this.readonly[field] = bool;
+    const is_admin = function () {
+        return true;
     };
 
+    const leave_group = function () {
+        console.info("you left group");
+    };
+
+    const admin_action = function () {
+        console.info("admin_action");
+        this.UserAddAppVisible = !this.UserAddAppVisible;
+    };
 
     export default {
         name: 'Groups',
 
         mixins: [activate_mixin],
 
-        // todo same username on change
-        data: () => {
+
+        data () {
             return {
-                group_name: null,
-                group_description: null,
-                showAlert: null,
-                openCPW: false,
-                userData: {},
-                showFields: {
-                    userId: 'Username',
-                    provider: 'Company',
-                    personalGroup: 'Group',
-                    primaryDevice: 'Primary Device',
-                    devices: 'Devices'
-                },
-                readonly: {
-                    userId: true,
-                    provider: true,
-                    personalGroup: true,
-                    primaryDevice: true,
-                    devices: true
-                }
+                dummyList: [
+                    {
+                        name: "Alen",
+                        status: "Participating"
+                    },
+                    {
+                        name: "Alja",
+                        status: "Invited"
+                    },
+                    {
+                        name: "Ales",
+                        status: "Requested"
+                    },
+                    {
+                        name: "Joze",
+                        status: "Nothing"
+                    }
+                ],
+                search: "",
+                UserAddAppVisible: false
+
+            }
+        },
+        computed: {
+            filteredList() {
+                /*
+                 return this.dummyList.filter(item => {
+                 return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+
+                 }
+                 )
+                 /*/
+                this.activate()
+                console.info("AAAA");
+                console.info(this.$store.user.email);
+                console.info(this.$store.user.token);
+                console.info(this.$store.user.groups);
+                console.info("BBBBB");
+                return this.dummyList.filter(item => {
+                        return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+
+                    }
+                )
+                //*/
             }
         },
 
         methods: {
-            create_group,
             activate,
-            setReadonly
+            is_admin,
+            leave_group,
+            admin_action
+        },
+        components: {
+            UserAddApp
         }
-
     }
 
 </script>
