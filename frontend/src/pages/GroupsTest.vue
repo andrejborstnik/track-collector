@@ -114,46 +114,30 @@
     import request from 'request';
     import * as config from 'config';
     import {activate_mixin} from 'common/activate-mixin';
-
-
-    const getGroups = function () {
-        console.info("EEEE");
-        let path = `/group/list`;
-        console.info("AAAAAFFEEEEEEE");
-        this.startLoading();
-        console.info("FFEEEEEEE");
-        request({
-            method: "POST",
-            uri: config.paths_api_prefix + path,
-            json: {
-                token: this.$store.user.token,
-            }
-        }).then((body) => {
-            this.endLoading();
-            if (body.status == "OK") {
-                console.info("FFFF");
-                this.updateGroups(body.groups);
-            }
-        });
-    };
-
-    const updateGroups = function (groups) {
-        console.info("CCCC");
-        let old = this.$store.user.groups;
-        this.$store.user.groups = this.initializeGroups(groups);
-        updateOrInitializeGroups(old);
-        console.info("BBBB");
-        console.info(this.$store.user.email);
-        console.info(this.$store.user.token);
-        console.info(this.$store.user.groups);
-    };
     
     const activate = function () {
-        this.getGroups();
+        console.info("CCCCC");
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/authentication/profile`,
+            json: {
+                token: this.$store.user.token
+            }
+        }).then((body) => {
+            if (body.status == "OK") {
+                this.userData = body;
+            }
+        }).catch((err) => {
+            this.errorTitle = "Authentication failure";
+            this.errorMessage = "System error.";
+            this.showAlert = true;
+        });
     };
 
     export default {
         name: 'UserAddApp',
+
+        mixins: [activate_mixin],
 
 
         data () {
@@ -181,26 +165,23 @@
         },
         computed: {
             filteredList() {
+                this.activate()
                 console.info("AAAA");
                 console.info(this.$store.user.email);
                 console.info(this.$store.user.token);
                 console.info(this.$store.user.groups);
-                //getGroups();
+                console.info("BBBBB");
                 return this.dummyList.filter(item => {
                         return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
 
                     }
                 )
             }
-        }
-/*
+        },
+
         methods: {
-            activate,
-            create_group
+            activate
         }
-        
-        mixins: [activate_mixin],
-*/
     }
 
 </script>
