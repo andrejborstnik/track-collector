@@ -21,7 +21,52 @@
                 </v-tabs-item>
             </v-tabs-bar>
 
+
+
             <v-tabs-content id="aau">
+                <v-card flat>
+                    <v-card-text>
+                        <input v-model="search" placeholder="search">
+                        <v-list-tile twoline v-for="group in $store.user.groups" v-bind:key="group.groupId">
+                            <v-list-tile-avatar>
+                                <v-icon>person</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                                <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ group.creatorId }}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                            <v-list-tile-avatar>
+                                <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
+                                    <v-icon>label</v-icon>
+                                </v-btn>
+                                <!--COMMENT
+                                ##prva za admin, ta pa za klasicnega uporabnika
+                                ##tole vseskupaj izgleda cudno (kako bo link na grupo v resnici?)
+                                <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
+                                    <v-icon>label_outline</v-icon>
+                                </v-btn>
+                                COMMENT-->
+                            </v-list-tile-avatar>
+                        </v-list-tile>
+                    </v-card-text>
+                </v-card>
+            </v-tabs-content>
+
+            <v-tabs-content id="ei">
+                <v-card flat>
+                    <v-card-text>Drugi text</v-card-text>
+                </v-card>
+                {{ $store.user.groups }}
+
+            </v-tabs-content>
+
+            <v-tabs-content id="pr">
+                <v-card flat>
+                    <v-card-text>Tretji text</v-card-text>
+                </v-card>
+
+
+                <!--COMMENT                                    
                 <v-card flat>
                     <v-card-text>
                         <v-list-group v-for="group in $store.user.groups" :value="group.active" :key="group.groupId">
@@ -33,58 +78,19 @@
                                     <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
                                         <v-icon>label</v-icon>
                                     </v-btn>
-                                    <!--COMMENT
+                                    COMMENT
                                     ##prva za admin, ta pa za klasicnega uporabnika
                                     ##tole vseskupaj izgleda cudno (kako bo link na grupo v resnici?)
                                     <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
                                         <v-icon>label_outline</v-icon>
                                     </v-btn>
-                                    COMMENT-->
+                                    COMMENT
                                 </v-list-tile-avatar>
                             </v-list-tile>
                         </v-list-group>
                     </v-card-text>
                 </v-card>
-            </v-tabs-content>
-
-            <v-tabs-content id="ei">
-                <v-card flat>
-                    <v-card-text>Drugi text</v-card-text>
-                </v-card>
-                
-
-                <v-card-text>
-                    <input v-model="search" placeholder="search">
-                    <v-list-tile twoline v-for="group in $store.user.groups" v-bind:key="group.groupId">
-                        <v-list-tile-avatar>
-                            <v-icon>person</v-icon>
-                        </v-list-tile-avatar>
-                        <v-list-tile-content>
-                            <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
-                            <v-list-tile-sub-title>{{ group.creatorId }}</v-list-tile-sub-title>
-                        </v-list-tile-content>
-                        <v-list-tile-avatar>
-                            <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
-                                <v-icon>label</v-icon>
-                            </v-btn>
-                            <!--COMMENT
-                            ##prva za admin, ta pa za klasicnega uporabnika
-                            ##tole vseskupaj izgleda cudno (kako bo link na grupo v resnici?)
-                            <v-btn icon v-on:click.native="edit_TEMPLATE_ACTION">
-                                <v-icon>label_outline</v-icon>
-                            </v-btn>
-                            COMMENT-->
-                        </v-list-tile-avatar>
-                    </v-list-tile>
-                </v-card-text>
-                {{ $store.user.groups }}
-
-            </v-tabs-content>
-
-            <v-tabs-content id="pr">
-                <v-card flat>
-                    <v-card-text>Tretji text</v-card-text>
-                </v-card>
+                COMMENT-->
             </v-tabs-content>
 
         </v-tabs>
@@ -102,6 +108,10 @@
     import request from 'request';
     import * as config from 'config';
     import {activate_mixin} from 'common/activate-mixin';
+
+    const activate = function () {
+        this.$store.user.bottomNavigation = [];
+    };
 
     const edit_TEMPLATE_ACTION = function () {
         console.info("EDIT_TEMPLATE spremeni vse te oblike za nov meni.");
@@ -161,6 +171,7 @@
         },
 
         methods: {
+            activate,
             edit_TEMPLATE_ACTION
         }
     }
