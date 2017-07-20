@@ -93,9 +93,7 @@ router.post('/api/group/list', function (req, res) {
     });
 });
 
-router.post('/api/group/create', function (req, res) {
-    let params = req.body; // todo parse safely
-
+router.post('/api/group/register', function (req, res) {
     request({
         method: "POST",
         json: true,
@@ -103,10 +101,8 @@ router.post('/api/group/create', function (req, res) {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        uri:`${config.java_be}${config.java_be_path}/group/list`,
-        body: {
-            token: params.token,
-        }
+        body: req.body,
+        uri:`${config.java_be}${config.java_be_path}/group/register`,
     }).then((body) => {
         res.send(body);
     }).catch((err) => {

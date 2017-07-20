@@ -246,7 +246,6 @@
     };
 
     const create_group = function () {
-        console.info("create group");
         let new_group_data = {
             groupId: this.group_name,
             description: this.group_description,
@@ -254,23 +253,17 @@
         };
         request({
             method: "POST",
-            uri: `${config.paths_api_prefix}/group/create`,
+            uri: `${config.paths_api_prefix}/group/register`,
             json: new_group_data
         }).then((body) => {
             if (body.status == "OK") {
-                console.info("BODY");
-                //POZOR
-                //tole nima smisla, ne naredi grupe
-                //pomoje je treba nekaj na backend
-                console.info(body);
-                console.info("BODY KONEC");
                 this.errorTitle = "New group created.";
                 this.errorMessage = "";
                 this.showAlert = true;
             }
             else {
                 this.errorTitle = "Failed.";
-                this.errorMessage = "Group creation faild.";
+                this.errorMessage = "Group creation faild: " + String(body.error_message);
                 this.showAlert = true;
             }
         }).catch((err) => {
