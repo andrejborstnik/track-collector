@@ -160,6 +160,8 @@
 
     import MyMap from 'widgets/Map2.vue';
 
+    import GroupsStorage from 'common/GroupsStorage'
+
     import {activate_mixin} from 'common/activate-mixin';
 
     //
@@ -237,6 +239,7 @@
         this.loading = false;
     };
 
+    /*
     const getGroups = function () {
         let path = `/group/list`;
         this.startLoading();
@@ -304,6 +307,7 @@
         this.$store.user.groups = this.initializeGroups(groups);
         updateOrInitializeGroups(old);
     };
+    */
 
     const zoomToExtent = function () {
         this.$refs.map.zoomToExtent();
@@ -377,7 +381,9 @@
         this.$store.user.leftMenuEnabled = true;
         this.$store.user.rightMenuEnabled = true;
         this.setDate();
-        this.getGroups();
+        var grpStor = new GroupsStorage(this.$store);
+        grpStor.getGroups(this.startLoading, this.endLoading);
+        //this.getGroups();
         this.$store.user.trackStorage.registerMap(this.$refs.map.map);
         let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
         tmpStr.visible = true;
@@ -428,12 +434,12 @@
             getTrack,
             zoomToExtent,
             setDate,
-            getGroups,
+            //getGroups,
             activate,
             formatterFunction,
-            updateGroups,
-            initializeGroups,
-            updateOrInitializeGroups,
+            //updateGroups,
+            //initializeGroups,
+            //updateOrInitializeGroups,
             startLoading,
             endLoading,
             timeZoom,

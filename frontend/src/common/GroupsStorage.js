@@ -6,9 +6,11 @@ export default class GroupsStorage {
         this.store = str;
     }
 
-    getGroups() {
+    getGroups(funcPreReq = null, funcPosReq = null) {
         let path = `/group/list`;
-        //this.startLoading();
+        if (funcPreReq != null){
+                funcPreReq();
+        }
         request({
             method: "POST",
             uri: config.paths_api_prefix + path,
@@ -16,7 +18,9 @@ export default class GroupsStorage {
                 token: this.store.user.token,
             }
         }).then((body) => {
-            //this.endLoading();
+            if (funcPosReq != null){
+                funcPosReq();
+            }
             if (body.status == "OK") {
                 this.updateGroups(body.groups);
             }
