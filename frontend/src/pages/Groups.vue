@@ -27,7 +27,7 @@
                 <v-flex xs4>
                     <v-layout xs6>
                         <v-flex xs3>
-                            <v-btn @click.native="openCPW = !openCPW" class="button">Create new group</v-btn>
+                            <v-btn @click.native.stop="openCPW = !openCPW" class="button">Create new group</v-btn>
                         </v-flex>
                     </v-layout>
                 </v-flex>
@@ -57,7 +57,7 @@
 
                                     <v-flex xm4 class="ma-0">
                                         <v-btn
-                                                @click.native="create_group">Create
+                                                @click.native.stop="create_group">Create
                                         </v-btn>
                                     </v-flex>
                                 </v-layout>
