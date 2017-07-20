@@ -102,7 +102,24 @@ router.post('/api/group/link/list', function (req, res) {
             'Content-Type': 'application/json'
         },
         body: req.body,
-        uri:`${config.java_be}${config.java_be_path}/group/list`,
+        uri: `${config.java_be}${config.java_be_path}/group/link/list`,
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
+
+router.post('/api/group/link/update', function (req, res) {
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: req.body,
+        uri: `${config.java_be}${config.java_be_path}/group/link/update`,
     }).then((body) => {
         res.send(body);
     }).catch((err) => {
