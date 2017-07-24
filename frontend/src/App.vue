@@ -139,10 +139,28 @@
                     </v-list-tile>
             </v-list>
         </v-navigation-drawer>
+        <v-dialog v-model="messageBox" fullscreen transition="dialog-bottom-transition" :overlay=false>
+             <v-card>
+               <v-toolbar dark class="primary">
+                 <v-btn icon @click.native.stop="toggleMessages" dark>
+                   <v-icon>close</v-icon>
+                 </v-btn>
+                 <v-toolbar-title>Messages</v-toolbar-title>
+                 <v-spacer></v-spacer>
+                 <v-toolbar-items>
+                   <v-btn dark flat @click.native="toggleMessages">Close</v-btn>
+                 </v-toolbar-items>
+               </v-toolbar>
+               Test test
+             </v-card>
+        </v-dialog>
         <v-toolbar dark class="primary" >
             <v-toolbar-side-icon @click.native.stop="toggleLeftMenu" v-if="$store.user.leftMenuEnabled"></v-toolbar-side-icon>
-            <v-toolbar-title class="white--text">Tracker</v-toolbar-title>
+            <v-toolbar-title class="white--text">{{$store.user.toolbarTitle}}</v-toolbar-title>
             <v-spacer></v-spacer>
+            <v-btn icon @click.native.stop="toggleMessages" v-if="$store.user.messagesEnabled">
+                <v-icon >message</v-icon>
+            </v-btn>
             <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled">
                 <v-icon >account_circle</v-icon>
             </v-btn>
@@ -217,6 +235,10 @@
                     tmpStr.visible = userInGroup.visible;
                     if(userInGroup.visible) {
                         visibleUserGroup = true;
+                        if(user.visibleCallback) {
+                            user.visibleCallback();
+                        }
+                        this.$store.user.toolbarTitle = userInGroup.userId;
                     }
                 } else {
                     if(user.visible) {
@@ -253,6 +275,14 @@
       }
     };
 
+    const toggleMessages = function() {
+      console.log("mb", this.messageBox);
+      if(this.$store.user.messagesEnabled) {
+          this.messageBox = !this.messageBox;
+      } else {
+          this.messageBox = false;
+      }
+    };
     export default {
         name: 'App',
         data () {
@@ -275,7 +305,8 @@
                 ],
                 mini: true,
                 right: null,
-                groupFilter: ''
+                groupFilter: '',
+                messageBox: false
             }
         },
         methods: {
@@ -287,13 +318,13 @@
             toggleVisibility,
             toggleGroupVisibility,
             toggleLeftMenu,
-            toggleRightMenu
+            toggleRightMenu,
+            toggleMessages
         },
         watch: {
             groupFilter: function() {
                     let filterString = this.groupFilter.toLowerCase();
                     let activateAll = filterString == null || filterString.length == 0;
-                    console.log(filterString);
                     let firstGroup = null;
                     for(let group of this.$store.user.groups) {
                         group.active = false;

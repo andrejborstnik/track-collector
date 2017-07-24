@@ -193,43 +193,60 @@
     }.bind(this);
 
     const setDate = function () {
-        let today = new Date();
-        let yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-        this.startDate = "2017-05-07";
-        this.endDate = "2017-05-14";
-        this.startTime = "09:00";
-        this.endTime = "13:00";
+        // let today = new Date();
+        // let yesterday = new Date();
+        // yesterday.setDate(yesterday.getDate() - 1);
+        // this.startDate = "2017-05-07";
+        // this.endDate = "2017-05-14";
+        // this.startTime = "09:00";
+        // this.endTime = "13:00";
         // ALEN - začasno zakomentirano
         // this.startDate = moment(yesterday).format("YYYY-MM-DD")
         // this.endDate = moment(today).format("YYYY-MM-DD")
+        this.startDate = moment().subtract(1, "days").format("YYYY-MM-DD");
+        this.endDate = moment().format("YYYY-MM-DD");
+        this.startTime = "00:00";
+        this.endTime = "23:59";
     };
 
     const setToday = function() {
-      this.startDate = moment().format("YYYY-MM-DD");;
+      this.startDate = moment().format("YYYY-MM-DD");
       this.endDate = this.startDate;
       this.startTime = "00:00";
       this.endTime = "23:59";
     };
 
     const setYesterday = function() {
-      this.startDate = moment().subtract(1, "days").format("YYYY-MM-DD");;
+      this.startDate = moment().subtract(1, "days").format("YYYY-MM-DD");
       this.endDate = this.startDate;
       this.startTime = "00:00";
       this.endTime = "23:59";
     };
 
     const buildTimestamp = function (date, time) {
-        return date + "T" + time + ":00"
+        let res = date.slice(0,10)
+                + "T"
+                + time.replace(/^(\d):/, '0$1:' )
+                      .replace(/^(\d\d):(\d)([^\d]*)$/, '$1:0$2')
+                      .replace(/^(\d\d):(\d\d).*$/, '$1:$2') + ":00";
+        return res;
     };
 
     const getTrack = function () {
         this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
         this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
         this.sliderValue = [0, Number.MAX_VALUE];
-        this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoading);
+        this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoadingWithZoom);
+
         this.toggleTimeSettings();
     };
+
+    const loadSeparateTrack = function() {
+      this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
+      this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
+      this.sliderValue = [0, Number.MAX_VALUE];
+      this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoadingWithZoom);
+    }
 
     const startLoading = function () {
         this.loading = true;
@@ -237,6 +254,11 @@
 
     const endLoading = function () {
         this.loading = false;
+    };
+
+    const endLoadingWithZoom = function () {
+        this.loading = false;
+        this.$refs.map.zoomToExtent();
     };
 
     /*
@@ -382,11 +404,12 @@
         this.$store.user.rightMenuEnabled = true;
         this.setDate();
         var grpStor = new GroupsStorage(this.$store);
-        grpStor.getGroups(this.startLoading, this.endLoading);
+        grpStor.getGroups(this.startLoading, this.endLoading, this.loadSeparateTrack);
         //this.getGroups();
         this.$store.user.trackStorage.registerMap(this.$refs.map.map);
         let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
         tmpStr.visible = true;
+        this.$store.user.toolbarTitle = this.$store.user.email;
         // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
         // this.storageChanged += 1;
         let cookie = cookies.get_session_cookie();
@@ -432,6 +455,7 @@
 
         methods: {
             getTrack,
+            loadSeparateTrack,
             zoomToExtent,
             setDate,
             //getGroups,
@@ -442,6 +466,7 @@
             //updateOrInitializeGroups,
             startLoading,
             endLoading,
+            endLoadingWithZoom,
             timeZoom,
             timeZoomOut,
             toggleTimeSettings,

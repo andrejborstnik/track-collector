@@ -151,6 +151,7 @@
         // Na primer, ce se odlogiras in nazaj logiras z drugim racunom, bi ti z mounted kazalo providerje prvega uporabnika.
         this.$store.user.leftMenuEnabled = false;
         this.$store.user.rightMenuEnabled = false;
+        this.$store.user.messagesEnabled = false;
         this.getProviders();
     };
 

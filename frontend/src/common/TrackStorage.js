@@ -8,6 +8,7 @@ export default class TrackStorage {
   constructor(map, userId, color) {
       this.map = map;
       this.maxSpeed = 120/3.6;
+      this.overSpeed = 130/3.6;
       this.data = [];
       this.userId = userId;
       this.blankColor = "rgba(255,0,0,0)";
@@ -18,6 +19,7 @@ export default class TrackStorage {
       this.alertPointColor = '#FF0000';
       this.width = 5;
       this.radius = 8;
+      this.bigRadius = 12;
       this.pointStrokeWidth = 1;
       this.onLineStyle = new ol.style.Style({
                         stroke: new ol.style.Stroke({
@@ -58,6 +60,20 @@ export default class TrackStorage {
                })
              })
       });
+      this.onPointBigAlertStyle = new ol.style.Style({
+          image: new ol.style.Circle({
+               radius: this.bigRadius,
+               fill: new ol.style.Fill({
+                 color: this.alertPointColor
+               })
+               ,
+               stroke: new ol.style.Stroke({
+                 color: this.pointStrokeColor,
+                 width: this.pointStrokeWidth
+               })
+             })
+      });
+
       this.offPointStyle = new ol.style.Style({
           image: new ol.style.Circle({
                radius: this.radius,
@@ -78,10 +94,12 @@ export default class TrackStorage {
       this.pointFeatures = [];
       this.lineVectorLayer = null;
       this.pointVectorLayer = null;
-      this.startDateTimeChanged = false;
-      this.endDateTimeChanged = false;
+      // this.startDateTimeChanged = false;
+      // this.endDateTimeChanged = false;
       this.loadedStartDateTime = null;
       this.loadedEndDateTime = null;
+      this.currentExtent = [];
+      //  [1301438.3041983845, 5697931.47271672, 1620677.9131304354, 5789591.817239217]
   };
 
   setColor(color) {
@@ -102,13 +120,13 @@ export default class TrackStorage {
   setStartDateTimeRaw(raw) {
       let oldSDT = this.startDateTime;
       this.startDateTime = raw;
-      this.startDateTimeChanged = oldSDT == null ? true : (oldSDT != this.startDateTime);
+      // this.startDateTimeChanged = oldSDT == null ? true : (oldSDT != this.startDateTime);
   }
 
   setEndDateTimeRaw(raw) {
       let oldEDT = this.endDateTime;
       this.endDateTime = raw;
-      this.endDateTimeChanged = oldEDT == null ? true : (oldEDT != this.endDateTime);
+      // this.endDateTimeChanged = oldEDT == null ? true : (oldEDT != this.endDateTime);
   }
   adjustVisibility(minTime, maxTime) {
       // let startDateTime = this.startDateTime();
@@ -116,17 +134,30 @@ export default class TrackStorage {
       if(this.dataLength == 0) return;
       let minT = Math.min(Math.max(minTime, this.startDateTime), this.endDateTime);
       let maxT = Math.max(Math.min(maxTime, this.endDateTime), this.startDateTime);
+      let minx = Infinity;
+      let miny = Infinity;
+      let maxx = -Infinity;
+      let maxy = - Infinity;
       if(this.startTimeIndex == null) return;
       for(let i = 0; i < this.dataLength - 1; i++) {
           let lineFeature = this.lineFeatures[i];
           let pointFeature = this.pointFeatures[i];
+          let pnt = pointFeature.getGeometry().getExtent();
+          let x = pnt[0];
+          let y = pnt[1];
           if(this.startTimeIndex[i] >= minT && maxT >= this.endTimeIndex[i]) {
               lineFeature.setStyle(this.onLineStyle);
-              if(this.data[i].speed > this.maxSpeed) {
+              if(this.data[i].speed > this.overSpeed) {
+                  pointFeature.setStyle(this.onPointBigAlertStyle);
+              } else if(this.data[i].speed > this.maxSpeed) {
                   pointFeature.setStyle(this.onPointAlertStyle);
               } else {
                   pointFeature.setStyle(this.onPointStyle);
               }
+              minx = x < minx ? x : minx;
+              miny = y < miny ? y : miny;
+              maxx = x > maxx ? x : maxx;
+              maxy = y > maxy ? y : maxy;
               // pointFeature.getStyle().setZIndex(1);
           } else {
               lineFeature.setStyle(this.offLineStyle);
@@ -135,11 +166,24 @@ export default class TrackStorage {
       }
       let last = this.dataLength - 1;
       let lastPointFeature = this.pointFeatures[last];
+      let pnt = lastPointFeature.getGeometry().getExtent();
+      let x = pnt[0];
+      let y = pnt[1];
+
       if(this.startTimeIndex[last] >= minT && maxT >= this.endTimeIndex[last]) {
-          lastPointFeature.setStyle(this.onPointStyle);
+          minx = x < minx ? x : minx;
+          miny = y < miny ? y : miny;
+          maxx = x > maxx ? x : maxx;
+          maxy = y > maxy ? y : maxy;
+          if(this.data[last].speed > this.maxSpeed) {
+              lastPointFeature.setStyle(this.onPointAlertStyle);
+          } else {
+              lastPointFeature.setStyle(this.onPointStyle);
+          }
       } else {
           lastPointFeature.setStyle(this.offPointStyle);
       }
+      this.currentExtent = [minx, miny, maxx, maxy];
   };
 
   zoomToVectorLayerExtent() {
@@ -149,14 +193,15 @@ export default class TrackStorage {
   };
 
   getExtent() {
-      if (this.lineVectorLayer == null) return null;
-      let src = this.lineVectorLayer.getSource();
-      if (src == null) return null;
-      return src.getExtent();
+      // if (this.lineVectorLayer == null) return null;
+      // let src = this.lineVectorLayer.getSource();
+      // if (src == null) return null;
+      // return src.getExtent();
+      return this.currentExtent;
   };
 
   getTrack (token, startCallback, endCallback) {
-      if(!this.startDateTimeChanged && !this.endDateTimeChanged) return;
+      // if(!this.startDateTimeChanged && !this.endDateTimeChanged) return;
       let path = `/track`;
       if(startCallback != null) startCallback();
       request({
@@ -189,8 +234,8 @@ export default class TrackStorage {
   mergeData(output) {
       this.loadedStartDateTime = this.startDateTime;
       this.loadedEndDateTime = this.endDateTime;
-      this.startDateTimeChanged = false;
-      this.endDateTimeChanged = false;
+      // this.startDateTimeChanged = false;
+      // this.endDateTimeChanged = false;
 
       let len = 0;
       let j = 0;

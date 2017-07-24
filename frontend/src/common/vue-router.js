@@ -30,7 +30,9 @@ let store = {
         bottomNavigation: [],
         groupFilter: '',
         leftMenuEnabled: false,
-        rightMenuEnable: false
+        rightMenuEnable: false,
+        messagesEnabled: true,
+        toolbarTitle: 'Tracker'
     },
     state: {
         path_to: null,

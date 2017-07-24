@@ -215,7 +215,6 @@ router.post('/api/resetPassword', resetPassword.resetPassword);
 
 router.post('/api/signin', function (req, res) {
     let params = req.body; // todo parse safely
-
     request({
         method: "POST",
         json: true,
