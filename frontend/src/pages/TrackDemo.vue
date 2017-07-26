@@ -100,7 +100,7 @@
             </v-list>
           </v-layout>
         </v-dialog>
-        <div style="position: absolute; bottom: 0px; left: 0px; right: 0px">
+        <div style="position: absolute; bottom: 110px; left: 0px; right: 0px">
             <v-layout v-if="sliderSettings" child-flex class="pl-3 pr-3">
                     <vue-slider ref="slider"
                       v-model="sliderValue"
@@ -402,6 +402,7 @@
     const activate = function () {
         this.$store.user.leftMenuEnabled = true;
         this.$store.user.rightMenuEnabled = true;
+        this.$store.user.messagesEnabled = true;
         this.setDate();
         var grpStor = new GroupsStorage(this.$store);
         grpStor.getGroups(this.startLoading, this.endLoading, this.loadSeparateTrack);

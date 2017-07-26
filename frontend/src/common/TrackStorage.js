@@ -7,8 +7,8 @@ export default class TrackStorage {
 
   constructor(map, userId, color) {
       this.map = map;
-      this.maxSpeed = 120/3.6;
-      this.overSpeed = 130/3.6;
+      this.maxSpeed = 130/3.6;
+      this.overSpeed = 140/3.6;
       this.data = [];
       this.userId = userId;
       this.blankColor = "rgba(255,0,0,0)";
@@ -16,7 +16,8 @@ export default class TrackStorage {
       this.pointBlankColor = "rgba(255,0,0,0)";
       this.pointColor = color;
       this.pointStrokeColor = color;
-      this.alertPointColor = '#FF0000';
+      this.alertPointColor = '#FFA500';
+      this.bigAlertPointColor = '#FF0000';
       this.width = 5;
       this.radius = 8;
       this.bigRadius = 12;
@@ -64,7 +65,7 @@ export default class TrackStorage {
           image: new ol.style.Circle({
                radius: this.bigRadius,
                fill: new ol.style.Fill({
-                 color: this.alertPointColor
+                 color: this.bigAlertPointColor
                })
                ,
                stroke: new ol.style.Stroke({
@@ -228,7 +229,12 @@ export default class TrackStorage {
   };
 
   static buildTimestamp(date, time) {
-      return date + " " + time
+    let res = date.slice(0,10)
+            + "T"
+            + time.replace(/^(\d):/, '0$1:' )
+                  .replace(/^(\d\d):(\d)([^\d]*)$/, '$1:0$2')
+                  .replace(/^(\d\d):(\d\d).*$/, '$1:$2') + ":00";
+    return res;
   };
 
   mergeData(output) {
@@ -271,6 +277,7 @@ export default class TrackStorage {
                    labelPoint: point,
                    geometry: point,
                    time: obj.timestamp,
+                   recorded: obj.recorded,
                    speed: obj.speed
               });
               pointGeo.setId(i);

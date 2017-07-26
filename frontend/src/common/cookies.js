@@ -22,8 +22,8 @@ import cookies from 'js-cookie';
 //
 
 
-export function set_session_cookie(email, token, admin, cookies_accepted) {
-    let session_cookie = {email, token, admin, cookies_accepted};
+export function set_session_cookie(email, token, admin, cookies_accepted, provider) {
+    let session_cookie = {email, token, admin, cookies_accepted, provider};
     cookies.set('session', session_cookie, { expires: config.cookie_expiry });
 }
 

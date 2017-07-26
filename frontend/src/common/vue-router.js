@@ -26,13 +26,23 @@ let store = {
         token: null,
         admin: false,
         groups: null,
+        provider: null,
         trackStorage: new MultiTrackStorage(),
         bottomNavigation: [],
         groupFilter: '',
         leftMenuEnabled: false,
         rightMenuEnable: false,
         messagesEnabled: true,
-        toolbarTitle: 'Tracker'
+        toolbarTitle: 'Tracker',
+        messages: null,
+        messageTo: null,   // linked to user receiver, if specified
+        messageBaseGroup: null,  // if null, then messaging mode is "USER" otherwise it is "GROUP" and group name is in this variable
+        sendingType: "NOTIFICATION", // NOTIFICATION, EMAIL
+        messageTitle: null,
+        messageText: null,
+        errorTitle: '',
+        errorMessage: '',
+        showAlert: false
     },
     state: {
         path_to: null,
@@ -83,6 +93,7 @@ let readSessionCookie = function (router, {to, from}) {
         Vue.set(store.user, "token", session_cookie.token);
         Vue.set(store.user, "admin", session_cookie.admin);
         Vue.set(store.user, "cookies_accepted", session_cookie.cookies_accepted);
+        Vue.set(store.user, "provider", session_cookie.provider);
     }
     else {
         for (let key of ['email', 'token', 'admin'])

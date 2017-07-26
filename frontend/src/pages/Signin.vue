@@ -1,12 +1,5 @@
 <template>
     <v-container fluid class="text-xs-center">
-        <v-dialog v-model="showAlert" persistent lazy>
-            <v-card>
-                    <v-card-title>{{errorTitle}}</v-card-title>
-                    <v-card-text>{{errorMessage}}</v-card-text>
-                    <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
-            </v-card>
-        </v-dialog>
         <v-layout align-center justify-center>
             <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="login">
                 <v-layout column>
@@ -87,9 +80,9 @@
         let provider = this.provider == this.systemProvider ? null : this.provider;
 
         if (!password || !user_mail) {
-            this.errorTitle = "Sign in failure";
-            this.errorMessage = "Please fill all the fields.";
-            this.showAlert = true;
+            this.$store.user.errorTitle = "Sign in failure";
+            this.$store.user.errorMessage = "Please fill all the fields.";
+            this.$store.user.showAlert = true;
             return;
         }
         const user_registration_data = {
@@ -97,7 +90,6 @@
             "userId": user_mail,
             "provider": provider
         };
-
         request({
             method: "POST",
             uri: `${config.paths_api_prefix}/signin`,
@@ -105,7 +97,9 @@
         }).then((body) => {
             if (body.status == "OK") {
                 this.$store.user.token = body.token;
-                cookies.set_session_cookie(user_mail, body.token, false, true); // todo admin and cookies
+                this.$store.user.email = user_mail;
+                this.$store.user.provider = provider;
+                cookies.set_session_cookie(user_mail, body.token, false, true, provider); // todo admin and cookies
 
                 // Set directives cookie.
                 //            if (user.cookies_accepted)
@@ -114,16 +108,16 @@
             }
             else {
                 cookies.remove_session_cookie();
-                this.errorTitle = "Authentication failure";
-                this.errorMessage = "Wrong username, password or provider.";
-                this.showAlert = true;
+                this.$store.user.errorTitle = "Authentication failure";
+                this.$store.user.errorMessage = "Wrong username, password or provider.";
+                this.$store.user.showAlert = true;
                 // todo react on error
             }
 
         }).catch((err) => {
-            this.errorTitle = "Authentication failure";
-            this.errorMessage = "System error.";
-            this.showAlert = true;
+            this.$store.user.errorTitle = "Authentication failure";
+            this.$store.user.errorMessage = "System error.";
+            this.$store.user.showAlert = true;
         });
     };
 
@@ -164,11 +158,8 @@
             return {
                 password: '',
                 user_mail: '',
-                showAlert: null,
                 systemProvider: "System",
-                provider: "GOOPTI",
-                errorTitle: '',
-                errorMessage: ''
+                provider: "GOOPTI"
             }
         },
 

@@ -4,6 +4,7 @@
             <!-- <a @click="closePopup" id="popup-closer" class="ol-popup-closer"></a> -->
             <div style="flex-grow: 1;">
                     Time: {{title}}
+                    <br/> Delay: {{delay}}
                     <br/>
                     Speed: {{speed}} km/h
             </div>
@@ -129,6 +130,10 @@
           },
           speed: {
                 type: Number,
+                default: null
+          },
+          delay: {
+                type: String,
                 default: null
           },
           orientation: {

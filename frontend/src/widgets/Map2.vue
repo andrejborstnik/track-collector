@@ -6,6 +6,7 @@
             ref="popup"
             borderColor="white"
             :speed="popupSpeed"
+            :delay="popupDelay"
             ></Popup>
 
         <!-- <Popup :title="previousPopupTitle"
@@ -65,11 +66,19 @@
 
         let data = feature.getProperties();
         this.popupTitle = moment(data.time).format("D[.]M[.]YYYY k:mm:ss");
+        if(data.recorded) {
+            this.popupDelay = moment.duration(moment(data.recorded).diff(moment(data.time))).humanize();
+        } else {
+            this.popupDelay = null;
+        }
+
         this.popupSpeed = Math.round(data.speed*3.6);
+
 
         delete data.geometry;
         delete data.labelPoint;
         delete data.time;
+        delete data.received;
         delete data.speed;
 
         this.popupContent = data;
@@ -353,6 +362,7 @@
                 addMode: false,
                 popupTitle: '',
                 popupSpeed: null,
+                popupDelay: null,
                 previousPopupTitle: '',
                 popupContent: null,
                 previousPopupContent: null,
