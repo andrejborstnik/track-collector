@@ -269,6 +269,23 @@ router.post('/api/notifications/notify', function (req, res) {
     });
 });
 
+router.post('/api/authentication/list', function (req, res) {
+    let params = req.body; // todo parse safely
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        uri: `${config.java_be}${config.java_be_path}/authentication/list`,
+        body: params
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
 
 
 module.exports = router;
