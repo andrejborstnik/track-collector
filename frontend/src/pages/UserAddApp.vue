@@ -34,35 +34,17 @@
                     <v-card-text>
                         <!-- ADD A USER -->
                         <!--Mozne ikone se pogleda na https://material.io/icons/-->
-                        <input v-model="searchAdd" placeholder="search">
-                        <v-list-tile twoline v-for="user in filteredDummyList" v-bind:key="user.name">
+                        <input v-model="searchAdd" placeholder="search" @keyup.enter="getSearchResultsAdd">
+                        <v-btn icon v-on:click.native.stop="getSearchResultsAdd">
+                            <v-icon>search</v-icon>
+                        </v-btn>
+                        <v-list-tile twoline v-for="user in this.searchResults" v-bind:key="user.name">
                             <v-list-tile-avatar>
                                 <v-icon>person</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
-                                <v-list-tile-title v-html="user.name"></v-list-tile-title>
-                                <v-list-tile-sub-title>{{user.status}}</v-list-tile-sub-title>
+                                <v-list-tile-title v-html="user.userId"></v-list-tile-title>
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="user.status=='Nothing'">
-                                <v-btn icon>
-                                    <v-icon>group_add</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Participating'">
-                                <v-btn icon>
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Requested'">
-                                <v-btn icon>
-                                    <v-icon>done</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Invited' || user.status=='Requested'">
-                                <v-btn icon>
-                                    <v-icon>clear</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
                         </v-list-tile>
 
 
@@ -146,12 +128,12 @@
     import request from 'request';
     import * as config from 'config';
 
-    const getPendingRequests = function (group) {
+    const getPendingRequests = function () {
         request({
             method: "POST",
             uri: `${config.paths_api_prefix}/group/link/list`,
             json: {
-                "forGroupId": group.groupId,
+                "forGroupId": this.group.groupId,
                 "pendingOnly": false,
                 "token": this.$store.user.token
             }
@@ -162,6 +144,23 @@
             console.log("Error with pending requsts");
         });
     };
+
+    const getSearchResultsAdd = function () {
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/authentication/list`,
+            json: {
+                "queryString": this.searchAdd,
+                "token": this.$store.user.token
+            }
+        }).then((body) => {
+            this.searchResults = body.users;
+            return;
+        }).catch((err) => {
+            console.log("Error with pending requsts");
+        });
+    };
+
 
     const handlePendingRequest = function (req, accepted) {
             var req_json = {
@@ -181,7 +180,7 @@
                 uri: `${config.paths_api_prefix}/group/link/update`,
                 json: req_json
             }).then((body) => {
-                this.getPendingRequests(this.group);
+                this.getPendingRequests();
                 return;
             }).catch((err) => {
                 console.log("Error with handling pending requst");
@@ -219,7 +218,8 @@
                 ],
                 searchAdd: "",
                 searchManage: "",
-                pendingRequests: null
+                pendingRequests: null,
+                searchResults: null
             }
         },
         computed: {
@@ -242,6 +242,7 @@
         ,
         methods: {
             getPendingRequests,
+            getSearchResultsAdd,
             handlePendingRequest
         }
 
