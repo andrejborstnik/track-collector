@@ -331,6 +331,16 @@
     };
     */
 
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 37) {
+            //alert("left press");
+            alert('Left was pressed'+String(MyMap.getView().getZoom()));
+        }
+        else if(event.keyCode == 39) {
+            alert('Right was pressed');
+        }
+    });
+
     const zoomToExtent = function () {
         this.$refs.map.zoomToExtent();
         this.toggleZoomSettings();
