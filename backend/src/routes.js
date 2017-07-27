@@ -84,7 +84,10 @@ router.post('/api/group/list', function (req, res) {
         },
         uri:`${config.java_be}${config.java_be_path}/group/list`,
         body: {
-            token: params.token,
+            forUser: params.forUser,
+            forUserProvider: params.forUserProvider,
+            queryString: params.queryString,
+            token: params.token
         }
     }).then((body) => {
         res.send(body);

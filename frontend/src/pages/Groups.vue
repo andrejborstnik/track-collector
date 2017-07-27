@@ -130,7 +130,14 @@
 
                 <v-card flat>
                     <v-card-text>
-                        <input v-model="search" placeholder="search">
+                        <v-text-field
+                        name="inputSRCgrp"
+                        autofocus
+                        label="Search..."
+                        single-line
+                        v-model="groupQueryStr"
+                        ></v-text-field>
+
                         <v-list-tile twoline v-for="group in filteredList" v-bind:key="group.groupId">
                             <v-list-tile-avatar>
                                 <v-icon>group</v-icon>
@@ -139,11 +146,6 @@
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
                                 <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="is_admin(group)">
-                                <v-btn icon v-on:click.native.stop="admin_action(group)">
-                                    <v-icon>bubble_chart</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
                             <v-list-tile-avatar>
                                 <v-btn icon v-on:click.native="leave_group">
                                     <v-icon>directions_run</v-icon>
@@ -185,7 +187,9 @@
 
         <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable>
             <v-card>
+                <!--COMMENT  
                 <UserAddApp :group="UserAddAppGroup"></UserAddApp>
+                COMMENT-->
             </v-card>
         </v-dialog>
     </v-container>
@@ -214,11 +218,12 @@
         this.$store.user.rightMenuEnabled = true;
         this.$store.user.bottomNavigation = [];
         var grpStr = new GroupsStorage(this.$store);
+        console.info(this.$store.user.groups);
         grpStr.getGroups();
     };
 
     const is_admin = function (group) {
-        //console.info("GROUP ADMIN");
+
         for (let user of group.users) {
             //POZOR
             //tole je sedaj nekonsisteno
@@ -239,6 +244,43 @@
         console.info("you left group");
     };
 
+    const time_delay_search_groups = function (searchStr) {
+        let searchStrFix = String(searchStr);
+        setTimeout(function(){ 
+            if (this.groupQueryStr == searchStrFix) {
+                this.search_groups(searchStrFix);
+            }
+        }.bind(this), 300);
+    }
+
+    const search_groups = function (searchStr) {
+        console.info("Search string:");
+        console.info(searchStr);
+
+        let search_group_data = {
+            //forUser: params.forUser,
+            //forUserProvider: params.forUserProvider,
+            queryString: searchStr,
+            token: this.$store.user.token
+        };
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/list`,
+            json: search_group_data
+        }).then((body) => {
+            if (body.status == "OK") {
+                //console.info("list body ok");
+                this.filteredList = body.groups;
+            }
+            else {
+                //console.info("list body failed");
+            }
+        }).catch((err) => {
+            //console.info("list error");
+        });
+    };
+
     const admin_action = function (group) {
         console.info("admin_action");
         this.UserAddAppGroup = group;
@@ -249,7 +291,7 @@
         let new_group_data = {
             groupId: this.group_name,
             description: this.group_description,
-            token: this.$store.user.token,
+            token: this.$store.user.token
         };
         request({
             method: "POST",
@@ -283,49 +325,21 @@
             return {
                 openCPW: false,
                 showAlert: false,
-                dummyList: [
-                    {
-                        name: "Alen",
-                        status: "Participating"
-                    },
-                    {
-                        name: "Alja",
-                        status: "Invited"
-                    },
-                    {
-                        name: "Ales",
-                        status: "Requested"
-                    },
-                    {
-                        name: "Joze",
-                        status: "Nothing"
-                    }
-                ],
-                search: "",
                 UserAddAppVisible: false,
-                UserAddAppGroup: ""
-
+                UserAddAppGroup: "",
+                filteredList: [],
+                groupQueryStr: ""
             }
         },
-        computed: {
-            filteredList() {
-                //console.info("AAAA");
-                //console.info(this.$store.user.email);
-                //console.info(this.$store.user.token);
-                //console.info(this.$store.user.groups);
-                console.info("filteredList");
-                //POZOR
-                //to je nujno treba narediti na backend tu nima smisla
-                //bomo iskali tudi po grupah, ki se niso nase (nismo clani)
-                if (this.$store.user.groups==null) {
-                    return null;
-                }
-                return this.$store.user.groups.filter(group => {
-                        return group.groupId.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-                    }
-                )
-                //*/
+
+        watch: {
+            groupQueryStr: function () {
+                this.time_delay_search_groups(this.groupQueryStr);
             }
+        },
+
+        computed: {
+
         },
 
         methods: {
@@ -333,7 +347,9 @@
             is_admin,
             leave_group,
             admin_action,
-            create_group
+            create_group,
+            search_groups,
+            time_delay_search_groups
         },
         components: {
             UserAddApp
