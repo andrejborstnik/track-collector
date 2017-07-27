@@ -1,13 +1,20 @@
 <template>
     <v-container fluid class="text-xs-center">
-        <v-subheader>{{group.groupId}}</v-subheader>
+        <div class="display-1">Managing group:</div>
+        <br>
+        <div class="headline">{{group.groupId}}</div>
         <v-tabs dark fixed centered>
             <v-tabs-bar slot="activators" class="blue">
                 <v-tabs-slider class="orange"></v-tabs-slider>
                 <v-tabs-item
                         href="aau"
                         ripple>
-                    Add a user
+                    Add a User
+                </v-tabs-item>
+                <v-tabs-item
+                        href="mu"
+                        ripple>
+                    Manage Users
                 </v-tabs-item>
                 <v-tabs-item
                         href="ei"
@@ -18,7 +25,7 @@
                 <v-tabs-item
                         href="pr"
                         ripple
-                        v-on:click.native.stop="getPendingRequests(group)">
+                        v-on:click.native.stop="getPendingRequests">
                     Pending requests
                 </v-tabs-item>
             </v-tabs-bar>
@@ -27,8 +34,8 @@
                     <v-card-text>
                         <!-- ADD A USER -->
                         <!--Mozne ikone se pogleda na https://material.io/icons/-->
-                        <input v-model="search" placeholder="search">
-                        <v-list-tile twoline v-for="user in filteredList" v-bind:key="user.name">
+                        <input v-model="searchAdd" placeholder="search">
+                        <v-list-tile twoline v-for="user in filteredDummyList" v-bind:key="user.name">
                             <v-list-tile-avatar>
                                 <v-icon>person</v-icon>
                             </v-list-tile-avatar>
@@ -54,6 +61,32 @@
                             <v-list-tile-avatar v-if="user.status=='Invited' || user.status=='Requested'">
                                 <v-btn icon>
                                     <v-icon>clear</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
+                        </v-list-tile>
+
+
+                    </v-card-text>
+                </v-card>
+            </v-tabs-content>
+
+            <v-tabs-content id="mu">
+                <v-card flat>
+                    <v-card-text>
+                        <!-- ADD A USER -->
+                        <!--Mozne ikone se pogleda na https://material.io/icons/-->
+                        <input v-model="searchManage" placeholder="search">
+                        <v-list-tile twoline v-for="user in filteredUserList" v-bind:key="user.name">
+                            <v-list-tile-avatar>
+                                <v-icon>person</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                                <v-list-tile-title v-html="user.userId"></v-list-tile-title>
+                                <v-list-tile-sub-title> Timestamp: {{user.timestamp}}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                            <v-list-tile-avatar v-if="user.isAdmin==false">
+                                <v-btn icon>
+                                    <v-icon>delete</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
                         </v-list-tile>
@@ -154,8 +187,8 @@
                 console.log("Error with handling pending requst");
             });
 
-        }
-    ;
+    };
+
 
     export default {
         name: 'UserAddApp',
@@ -184,19 +217,29 @@
                         status: "Nothing"
                     }
                 ],
-                search: "",
+                searchAdd: "",
+                searchManage: "",
                 pendingRequests: null
             }
         },
         computed: {
-            filteredList() {
+            filteredDummyList() {
                 return this.dummyList.filter(item => {
-                        return item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+                        return item.name.toLowerCase().indexOf(this.searchAdd.toLowerCase()) > -1
+
+                    }
+                )
+            },
+            filteredUserList(){
+                return this.group.users.filter(item => {
+                    return item.userId.toLowerCase().indexOf(this.searchManage.toLowerCase()) > -1
 
                     }
                 )
             }
-        },
+        }
+
+        ,
         methods: {
             getPendingRequests,
             handlePendingRequest

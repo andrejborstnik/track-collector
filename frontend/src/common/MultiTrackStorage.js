@@ -12,7 +12,7 @@ export default class MultiTrackStorage {
     registerMap(aMap) {
         this.map = aMap;
     }
-    
+
     registerUser(userId, color) {
         if(this.toStorage.has(userId)) {
            let tmpStr = this.toStorage.get(userId);
@@ -41,7 +41,8 @@ export default class MultiTrackStorage {
           let tmpStr = this.toStorage.get(userId);
           if(!tmpStr.visible) continue;
           let ext = tmpStr.getExtent();
-          if(ext != null) {
+          if(ext != null && ext.length == 4) {
+              if(ext.indexOf(Infinity) > 0 || ext.indexOf(-Infinity) > 0) continue;
               if(bounds == null) {
                   bounds = ext;
               } else {
@@ -49,7 +50,9 @@ export default class MultiTrackStorage {
               }
           }
       }
-      this.map.getView().fit(bounds, this.map.getSize());
+      if(bounds != null) {
+        this.map.getView().fit(bounds, this.map.getSize());
+      }
       // this.map.getView().fitExtent(bounds, map.getSize());
 
 // if (this.lineVectorLayer == null) return;

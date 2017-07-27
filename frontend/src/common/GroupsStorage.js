@@ -6,7 +6,7 @@ export default class GroupsStorage {
         this.store = str;
     }
 
-    getGroups(funcPreReq = null, funcPosReq = null) {
+    getGroups(funcPreReq = null, funcPosReq = null, funcSetVis = null) {
         let path = `/group/list`;
         if (funcPreReq != null){
                 funcPreReq();
@@ -23,6 +23,9 @@ export default class GroupsStorage {
             }
             if (body.status == "OK") {
                 this.updateGroups(body.groups);
+                if(funcSetVis) {
+                    this.setVisibleCallback(funcSetVis);
+                }
             }
         });
     }
@@ -77,5 +80,14 @@ export default class GroupsStorage {
             }
         }
         return groups;
+    };
+
+    setVisibleCallback(fun) {
+      let groups = this.store.user.groups;
+      for (let grp of groups) {
+          for (let user of grp.users) {
+              user.visibleCallback = fun;
+          }
+      }
     }
 }
