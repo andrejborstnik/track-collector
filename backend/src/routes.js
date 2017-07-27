@@ -287,5 +287,24 @@ router.post('/api/authentication/list', function (req, res) {
     });
 });
 
+router.post('/api/group/link/register', function (req, res) {
+    let params = req.body; // todo parse safely
+    console.log(req.body);
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        uri: `${config.java_be}${config.java_be_path}/group/link/register`,
+        body: params
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
+
 
 module.exports = router;

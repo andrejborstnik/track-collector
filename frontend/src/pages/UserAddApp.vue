@@ -38,13 +38,30 @@
                         <v-btn icon v-on:click.native.stop="getSearchResultsAdd">
                             <v-icon>search</v-icon>
                         </v-btn>
-                        <v-list-tile twoline v-for="user in this.searchResults" v-bind:key="user.name">
+                        <v-list-tile twoline v-for="user in searchResults" v-bind:key="user.name">
                             <v-list-tile-avatar>
                                 <v-icon>person</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="user.userId"></v-list-tile-title>
                             </v-list-tile-content>
+                            <!--<v-list-tile-avatar v-if="user.inGroup==false">-->
+                            <!--<v-btn icon-->
+                            <!--v-on:click.native.stop="inviteUserVisible = true ; userToInvite=user ;">-->
+                            <!--<v-icon>add</v-icon>-->
+                            <!--</v-btn>-->
+                            <!--</v-list-tile-avatar>-->
+                            <v-menu offset-y>
+                                <v-btn primary dark slot="activator">Invite</v-btn>
+                                <v-list>
+                                    <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN')">
+                                        <v-list-tile-title>As Admin</v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-on:click.native.stop="createNewInvite(user,'USER')">
+                                        <v-list-tile-title>As User</v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
                         </v-list-tile>
 
 
@@ -72,8 +89,6 @@
                                 </v-btn>
                             </v-list-tile-avatar>
                         </v-list-tile>
-
-
                     </v-card-text>
                 </v-card>
             </v-tabs-content>
@@ -91,7 +106,6 @@
                     </v-list-tile>
                 </v-card>
             </v-tabs-content>
-
             <v-tabs-content id="pr">
                 <v-flex xs12>
                     <v-card v-for="request in pendingRequests">
@@ -114,7 +128,15 @@
             </v-tabs-content>
 
         </v-tabs>
+        <!--<v-dialog v-model="inviteUserVisible" hide-overlay width="1000" content-class="z-index: 100">-->
+        <!--<v-card>-->
+        <!--<v-card-title>Inviting user {{userToInvite}} to group {{group.groupId}}. </v-card-title>-->
+        <!--</v-card>-->
+        <!--</v-dialog>-->
+
+
     </v-container>
+
 </template>
 
 
@@ -127,6 +149,7 @@
 
     import request from 'request';
     import * as config from 'config';
+    import moment from 'moment-timezone';
 
     const getPendingRequests = function () {
         request({
@@ -141,7 +164,7 @@
             this.pendingRequests = body.assignments;
             return;
         }).catch((err) => {
-            console.log("Error with pending requsts");
+            console.log("Error with get pending requsts");
         });
     };
 
@@ -155,36 +178,69 @@
             }
         }).then((body) => {
             this.searchResults = body.users;
+            for (let i of this.searchResults) {
+                i.inGroup = this.group.users.some(function (el) {
+                    return el.userId === i.userId;
+                });
+            }
             return;
         }).catch((err) => {
-            console.log("Error with pending requsts");
+            console.log("Error with getSearchResultsAdd");
         });
     };
 
+    const createNewInvite = function (user, role) {
+        console.log("doing things", role);
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/register`,
+            json:
+                {
+                    "requests": [
+                        {
+                            "fromDate": moment().toISOString(),
+                            "grant": "ALLOW",
+                            "groupId": this.group.groupId,
+                            "groupRole": role,
+                            "inviteType": "GROUP",
+                            "untilDate": null,
+                            "userId": this.$store.user.userId
+                        }
+                    ],
+                    "token": this.$store.user.token
+                }
+        }).then((body) => {
+            this.getSearchResultsAdd();
+            console.log("greata - success", role);
+            return;
+        }).catch((err) => {
+            console.log("Error with createNewInvite", err);
+        });
+    };
 
     const handlePendingRequest = function (req, accepted) {
-            var req_json = {
-                "forUserId": this.$store.user.userId,
-                "forUserIdProvider": this.$store.user.provider,
-                "token": this.$store.user.token
-            }
-            if (accepted) {
-                req.confirmLinks = [req.id];
-            } else {
-                req.rejectLinks = [req.id];
-            }
+        var req_json = {
+            "forUserId": this.$store.user.userId,
+            "forUserIdProvider": this.$store.user.provider,
+            "token": this.$store.user.token
+        }
+        if (accepted) {
+            req.confirmLinks = [req.id];
+        } else {
+            req.rejectLinks = [req.id];
+        }
 
 
-            request({
-                method: "POST",
-                uri: `${config.paths_api_prefix}/group/link/update`,
-                json: req_json
-            }).then((body) => {
-                this.getPendingRequests();
-                return;
-            }).catch((err) => {
-                console.log("Error with handling pending requst");
-            });
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/update`,
+            json: req_json
+        }).then((body) => {
+            this.getPendingRequests();
+            return;
+        }).catch((err) => {
+            console.log("Error with handling pending requst");
+        });
 
     };
 
@@ -195,7 +251,7 @@
         props: ['group'],
 
 
-        data () {
+        data() {
             return {
                 text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
                 dummyList: [
@@ -219,7 +275,9 @@
                 searchAdd: "",
                 searchManage: "",
                 pendingRequests: null,
-                searchResults: null
+                searchResults: null,
+                userToInvite: null,
+                inviteUserVisible: false
             }
         },
         computed: {
@@ -230,9 +288,9 @@
                     }
                 )
             },
-            filteredUserList(){
+            filteredUserList() {
                 return this.group.users.filter(item => {
-                    return item.userId.toLowerCase().indexOf(this.searchManage.toLowerCase()) > -1
+                        return item.userId.toLowerCase().indexOf(this.searchManage.toLowerCase()) > -1
 
                     }
                 )
@@ -243,7 +301,8 @@
         methods: {
             getPendingRequests,
             getSearchResultsAdd,
-            handlePendingRequest
+            handlePendingRequest,
+            createNewInvite
         }
 
 
