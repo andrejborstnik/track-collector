@@ -48,6 +48,7 @@ let store = {
         path_to: null,
         path_from: null
     },
+    event: {},
     providers: [],
     groups: [],
     pallete: new ColorPallete()
@@ -55,9 +56,27 @@ let store = {
 
 Object.defineProperty(Vue.prototype, '$store', {
     get () {
-        return this.$root.store
+        return this.$root.store;
     }
 });
+
+// Events plugin
+
+let EventsPlugin = {};
+
+EventsPlugin.install = function (Vue, options) {
+    Vue.mixin({
+        mounted() {
+            ['click', 'keydown', 'keyup', 'wheel', 'touchmove', 'mousedown', 'mouseup', 'mousewheel'].forEach(function (eventName) {
+                document.addEventListener(eventName, function (event) {
+                    this.$store.event = event;
+                }.bind(this));
+            }.bind(this));
+        }
+    });
+};
+
+Vue.use(EventsPlugin);
 
 // Vuetify
 import Vuetify from 'vuetify';
@@ -70,7 +89,7 @@ import i18n from 'common/vue-translation'
 import main_app from 'src/App.vue';
 
 // Cookies support.
-import { cookie_law } from 'common/cookie-law';
+import {cookie_law} from 'common/cookie-law';
 import * as cookies from 'common/cookies';
 
 import * as config from 'config';
@@ -139,13 +158,13 @@ router.beforeEach((to, from, next) => { // Check authentication before each tran
 
 // Start router.
 new Vue({
-  el: 'app',
-  router: router,
-  i18n,
-  data: function () {
-      return {
-          store
-      }
-  },
-  render: h => h('router-view')
+    el: 'app',
+    router: router,
+    i18n,
+    data: function () {
+        return {
+            store
+        }
+    },
+    render: h => h('router-view')
 });
