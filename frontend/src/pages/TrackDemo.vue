@@ -264,26 +264,28 @@
     document.onkeydown = function(e) {
     switch (e.keyCode) {
         case 37:
-            alert('left');
+            console.info('left');
             break;
         case 38:
-            alert('up');
+            console.info('up');
             break;
         case 39:
-            alert('right');
+            console.info('right');
             break;
         case 40:
-            alert('down');
+            console.info('down');
             break;
         case 17:
-            alert('ctrl');
+            console.info('ctrl');
             zoomToExtent();
             break;
         case 33:
-            alert('PgUp');
+            console.info('PgUp');
+            timeZoomOut();
             break;
         case 34:
-            alert('PgDn');
+            console.info('PgDn');
+            timeZoom();
             break;
         }
     };
