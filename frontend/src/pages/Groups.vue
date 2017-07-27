@@ -187,9 +187,7 @@
 
         <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable>
             <v-card>
-                <!--COMMENT  
                 <UserAddApp :group="UserAddAppGroup"></UserAddApp>
-                COMMENT-->
             </v-card>
         </v-dialog>
     </v-container>
