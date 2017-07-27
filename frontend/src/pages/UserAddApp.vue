@@ -51,7 +51,7 @@
                             <!--<v-icon>add</v-icon>-->
                             <!--</v-btn>-->
                             <!--</v-list-tile-avatar>-->
-                            <v-menu offset-y>
+                            <v-menu v-if="user.inGroup==false" offset-y>
                                 <v-btn primary dark slot="activator">Invite</v-btn>
                                 <v-list>
                                     <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN')">
@@ -62,6 +62,7 @@
                                     </v-list-tile>
                                 </v-list>
                             </v-menu>
+                            <v-btn v-if="user.inGroup==true" primary dark>Member</v-btn>
                         </v-list-tile>
 
 
