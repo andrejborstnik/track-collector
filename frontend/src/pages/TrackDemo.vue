@@ -331,15 +331,53 @@
     };
     */
 
+    document.onkeydown = function(e) {
+    switch (e.keyCode) {
+        case 37:
+            alert('left');
+            break;
+        case 38:
+            alert('up');
+            break;
+        case 39:
+            alert('right');
+            break;
+        case 40:
+            alert('down');
+            break;
+        case 17:
+            alert('ctrl');
+            zoomToExtent();
+            break;
+        case 33:
+            alert('PgUp');
+            break;
+        case 34:
+            alert('PgDn');
+            break;
+        }
+    };
+
+    /*
     document.addEventListener('keydown', function(event) {
         if(event.keyCode == 37) {
             //alert("left press");
+            console.info("left press");
+            console.info(this.$refs.map);
+            console.info(String(this.$refs.map.getView().getZoom()));
             alert('Left was pressed'+String(MyMap.getView().getZoom()));
         }
         else if(event.keyCode == 39) {
+            console.info("right press");
             alert('Right was pressed');
         }
+        else if(event.keyCode == 70) {
+            console.info("f press");
+            alert('f was pressed');
+            this.zoomToExtent();
+        }
     });
+    */
 
     const zoomToExtent = function () {
         this.$refs.map.zoomToExtent();
