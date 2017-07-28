@@ -97,15 +97,23 @@
 
             <v-tabs-content id="ei">
                 <v-card flat>
-                    <v-list-tile twoline v-for="user in group.users" v-bind:key="user.name">
+                    <v-list-tile twoline v-for="invite in extendedInvitations">
                         <v-list-tile-avatar>
-                            <v-icon>person</v-icon>
-                        </v-list-tile-avatar>
-                        <v-list-tile-content>
-                            <v-list-tile-title v-html="user.userId"></v-list-tile-title>
-                            <v-list-tile-sub-title>{{user.isAdmin}}</v-list-tile-sub-title>
-                        </v-list-tile-content>
+                                <v-icon>person</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                                <v-list-tile-title>{{invite.userId}}</v-list-tile-title>
+                                <v-list-tile-sub-title> Role: {{invite.groupRole}} </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                            <v-list-tile-avatar>
+                                <v-btn icon>
+                                    <v-icon>delete</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
                     </v-list-tile>
+                    <div v-if="extendedInvitations">
+                        No Extended Invitations
+                    </div>
                 </v-card>
             </v-tabs-content>
             <v-tabs-content id="pr">
@@ -125,6 +133,9 @@
                             <v-btn flat v-on:click.native.stop="handlePendingRequest(request,true)">Deny</v-btn>
                         </v-card-actions>
                     </v-card>
+                    <div v-if="pendingRequests">
+                        No Pending Requests
+                    </div>
                 </v-flex>
 
             </v-tabs-content>
@@ -154,17 +165,18 @@
     import moment from 'moment-timezone';
     import {activate_mixin} from 'common/activate-mixin';
 
-    const getPendingRequests = function () {
+    const getGroupLinks = function () {
         request({
             method: "POST",
             uri: `${config.paths_api_prefix}/group/link/list`,
             json: {
                 "forGroupId": this.group.groupId,
-                "pendingOnly": false,
+                "pendingOnly": true,
                 "token": this.$store.user.token
             }
         }).then((body) => {
-            this.pendingRequests = body.assignments;
+            this.groupLinks = body.assignments;
+            console.log("group links:",this.groupLinks);
             return;
         }).catch((err) => {
             console.log("Error with get pending requsts");
@@ -207,14 +219,14 @@
                             "groupRole": role,
                             "inviteType": "GROUP",
                             "untilDate": null,
-                            "userId": this.$store.user.userId
+                            "userId": user.userId
                         }
                     ],
                     "token": this.$store.user.token
                 }
         }).then((body) => {
-            this.getSearchResultsAdd();
-            console.log("greata - success", role);
+            this.getGroupLinks();
+            console.log("greata - success", body);
             return;
         }).catch((err) => {
             console.log("Error with createNewInvite", err);
@@ -223,7 +235,7 @@
 
     const handlePendingRequest = function (req, accepted) {
         var req_json = {
-            "forUserId": this.$store.user.userId,
+            "forUserId": this.$store.user.email,
             "forUserIdProvider": this.$store.user.provider,
             "token": this.$store.user.token
         }
@@ -239,7 +251,7 @@
             uri: `${config.paths_api_prefix}/group/link/update`,
             json: req_json
         }).then((body) => {
-            this.getPendingRequests();
+            this.getGroupLinks();
             return;
         }).catch((err) => {
             console.log("Error with handling pending requst");
@@ -256,41 +268,15 @@
 
         data() {
             return {
-                text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                dummyList: [
-                    {
-                        name: "Alen",
-                        status: "Participating"
-                    },
-                    {
-                        name: "Alja",
-                        status: "Invited"
-                    },
-                    {
-                        name: "Ales",
-                        status: "Requested"
-                    },
-                    {
-                        name: "Joze",
-                        status: "Nothing"
-                    }
-                ],
                 searchAdd: "",
                 searchManage: "",
-                pendingRequests: null,
+                groupLinks: null,
                 searchResults: null,
                 userToInvite: null,
                 inviteUserVisible: false
             }
         },
         computed: {
-            filteredDummyList() {
-                return this.dummyList.filter(item => {
-                        return item.name.toLowerCase().indexOf(this.searchAdd.toLowerCase()) > -1
-
-                    }
-                )
-            },
             filteredUserList() {
                 if (this.group.users) {
                     return this.group.users.filter(item => {
@@ -299,19 +285,38 @@
                         }
                     )
                 } else return [];
+            },
+            extendedInvitations() {
+                if (this.groupLinks) {
+                    return this.groupLinks.filter(el => {
+                        return el.groupId===this.group.groupId && el.inviteType==='GROUP'
+                    });
+                } else {
+                    return [];
+                }
+            },
+            pendingRequests() {
+                if (this.groupLinks) {
+                    return this.groupLinks.filter(el => {
+                        return el.groupId===this.group.groupId && el.inviteType==='USER'
+                    });
+                } else {
+                    return [];
+                }
             }
+
         }
 
         ,
         methods: {
-            getPendingRequests,
+            getGroupLinks,
             getSearchResultsAdd,
             handlePendingRequest,
             createNewInvite
         },
         watch: {
             group: function () {
-                this.getPendingRequests();
+                this.getGroupLinks();
             }
         }
 
