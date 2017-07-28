@@ -214,7 +214,10 @@
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="assigData.groupId"></v-list-tile-title>
+                                <!--COMMENT 
                                 <v-list-tile-sub-title>{{ assigData.groupUserId }} </v-list-tile-sub-title>
+                                COMMENT-->
+                                <v-list-tile-sub-title>Assinged status: {{ assigData.groupRole }} </v-list-tile-sub-title>
                             </v-list-tile-content>
                         </v-list-tile>
                     </v-card-text>
@@ -235,7 +238,10 @@
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="assigData.groupId"></v-list-tile-title>
+                                <!--COMMENT 
                                 <v-list-tile-sub-title>{{ assigData.groupUserId }} </v-list-tile-sub-title>
+                                COMMENT-->
+                                <v-list-tile-sub-title>Requested status: {{ assigData.groupRole }} </v-list-tile-sub-title>
                             </v-list-tile-content>
                         </v-list-tile>
                     </v-card-text>
@@ -247,10 +253,8 @@
 
         </v-tabs>
         <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable>
-            <v-card>
-                <!--COMMENT                                    
+            <v-card>                                   
                 <UserAddApp :group="UserAddAppGroup"></UserAddApp>
-                COMMENT-->
             </v-card>
         </v-dialog>
     </v-container>
@@ -348,7 +352,7 @@
         let userRequestData = {
             //accept: true,
             //forGroupId: "string",
-            forUserId: this.$store.user.email,
+            //forUserId: this.$store.user.email,
             //forUserIdProvider: "string",
             //pendingOnly: true,
             token: this.$store.user.token
@@ -400,13 +404,15 @@
 
     const extractInvitations = function (grpLinkList) {
         let invitations = [];
+        console.info("extractInvitations A");
 
         for (let assigData of grpLinkList) {
             //to najbrz ne bo potrebno
             //if (assigData.accetped == false){}
 
             if (assigData.userId != this.$store.user.email){
-                invitations.append({
+                console.info("extractInvitations B");
+                invitations.push({
                     //accepted: assigData.accepted,
                     groupId: assigData.groupId,
                     groupRole: assigData.groupRole,
@@ -420,13 +426,15 @@
 
     const extractRequest = function (grpLinkList) {
         let requests = [];
+        console.info("extractRequest A");
 
         for (let assigData of grpLinkList) {
             //to najbrz ne bo potrebno
             //if (assigData.accetped == false){}
 
             if (assigData.userId == this.$store.user.email){
-                requests.append({
+                console.info("extractRequest B");
+                requests.push({
                     //accepted: assigData.accepted,
                     groupId: assigData.groupId,
                     groupRole: assigData.groupRole,
@@ -500,8 +508,12 @@
             },
 
             groupLinkList: function () {
+                console.info("this.groupLinkList");
+                console.info(this.groupLinkList);
                 this.invitationLinkList = this.extractInvitations(this.groupLinkList);
+                console.info("OK 1");
                 this.requestLinkList = this.extractRequest(this.groupLinkList);
+                console.info("OK 2");
             }
         },
 
