@@ -426,7 +426,8 @@
         console.info("cancelRequest TODO");
     };
 
-
+    //vse zgornje treba naresti
+    //moram vprasati kaksen je request
 
 
 
