@@ -185,7 +185,7 @@
                             </div>
                             <div v-else>
                                 <v-list-tile-avatar>
-                                    <v-btn icon v-on:click.native.stop="join_group">
+                                    <v-btn icon v-on:click.native.stop="join_group(group)">
                                         <!--COMMENT 
                                         <v-icon>foreword</v-icon>
                                         COMMENT-->
@@ -375,8 +375,43 @@
         console.info("you left group TODO");
     };
 
-    const join_group = function () {
+    const join_group = function (group) {
         console.info("you join group TODO");
+
+        //je treba vprasat kaj je tu treba podati
+        /*
+        let joinGroupData = {
+          "requests": [
+            {
+              "fromDate": "2017-07-28T10:27:59.812Z",
+              "grant": "string",
+              "groupId": "string",
+              "groupRole": "string",
+              "inviteType": "string",
+              "periodic": "string",
+              "repeatTimes": 0,
+              "untilDate": "2017-07-28T10:27:59.812Z",
+              "userId": "string"
+            }
+          ],
+          "token": "string"
+        }
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/register`,
+            json: joinGroupData
+        }).then((body) => {
+            if (body.status == "OK") {
+                //console.info("join_group ok");
+            }
+            else {
+                //console.info("join_group failed");
+            }
+        }).catch((err) => {
+            //console.info("join_group error");
+        });
+        */
     };
 
     const acceptInvitation = function () {

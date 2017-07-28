@@ -99,6 +99,25 @@ router.post('/api/group/list', function (req, res) {
     });
 });
 
+
+
+router.post('/api/group/register', function (req, res) {
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: req.body,
+        uri:`${config.java_be}${config.java_be_path}/group/register`,
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
+
 router.post('/api/group/link/list', function (req, res) {
     request({
         method: "POST",
@@ -109,6 +128,25 @@ router.post('/api/group/link/list', function (req, res) {
         },
         body: req.body,
         uri: `${config.java_be}${config.java_be_path}/group/link/list`,
+    }).then((body) => {
+        res.send(body);
+    }).catch((err) => {
+        throw err;
+    });
+});
+
+router.post('/api/group/link/register', function (req, res) {
+    let params = req.body; // todo parse safely
+    console.log(req.body);
+    request({
+        method: "POST",
+        json: true,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        uri: `${config.java_be}${config.java_be_path}/group/link/register`,
+        body: params
     }).then((body) => {
         res.send(body);
     }).catch((err) => {
@@ -133,22 +171,10 @@ router.post('/api/group/link/update', function (req, res) {
     });
 });
 
-router.post('/api/group/register', function (req, res) {
-    request({
-        method: "POST",
-        json: true,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: req.body,
-        uri:`${config.java_be}${config.java_be_path}/group/register`,
-    }).then((body) => {
-        res.send(body);
-    }).catch((err) => {
-        throw err;
-    });
-});
+
+
+
+
 
 router.get('/api/authentication/providers/list', function (req, res) {
     request({
@@ -285,25 +311,6 @@ router.post('/api/authentication/list', function (req, res) {
             'Content-Type': 'application/json'
         },
         uri: `${config.java_be}${config.java_be_path}/authentication/list`,
-        body: params
-    }).then((body) => {
-        res.send(body);
-    }).catch((err) => {
-        throw err;
-    });
-});
-
-router.post('/api/group/link/register', function (req, res) {
-    let params = req.body; // todo parse safely
-    console.log(req.body);
-    request({
-        method: "POST",
-        json: true,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        uri: `${config.java_be}${config.java_be_path}/group/link/register`,
         body: params
     }).then((body) => {
         res.send(body);

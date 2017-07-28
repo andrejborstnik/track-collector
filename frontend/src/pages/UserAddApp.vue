@@ -34,10 +34,22 @@
                     <v-card-text>
                         <!-- ADD A USER -->
                         <!--Mozne ikone se pogleda na https://material.io/icons/-->
+
+                        <!--COMMENT
                         <input v-model="searchAdd" placeholder="search (at least 3 letters)" @keyup.enter="getSearchResultsAdd">
                         <v-btn icon v-on:click.native.stop="getSearchResultsAdd">
                             <v-icon>search</v-icon>
                         </v-btn>
+                        COMMENT-->
+
+                        <v-text-field
+                        name="inputSRCusr"
+                        autofocus
+                        label="Search (at least 3 letters)"
+                        single-line
+                        v-model="userQueryStr"
+                        ></v-text-field>
+
                         <v-list-tile twoline v-for="user in searchResults" v-bind:key="user.name">
                             <v-list-tile-avatar>
                                 <v-icon>person</v-icon>
@@ -187,12 +199,22 @@
         });
     };
 
-    const getSearchResultsAdd = function () {
+
+    const timeDelaySearchResultsAdd = function () {
+        let searchStrFix = String(this.userQueryStr);
+        setTimeout(function(){ 
+            if (this.userQueryStr == searchStrFix) {
+                this.getSearchResultsAdd(searchStrFix);
+            }
+        }.bind(this), 300);
+    }
+
+    const getSearchResultsAdd = function (searchStrFix) {
         request({
             method: "POST",
             uri: `${config.paths_api_prefix}/authentication/list`,
             json: {
-                "queryString": this.searchAdd,
+                "queryString": searchStrFix,//this.searchAdd,
                 "token": this.$store.user.token
             }
         }).then((body) => {
@@ -272,12 +294,13 @@
 
         data() {
             return {
-                searchAdd: "",
+                //searchAdd: "",
                 searchManage: "",
                 groupLinks: null,
                 searchResults: null,
                 userToInvite: null,
-                inviteUserVisible: false
+                inviteUserVisible: false,
+                userQueryStr: ""
             }
         },
         computed: {
@@ -316,14 +339,18 @@
             getGroupLinks,
             getSearchResultsAdd,
             handlePendingRequest,
-            createNewInvite
+            createNewInvite,
+            timeDelaySearchResultsAdd
         },
         watch: {
+            userQueryStr: function () {
+                this.timeDelaySearchResultsAdd(this.userQueryStr);
+            },
+
             group: function () {
                 this.getGroupLinks();
             }
         }
-
 
     }
 
