@@ -25,7 +25,7 @@
                 <v-tabs-item
                         href="pr"
                         ripple
-                        v-on:click.native.stop="getPendingRequests">
+                >
                     Pending requests
                 </v-tabs-item>
             </v-tabs-bar>
@@ -75,16 +75,17 @@
                     <v-card-text>
                         <!-- ADD A USER -->
                         <!--Mozne ikone se pogleda na https://material.io/icons/-->
-                        <input v-model="searchManage" placeholder="search">
+                        <input v-model="searchManage" placeholder="filter">
                         <v-list-tile twoline v-for="user in filteredUserList" v-bind:key="user.name">
                             <v-list-tile-avatar>
                                 <v-icon>person</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
-                                <v-list-tile-title v-html="user.userId"></v-list-tile-title>
-                                <v-list-tile-sub-title> Timestamp: {{user.timestamp}}</v-list-tile-sub-title>
+                                <v-list-tile-title>{{user.userId}}</v-list-tile-title>
+                                <v-list-tile-sub-title v-if="user.isAdmin"> Admin </v-list-tile-sub-title>
+                                <v-list-tile-sub-title v-if="!user.isAdmin"> User </v-list-tile-sub-title>
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="user.isAdmin==false">
+                            <v-list-tile-avatar v-if="!user.isAdmin">
                                 <v-btn icon>
                                     <v-icon>delete</v-icon>
                                 </v-btn>
@@ -151,6 +152,7 @@
     import request from 'request';
     import * as config from 'config';
     import moment from 'moment-timezone';
+    import {activate_mixin} from 'common/activate-mixin';
 
     const getPendingRequests = function () {
         request({
@@ -250,7 +252,7 @@
         name: 'UserAddApp',
 
         props: ['group'],
-
+        mixins: [activate_mixin],
 
         data() {
             return {
@@ -290,11 +292,13 @@
                 )
             },
             filteredUserList() {
-                return this.group.users.filter(item => {
-                        return item.userId.toLowerCase().indexOf(this.searchManage.toLowerCase()) > -1
+                if (this.group.users) {
+                    return this.group.users.filter(item => {
+                            return item.userId.toLowerCase().indexOf(this.searchManage.toLowerCase()) > -1
 
-                    }
-                )
+                        }
+                    )
+                } else return [];
             }
         }
 
@@ -304,6 +308,11 @@
             getSearchResultsAdd,
             handlePendingRequest,
             createNewInvite
+        },
+        watch: {
+            group: function () {
+                this.getPendingRequests();
+            }
         }
 
 
