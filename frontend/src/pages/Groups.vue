@@ -134,6 +134,8 @@
                     <v-card-text>Drugi text</v-card-text>
                 </v-card>
                 {{ $store.user.groups }}
+                AAAAAAAAAAAAAAAA                  groupLinkList                 AAAAAAAAAAAAAAAAAAA
+                {{ filteredList }}
 
 
             </v-tabs-content>
@@ -161,6 +163,41 @@
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
                                 <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
                             </v-list-tile-content>
+
+
+                            <!--COMMENT
+                            Idealno bi bilo, ce bi za vsako grupo ze takoj
+                            vedel ali je uporabnik notri ali ne
+                            COMMENT-->
+
+                            <div v-if="simpleInGroup(group.groupId)">
+                                <v-list-tile-avatar v-if="isInAdminRole(group)">
+                                    <v-btn icon v-on:click.native.stop="admin_action(group)">
+                                        <v-icon>bubble_chart</v-icon>
+                                    </v-btn>
+                                </v-list-tile-avatar>
+
+                                <v-list-tile-avatar v-else>
+                                    <v-btn icon v-on:click.native.stop="leave_group">
+                                        <v-icon>directions_run</v-icon>
+                                    </v-btn>
+                                </v-list-tile-avatar>
+                            </div>
+                            <div v-else>
+                                <v-list-tile-avatar>
+                                    <v-btn icon v-on:click.native.stop="join_group">
+                                        <!--COMMENT 
+                                        <v-icon>foreword</v-icon>
+                                        COMMENT-->
+                                        
+                                        <v-icon>transfer_within_a_station</v-icon>
+                                        
+                                    </v-btn>
+                                </v-list-tile-avatar>
+                            </div>
+
+                            
+
                             <!--COMMENT 
                             <v-list-tile-avatar>
                                 <v-btn icon v-on:click.native="leave_group">
@@ -219,6 +256,17 @@
                                 COMMENT-->
                                 <v-list-tile-sub-title>Assinged status: {{ assigData.groupRole }} </v-list-tile-sub-title>
                             </v-list-tile-content>
+
+                            <v-list-tile-avatar>
+                                <v-btn icon v-on:click.native="acceptInvitation">
+                                    <v-icon>done</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
+                            <v-list-tile-avatar>
+                                <v-btn icon v-on:click.native="cancelInvitation">
+                                    <v-icon>clear</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
                         </v-list-tile>
                     </v-card-text>
                 </v-card>
@@ -243,6 +291,13 @@
                                 COMMENT-->
                                 <v-list-tile-sub-title>Requested status: {{ assigData.groupRole }} </v-list-tile-sub-title>
                             </v-list-tile-content>
+
+                            <v-list-tile-avatar>
+                                <v-btn icon v-on:click.native="cancelRequest">
+                                    <v-icon>clear</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
+
                         </v-list-tile>
                     </v-card-text>
                 </v-card>
@@ -305,9 +360,42 @@
         }
     };
 
-    const leave_group = function () {
-        console.info("you left group");
+    const isInAdminRole = function (group){
+        //console.info("isInAdminRole");
+        //console.info(group.groupRole);
+        //console.info(group);
+        //return group.groupRole=="ADMIN";
+
+        //POZOR
+        //to bo treba narediti ali na bazi ali pa lokalno
+        return false;
     };
+
+    const leave_group = function () {
+        console.info("you left group TODO");
+    };
+
+    const join_group = function () {
+        console.info("you join group TODO");
+    };
+
+    const acceptInvitation = function () {
+        console.info("acceptInvitation TODO");
+    };
+
+    const cancelInvitation = function () {
+        console.info("cancelInvitation TODO");
+    };
+
+    const cancelRequest = function () {
+        console.info("cancelRequest TODO");
+    };
+
+
+
+
+
+
 
     const time_delay_search_groups = function (searchStr) {
         let searchStrFix = String(searchStr);
@@ -447,6 +535,61 @@
     };
 
 
+    /*
+    //to se ne splaca, tudi ce je zelo veliko grup
+    //uporabnik ni v zelo veliko grupah
+    //ce kaksen uporabnik bo v vec kot 50 grupah se splaca
+    //ampak ali bo? ce bo lahko enkrat to popravimo na tole:
+
+    const commpereGroups = function(group1,group2){
+            if (group1.groupId < group2.groupId){
+                return -1;
+            }
+            return 1;
+            //enako ni nikoli, ker groupId unikaten
+        };
+
+    
+    const listSortedDifference = function (allGroups, myGroups) {
+        allGroups.sort(this.commpereGroups);
+        myGroups.sort(this.commpereGroups);
+
+        let filterdGroups = [];
+
+        let i = 0;
+        let j = 0;
+        while (allGroups[i] < myGroups[j]){
+            if (i >= allGroups.length){
+
+            }
+            if (j >= myGroups.length){
+                
+            }
+        }
+
+
+    }
+    */
+
+    const simpleInGroup = function (group) {
+        //POZOR
+        //ce bo to delalo prepocasi je treba popravit
+
+        //super bi bilo ce bi se dalo imeti za vsako grupo se status
+        //da se ve kako je z uporabnikom
+
+        //console.info("simpleInGroup group");
+        //console.info(group);
+        for (let myGroup of this.$store.user.groups) {
+            //console.info(myGroup.groupId);
+            if (myGroup.groupId == group){
+                return true;
+            }                
+        }
+        return false;
+    }
+
+
 
     const admin_action = function (group) {
         console.info("admin_action");
@@ -535,7 +678,14 @@
             time_delay_search_groups,
             getUserGroupLinks,
             extractInvitations,
-            extractRequest
+            extractRequest,
+            simpleInGroup,
+            isInAdminRole,
+            leave_group,
+            join_group,
+            acceptInvitation,
+            cancelInvitation,
+            cancelRequest,
         },
         components: {
             UserAddApp
