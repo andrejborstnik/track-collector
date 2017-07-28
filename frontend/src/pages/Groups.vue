@@ -6,18 +6,33 @@
                 <v-tabs-item
                         href="listgroups"
                         ripple>
-                    List groups
+                    List groups 
+                    <!--COMMENT (my groups) COMMENT -->
                 </v-tabs-item>
                 <v-tabs-item
                         href="infogroups"
                         ripple>
-                    Info groups
+                    Info groups 
+                    <!--COMMENT (tega ne bo) COMMENT -->
                 </v-tabs-item>
 
                 <v-tabs-item
                         href="searchgroups"
                         ripple>
-                    Search groups
+                    Search groups 
+                    <!--COMMENT (join groups) COMMENT -->
+                </v-tabs-item>
+
+                <v-tabs-item
+                        href="myinvitations"
+                        ripple>
+                    My invitations
+                </v-tabs-item>
+
+                <v-tabs-item
+                        href="myrequest"
+                        ripple>
+                    My request
                 </v-tabs-item>
             </v-tabs-bar>
 
@@ -146,11 +161,13 @@
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
                                 <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
                             </v-list-tile-content>
+                            <!--COMMENT 
                             <v-list-tile-avatar>
                                 <v-btn icon v-on:click.native="leave_group">
                                     <v-icon>directions_run</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
+                            COMMENT-->
 
                         </v-list-tile>
                     </v-card-text>
@@ -183,11 +200,57 @@
                 COMMENT-->
             </v-tabs-content>
 
-        </v-tabs>
+            <v-tabs-content id="myinvitations">
+                <v-card flat>
+                    <v-card-text>Cetrti text</v-card-text>
+                </v-card>
 
+
+                <v-card flat>
+                    <v-card-text>
+                        <v-list-tile twoline v-for="assigData in invitationLinkList" v-bind:key="assigData.groupId">
+                            <v-list-tile-avatar>
+                                <v-icon>group</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                                <v-list-tile-title v-html="assigData.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ assigData.groupUserId }} </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-card-text>
+                </v-card>
+
+            </v-tabs-content>
+
+            <v-tabs-content id="myrequest">
+                <v-card flat>
+                    <v-card-text>Peti text</v-card-text>
+                </v-card>
+
+                <v-card flat>
+                    <v-card-text>
+                        <v-list-tile twoline v-for="assigData in requestLinkList" v-bind:key="assigData.groupId">
+                            <v-list-tile-avatar>
+                                <v-icon>group</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                                <v-list-tile-title v-html="assigData.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ assigData.groupUserId }} </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-card-text>
+                </v-card>
+
+            </v-tabs-content>
+
+
+
+        </v-tabs>
         <v-dialog v-model="UserAddAppVisible" hide-overlay width="800" scrollable>
             <v-card>
+                <!--COMMENT                                    
                 <UserAddApp :group="UserAddAppGroup"></UserAddApp>
+                COMMENT-->
             </v-card>
         </v-dialog>
     </v-container>
@@ -279,6 +342,104 @@
         });
     };
 
+
+
+    const getUserGroupLinks = function () {
+        let userRequestData = {
+            //accept: true,
+            //forGroupId: "string",
+            forUserId: this.$store.user.email,
+            //forUserIdProvider: "string",
+            //pendingOnly: true,
+            token: this.$store.user.token
+        }
+        console.info("userRequestData");
+        console.info(userRequestData);
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/list`,
+            json: userRequestData
+        }).then((body) => {
+            if (body.status == "OK") {
+                this.groupLinkList = body.assignments;
+            }
+            else {
+                console.info("getUserGroupLinks failed");
+                console.info(body);
+            }
+        }).catch((err) => {
+            console.info("getUserGroupLinks error");
+        });
+    };
+
+
+
+
+
+
+/*
+    {
+      "accepted": true,
+      "fromDate": "2017-07-28T10:27:59.784Z",
+      "grant": "string",
+      "groupAction": "2017-07-28T10:27:59.784Z",
+      "groupId": "string",
+      "groupRole": "string",
+      "groupUserId": "string",
+      "id": 0,
+      "inviteType": "string",
+      "periodic": "string",
+      "repeatTimes": 0,
+      "timestamp": "2017-07-28T10:27:59.784Z",
+      "untilDate": "2017-07-28T10:27:59.784Z",
+      "userAction": "2017-07-28T10:27:59.784Z",
+      "userId": "string"
+    }
+*/
+
+    const extractInvitations = function (grpLinkList) {
+        let invitations = [];
+
+        for (let assigData of grpLinkList) {
+            //to najbrz ne bo potrebno
+            //if (assigData.accetped == false){}
+
+            if (assigData.userId != this.$store.user.email){
+                invitations.append({
+                    //accepted: assigData.accepted,
+                    groupId: assigData.groupId,
+                    groupRole: assigData.groupRole,
+                    groupUserId: assigData.groupUserId,
+                    userId: assigData.userId
+                })
+            }
+        }
+        return invitations;   
+    };
+
+    const extractRequest = function (grpLinkList) {
+        let requests = [];
+
+        for (let assigData of grpLinkList) {
+            //to najbrz ne bo potrebno
+            //if (assigData.accetped == false){}
+
+            if (assigData.userId == this.$store.user.email){
+                requests.append({
+                    //accepted: assigData.accepted,
+                    groupId: assigData.groupId,
+                    groupRole: assigData.groupRole,
+                    groupUserId: assigData.groupUserId,
+                    userId: assigData.userId
+                })                
+            }
+        }
+        return requests;  
+    };
+
+
+
     const admin_action = function (group) {
         console.info("admin_action");
         this.UserAddAppGroup = group;
@@ -326,6 +487,9 @@
                 UserAddAppVisible: false,
                 UserAddAppGroup: "",
                 filteredList: [],
+                groupLinkList: [],
+                invitationLinkList: [],
+                requestLinkList: [],
                 groupQueryStr: ""
             }
         },
@@ -333,11 +497,20 @@
         watch: {
             groupQueryStr: function () {
                 this.time_delay_search_groups(this.groupQueryStr);
+            },
+
+            groupLinkList: function () {
+                this.invitationLinkList = this.extractInvitations(this.groupLinkList);
+                this.requestLinkList = this.extractRequest(this.groupLinkList);
             }
         },
 
         computed: {
 
+        },
+
+        beforeMount(){
+            this.getUserGroupLinks();
         },
 
         methods: {
@@ -347,7 +520,10 @@
             admin_action,
             create_group,
             search_groups,
-            time_delay_search_groups
+            time_delay_search_groups,
+            getUserGroupLinks,
+            extractInvitations,
+            extractRequest
         },
         components: {
             UserAddApp
