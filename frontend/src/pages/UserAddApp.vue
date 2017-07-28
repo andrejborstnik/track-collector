@@ -34,7 +34,7 @@
                     <v-card-text>
                         <!-- ADD A USER -->
                         <!--Mozne ikone se pogleda na https://material.io/icons/-->
-                        <input v-model="searchAdd" placeholder="search" @keyup.enter="getSearchResultsAdd">
+                        <input v-model="searchAdd" placeholder="search (at least 3 letters)" @keyup.enter="getSearchResultsAdd">
                         <v-btn icon v-on:click.native.stop="getSearchResultsAdd">
                             <v-icon>search</v-icon>
                         </v-btn>
@@ -64,8 +64,9 @@
                             </v-menu>
                             <v-btn v-if="user.inGroup==true" primary dark>Member</v-btn>
                         </v-list-tile>
-
-
+                        <div v-if="!searchResults">
+                            No results.
+                        </div>
                     </v-card-text>
                 </v-card>
             </v-tabs-content>
@@ -91,6 +92,9 @@
                                 </v-btn>
                             </v-list-tile-avatar>
                         </v-list-tile>
+                        <div v-if="filteredUserList.length==0">
+                            No results.
+                        </div>
                     </v-card-text>
                 </v-card>
             </v-tabs-content>
