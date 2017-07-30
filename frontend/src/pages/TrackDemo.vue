@@ -1,6 +1,6 @@
 <template>
     <v-container id="trackShow" fluid class="ma-0 pa-0"
-                 style="display: flex; position: absolute; top: 48px; bottom: 56px">
+                 style="display: flex; position: absolute; bottom: 56px">
         <v-dialog v-model="timeSettings" hide-overlay persistent>
             <v-layout row wrap class="ma-0 pa-3" style="background-color: white">
                 <v-dialog v-model="menuFromDate">
@@ -101,7 +101,7 @@
                 </v-list>
             </v-layout>
         </v-dialog>
-        <div style="position: absolute; bottom: 120px; left: 0px; right: 0px">
+        <div style="position: absolute; bottom: 0px; left: 0px; right: 0px">
             <v-layout v-if="sliderSettings" child-flex class="pl-3 pr-3">
                 <vue-slider ref="slider"
                             v-model="sliderValue"
@@ -115,7 +115,7 @@
                 ></vue-slider>
             </v-layout>
         </div>
-        <div style="display: flex; flex-grow: 1;">
+        <div style="display: flex; flex-grow: 1">
             <div v-if="connections"></div>
             <MyMap ref="map"
                    :storageChanged="storageChanged"

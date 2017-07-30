@@ -241,20 +241,17 @@
             </v-flex>
            </v-layout>
         </v-dialog>
+        <main>
+                <router-view></router-view>
+        </main>
         <v-toolbar dark class="primary">
             <v-toolbar-side-icon @click.native.stop="toggleLeftMenu" v-if="$store.user.leftMenuEnabled"></v-toolbar-side-icon>
             <v-toolbar-title class="white--text">{{$store.user.toolbarTitle}}</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn icon @click.native.stop="toggleShowPointLayer">
-                <v-icon >timeline</v-icon>
-            </v-btn>
             <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled">
                 <v-icon >account_circle</v-icon>
             </v-btn>
         </v-toolbar>
-        <main>
-                <router-view></router-view>
-        </main>
         <v-bottom-nav absolute value="true"
             :class="{'white': true}"
             v-if="$store.user.bottomNavigation.length > 0"
