@@ -62,6 +62,17 @@ export default class MultiTrackStorage {
 //       // todo
     }
 
+    setPointAnalysisType(type) {
+        for(let key of this.toStorage.keys()) {
+            this.toStorage.get(key).setPointAnalysisType(type);
+        }
+    }
+
+    runAnalysis() {
+        for(let key of this.toStorage.keys()) {
+            this.toStorage.get(key).runAnalysis();
+        }
+    }
     setStartDateTime(date, time, timezone) {
         this.startDateTime = moment.tz(TrackStorage.buildTimestamp(date, time), timezone).valueOf();
         for(let key of this.toStorage.keys()) {
@@ -82,11 +93,23 @@ export default class MultiTrackStorage {
         }
     }
 
+    getTrackForUser (token, userId, startCallback, endCallback) {
+            this.toStorage.get(userId).getTrack(token, startCallback, endCallback);
+    }
+
     get pointLayers() {
         let lst = [];
         for(let key of this.toStorage.keys()) {
             lst.push(this.toStorage.get(key).pointLayer);
         }
         return lst;
+    }
+
+    get firstVisibleStorage() {
+        for(let key of this.toStorage.keys()) {
+            let tmpStr = this.toStorage.get(key);
+            if(tmpStr.visible) return tmpStr;
+        }
+        return null;
     }
 }

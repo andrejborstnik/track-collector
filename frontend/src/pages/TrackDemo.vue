@@ -100,7 +100,7 @@
             </v-list>
           </v-layout>
         </v-dialog>
-        <div style="position: absolute; bottom: 110px; left: 0px; right: 0px">
+        <div style="position: absolute; bottom: 120px; left: 0px; right: 0px">
             <v-layout v-if="sliderSettings" child-flex class="pl-3 pr-3">
                     <vue-slider ref="slider"
                       v-model="sliderValue"
@@ -241,11 +241,11 @@
         this.toggleTimeSettings();
     };
 
-    const loadSeparateTrack = function() {
+    const loadSeparateTrack = function(userId) {
       this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
       this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
       this.sliderValue = [0, Number.MAX_VALUE];
-      this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoadingWithZoom);
+      this.$store.user.trackStorage.getTrackForUser(this.$store.user.token, userId, this.startLoading, this.endLoadingWithZoom);
     }
 
     const startLoading = function () {
@@ -410,6 +410,7 @@
         this.$store.user.trackStorage.registerMap(this.$refs.map.map);
         let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
         tmpStr.visible = true;
+        tmpStr.setPointAnalysisType(this.$store.user.pointAnalysisType);
         this.$store.user.toolbarTitle = this.$store.user.email;
         // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
         // this.storageChanged += 1;

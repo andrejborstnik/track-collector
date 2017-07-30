@@ -113,13 +113,21 @@
                         <v-list-tile-content>
                             <v-list-tile-title>Messages</v-list-tile-title>
                         </v-list-tile-content>
-                    </v-list-tile>                    
+                    </v-list-tile>
                     <v-list-tile v-on:click.native="groups">
                         <v-list-tile-action>
                             <v-icon>group</v-icon>
                         </v-list-tile-action>
                         <v-list-tile-content>
                             <v-list-tile-title>Groups</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile v-on:click.native.stop="toggleSettings">
+                        <v-list-tile-action>
+                            <v-icon>settings</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Settings</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
                     <v-list-tile v-on:click.native="go_to_map">
@@ -208,11 +216,38 @@
                   </div>
              </v-layout>
         </v-dialog>
-
-        <v-toolbar dark class="primary" >
+        <v-dialog v-model="settingsBox" fullscreen transition="dialog-bottom-transition" :overlay=false>
+          <v-layout column>
+            <v-toolbar dark class="primary">
+              <v-btn icon @click.native.stop="toggleSettings" dark>
+                <v-icon>close</v-icon>
+              </v-btn>
+              <v-toolbar-title>Settings</v-toolbar-title>
+              <v-spacer></v-spacer>
+              <v-toolbar-items>
+                <v-btn dark flat @click.native="toggleSettings">Close</v-btn>
+              </v-toolbar-items>
+            </v-toolbar>
+            <v-flex>
+              <v-card>
+                <v-card-title>
+                    <span class="title mb-0">Point analysis type</span>
+                </v-card-title>
+                <v-layout row>
+                    <v-radio class="ml-5" label="Speed" v-model="pointAnalysisType" value="SPEED"></v-radio>
+                    <v-radio label="Delay" v-model="pointAnalysisType" value="DELAY"></v-radio>
+                </v-layout>
+              </v-card>
+            </v-flex>
+           </v-layout>
+        </v-dialog>
+        <v-toolbar dark class="primary">
             <v-toolbar-side-icon @click.native.stop="toggleLeftMenu" v-if="$store.user.leftMenuEnabled"></v-toolbar-side-icon>
             <v-toolbar-title class="white--text">{{$store.user.toolbarTitle}}</v-toolbar-title>
             <v-spacer></v-spacer>
+            <v-btn icon @click.native.stop="toggleShowPointLayer">
+                <v-icon >timeline</v-icon>
+            </v-btn>
             <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled">
                 <v-icon >account_circle</v-icon>
             </v-btn>
@@ -286,16 +321,8 @@
             let visibleUserGroup = false;
             for(let user of group.users) {
                 if(user == userInGroup) {
-                    let current = userInGroup.visible;
-                    userInGroup.visible = !current;
-                    let tmpStr = this.$store.user.trackStorage.registerUser(userInGroup.userId, userInGroup.style.color);
-                    tmpStr.visible = userInGroup.visible;
-                    if(userInGroup.visible) {
+                    if(!userInGroup.visible) {  // will become visible
                         visibleUserGroup = true;
-                        if(user.visibleCallback) {
-                            user.visibleCallback();
-                        }
-                        this.$store.user.toolbarTitle = userInGroup.userId;
                     }
                 } else {
                     if(user.visible) {
@@ -308,6 +335,17 @@
             }
             group.withVisibleUser = visibleUserGroup;
         }
+        // set visibility only once per layer
+        this.$store.user.toolbarTitle = userInGroup.userId;
+        let current = userInGroup.visible;
+        userInGroup.visible = !current;
+        let tmpStr = this.$store.user.trackStorage.registerUser(userInGroup.userId, userInGroup.style.color);
+        tmpStr.visible = userInGroup.visible;
+        if(userInGroup.visibleCallback) {
+            userInGroup.visibleCallback(userInGroup.userId);
+        }
+        this.toggleLeftMenu()
+        // tmpStr.setPointAnalysisType(this.$store.user.pointAnalysisType);
     };
 
     const toggleGroupVisibility = function(group) {
@@ -362,6 +400,16 @@
     const toggleSendMessages = function() {
           this.sendMessages = !this.sendMessages;
     };
+
+    const toggleSettings = function() {
+          this.settingsBox = !this.settingsBox;
+          this.toggleRightMenu();
+    };
+
+    const toggleShowPointLayer = function() {
+          this.$store.user.showPointLayer = !this.$store.user.showPointLayer;
+    };
+
 
     const formatGroupName = function(group) {
         return group.replace(/^([^#]*)#([^#]*)$/, "#$2").replace(/^([^#]*)$/, "#$1");
@@ -503,7 +551,9 @@
                 messageBox: false,
                 sendMessages: false,
                 messagesTitle: "Messages",
-                sendingType: "NOTIFICATION"
+                sendingType: "NOTIFICATION",
+                settingsBox: false,
+                pointAnalysisType: "SPEED"
             }
         },
         methods: {
@@ -524,7 +574,9 @@
             formatGroupName,
             getMessages,
             processMessages,
-            triggerAlert
+            triggerAlert,
+            toggleSettings,
+            toggleShowPointLayer
         },
         watch: {
             groupFilter: function() {
@@ -554,7 +606,12 @@
                     if(firstGroup) {
                         firstGroup.active = true;
                     }
-                  }
+            },
+            pointAnalysisType: function() {
+                  this.$store.user.pointAnalysisType = this.pointAnalysisType;
+                  this.$store.user.trackStorage.setPointAnalysisType(this.pointAnalysisType);
+                  this.$store.user.trackStorage.runAnalysis();
+            }
         },
         components: {
             'MessageCallout': MessageCallout

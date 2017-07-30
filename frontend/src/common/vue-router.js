@@ -42,7 +42,9 @@ let store = {
         messageText: null,
         errorTitle: '',
         errorMessage: '',
-        showAlert: false
+        showAlert: false,
+        pointAnalysisType: "SPEED",   // 0-SPEED, 1-DELAY
+        showPointLayer: true
     },
     state: {
         path_to: null,

@@ -17,6 +17,7 @@
             :speed="20"
             ></Popup> -->
         <div ref="map" style="flex: 1; min-height: 0"></div>
+
     </section>
 </template>
 
@@ -60,28 +61,28 @@
         return ol.proj.transform(coords, 'EPSG:4326', 'EPSG:3857');
     };
 
-    let popupStats = function(feature, previousFeature, coordinate) {
-        let coordinate1 = feature.getGeometry().getClosestPoint([0,0]);
+    let popupStats = function(coordinate) {
+        let coordinate1 = this.lastClickedFeatureData.coords.slice(0,2);
         let hdms = ol.coordinate.toStringHDMS(ol.proj.transform(coordinate1, 'EPSG:3857', 'EPSG:4326'));
 
-        let data = feature.getProperties();
-        this.popupTitle = moment(data.time).format("D[.]M[.]YYYY k:mm:ss");
-        if(data.recorded) {
-            this.popupDelay = moment.duration(moment(data.recorded).diff(moment(data.time))).humanize();
+        // let data = feature.getProperties();
+        this.popupTitle = moment(this.lastClickedFeatureData.timestamp).format("D[.]M[.]YYYY k:mm:ss");
+        if(this.lastClickedFeatureData.recorded) {
+            this.popupDelay = moment.duration(moment(this.lastClickedFeatureData.recorded).diff(moment(this.lastClickedFeatureData.timestamp)))/1000 + "s";//.humanize();
         } else {
             this.popupDelay = null;
         }
 
-        this.popupSpeed = Math.round(data.speed*3.6);
+        this.popupSpeed = Math.round(this.lastClickedFeatureData.speed*3.6);
 
 
-        delete data.geometry;
-        delete data.labelPoint;
-        delete data.time;
-        delete data.received;
-        delete data.speed;
+        // delete data.geometry;
+        // delete data.labelPoint;
+        // delete data.time;
+        // delete data.received;
+        // delete data.speed;
 
-        this.popupContent = data;
+        // this.popupContent = data;
         this.popupCoords = hdms;
         this.overlay.setPosition(coordinate1);
         // if(previousFeature != null) {
@@ -151,16 +152,19 @@
         // if (!this.lastHoveredFeature) {
         //     // Add feature to last hovered in case our touchy friends click
             let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-                this.previousClickedFeature = this.lastClickedFeature;
                 this.lastClickedFeature = feature;
-                this.lastPointLayer = layer;
+                let coordinate = this.map.getEventCoordinate(evt.originalEvent);
+                let point = feature.getGeometry().getClosestPoint(coordinate);
+                this.lastClickedFeatureData = this.$store.user.trackStorage.firstVisibleStorage.getDataForPointFeature(feature, point[2]);
+
+                this.previousClickedFeature = this.lastClickedFeature;
+                this.previousClickedFeatureData = this.lastClickedFeatureData;
+                // this.lastClickedFeature = feature;
+                // this.lastPointLayer = layer;
                 return true;
             }.bind(this), {
                 layerFilter: function (layer) {
-                    for(let lay of this.$store.user.trackStorage.pointLayers) {
-                        if(layer == lay) return true;
-                    }
-                    return false;
+                    return layer == this.$store.user.trackStorage.firstVisibleStorage.pointLayer;
                 }.bind(this)
             });
             // if (!hit)
@@ -183,7 +187,7 @@
         // });
 
         if (hit) {
-            this.popupStats(this.lastClickedFeature, this.previousClickedFeature, evt.coordinate);
+            this.popupStats(evt.coordinate);
         } else {
             this.overlay.setPosition();
             // this.previousOverlay.setPosition();
@@ -221,17 +225,17 @@
                 })
             ],
             target: this.$refs.map,
-            controls: ol.control.defaults({
-                attributionOptions: ({
-                    collapsible: false
-                })
-            }),
-            renderer: 'webgl',
+            // controls: ol.control.defaults({
+            //     attributionOptions: ({
+            //         collapsible: false
+            //     })
+            // }),
+            renderer: ('webgl'),
             overlays: [this.overlay], //, this.previousOverlay],
             view: new ol.View({
                 center: [this.centerCoords[0], this.centerCoords[1]],
                 zoom: 9,
-                minZoom: 5
+                // minZoom: 5
             })
         });
 
@@ -348,6 +352,7 @@
         data: function () {
             return {
                 lastClickedFeature: undefined,
+                lastClickedFeatureData: undefined,
                 previousClickedFeature: undefined,
                 previousOverlay: undefined,
                 overlay: undefined,

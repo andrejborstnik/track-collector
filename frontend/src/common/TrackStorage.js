@@ -7,8 +7,11 @@ export default class TrackStorage {
 
   constructor(map, userId, color) {
       this.map = map;
-      this.maxSpeed = 130/3.6;
-      this.overSpeed = 140/3.6;
+      this.speedLimitSmall = 130/3.6;
+      this.speedLimitBig = 140/3.6;
+      this.pointAnalysisType = 0; // 0-SPEED, 1-DELAY
+      this.delaySmall = 60000;   // 1min
+      this.delayBig = 600000;    // 10 min
       this.data = [];
       this.userId = userId;
       this.blankColor = "rgba(255,0,0,0)";
@@ -24,8 +27,8 @@ export default class TrackStorage {
       this.pointStrokeWidth = 1;
       this.onLineStyle = new ol.style.Style({
                         stroke: new ol.style.Stroke({
-                            width: this.width,
-                            color: this.strikeColor
+                            width: 5, //this.width,
+                            color: "blue" //this.strikeColor
                         })
                     });
       this.offLineStyle = new ol.style.Style({
@@ -88,6 +91,8 @@ export default class TrackStorage {
                })
              })
       });
+
+      this.analysisPallete = [this.onPointStyle, this.onPointAlertStyle, this.onPointBigAlertStyle];
       this.dataLength = null;   // size of array of data samples
       this.startTimeIndex = null;
       this.endTimeIndex = null;
@@ -129,63 +134,109 @@ export default class TrackStorage {
       this.endDateTime = raw;
       // this.endDateTimeChanged = oldEDT == null ? true : (oldEDT != this.endDateTime);
   }
+
+  setPointAnalysisType(type) {
+      if(type == "SPEED") {
+          this.pointAnalysisType = 0;
+          return;
+      }
+      if(type == "DELAY") {
+          this.pointAnalysisType = 1;
+          return;
+      }
+      this.pointAnalysisType = 0;   // SPEED is default
+  }
+
+  analysisStyle(obj) {
+      if(this.pointAnalysisType == null) return this.onPointStyle;
+      if(this.pointAnalysisType == 1) {  // delay
+          let delay = obj.intRecorded - obj.intTimestamp;
+          if(delay <= this.delaySmall) return this.analysisPallete[0];
+          if(delay <= this.delayBig) return this.analysisPallete[1];
+          return this.analysisPallete[2];;
+      }
+      if(obj.speed <= this.speedLimitSmall) return this.analysisPallete[0];
+      if(obj.speed <= this.speedLimitBig) return this.analysisPallete[1];
+      return this.analysisPallete[2];
+  }
+
+  pointAnalysisMode(obj) {
+      if(this.pointAnalysisType == null) return 0;
+      if(this.pointAnalysisType == 1) {  // delay
+          let delay = obj.intRecorded - obj.intTimestamp;
+          if(delay <= this.delaySmall) return 0;
+          if(delay <= this.delayBig) return 1;
+          return 2;
+      }
+      if(obj.speed <= this.speedLimitSmall) return 0;
+      if(obj.speed <= this.speedLimitBig) return 1;
+      return 2;
+  }
+
+
   adjustVisibility(minTime, maxTime) {
       // let startDateTime = this.startDateTime();
       // let endDateTime = this.endDateTime();
-      if(this.dataLength == 0) return;
+      if(this.dataLength == null) return;
       let minT = Math.min(Math.max(minTime, this.startDateTime), this.endDateTime);
       let maxT = Math.max(Math.min(maxTime, this.endDateTime), this.startDateTime);
       let minx = Infinity;
       let miny = Infinity;
       let maxx = -Infinity;
       let maxy = - Infinity;
-      if(this.startTimeIndex == null) return;
-      for(let i = 0; i < this.dataLength - 1; i++) {
-          let lineFeature = this.lineFeatures[i];
-          let pointFeature = this.pointFeatures[i];
-          let pnt = pointFeature.getGeometry().getExtent();
-          let x = pnt[0];
-          let y = pnt[1];
-          if(this.startTimeIndex[i] >= minT && maxT >= this.endTimeIndex[i]) {
-              lineFeature.setStyle(this.onLineStyle);
-              if(this.data[i].speed > this.overSpeed) {
-                  pointFeature.setStyle(this.onPointBigAlertStyle);
-              } else if(this.data[i].speed > this.maxSpeed) {
-                  pointFeature.setStyle(this.onPointAlertStyle);
-              } else {
-                  pointFeature.setStyle(this.onPointStyle);
-              }
+      let linePoints = [];
+
+      this.indexMap = new Map();
+      let analysisLength = 3;
+      let pointGroups = [];
+      for(let j = 0; j < analysisLength; j++) {
+          this.indexMap.set(j, new Map());
+          pointGroups.push([]);
+      }
+      let i = 0;
+      for(let obj of this.data) {
+          let x = obj.coords[0];
+          let y = obj.coords[1];
+
+          if(obj.intTimestamp >= minT && maxT >= obj.intTimestamp) {
+              // lineFeature.setStyle(this.onLineStyle);
+              // pointFeature.setStyle(this.analysisStyle(this.data[i]));
               minx = x < minx ? x : minx;
               miny = y < miny ? y : miny;
               maxx = x > maxx ? x : maxx;
               maxy = y > maxy ? y : maxy;
-              // pointFeature.getStyle().setZIndex(1);
-          } else {
-              lineFeature.setStyle(this.offLineStyle);
-              pointFeature.setStyle(this.offPointStyle);
+              linePoints.push(obj.coords);
+              let tmpLst = pointGroups[obj.analysisMode];
+              this.indexMap.get(obj.analysisMode).set(tmpLst.length, i);
+              tmpLst.push(obj.coords);
           }
-      }
-      let last = this.dataLength - 1;
-      let lastPointFeature = this.pointFeatures[last];
-      let pnt = lastPointFeature.getGeometry().getExtent();
-      let x = pnt[0];
-      let y = pnt[1];
-
-      if(this.startTimeIndex[last] >= minT && maxT >= this.endTimeIndex[last]) {
-          minx = x < minx ? x : minx;
-          miny = y < miny ? y : miny;
-          maxx = x > maxx ? x : maxx;
-          maxy = y > maxy ? y : maxy;
-          if(this.data[last].speed > this.maxSpeed) {
-              lastPointFeature.setStyle(this.onPointAlertStyle);
-          } else {
-              lastPointFeature.setStyle(this.onPointStyle);
-          }
-      } else {
-          lastPointFeature.setStyle(this.offPointStyle);
+          i++;
       }
       this.currentExtent = [minx, miny, maxx, maxy];
+      let lineFeature = new ol.Feature({geometry: new ol.geom.LineString(linePoints)});
+      lineFeature.setStyle(this.onLineStyle);
+      let lineFeatures  = [lineFeature];
+      let pointFeatures = [];
+      for(let j = 0; j < analysisLength; j++) {
+          let ptFeature = new ol.Feature({geometry: new ol.geom.MultiPoint(pointGroups[j])});
+          ptFeature.setId(j);
+          ptFeature.setStyle(this.analysisPallete[j]);
+          pointFeatures.push(ptFeature);
+      }
+      this.lineVectorLayer.getSource().clear();
+      this.lineVectorLayer.getSource().addFeatures(lineFeatures)
+      this.pointVectorLayer.getSource().clear();
+      this.pointVectorLayer.getSource().addFeatures(pointFeatures);
+
   };
+
+  getDataForPointFeature(feature, index) {
+      // debugger
+      // let id = feature.getId();
+      // let newId = this.indexMap.get(id).get(index);
+
+      return this.data[index];
+  }
 
   zoomToVectorLayerExtent() {
       if (this.lineVectorLayer == null) return;
@@ -193,6 +244,13 @@ export default class TrackStorage {
           this.map.getView().fit(this.lineVectorLayer.getSource().getExtent(), this.map.getSize());
   };
 
+  runAnalysis() {
+      for(let obj of this.data) {
+          obj.analysisMode = this.pointAnalysisMode(obj);
+      }
+      this.adjustVisibility(this.startDateTime, this.endDateTime);
+  }
+  
   getExtent() {
       // if (this.lineVectorLayer == null) return null;
       // let src = this.lineVectorLayer.getSource();
@@ -250,77 +308,38 @@ export default class TrackStorage {
       }
       this.dataLength = len;
       this.data = new Array(len);
-      this.startTimeIndex = new Array(len);
-      this.endTimeIndex = new Array(len);
-      this.pointFeatures = [];
-      this.lineFeatures = [];
+      // let linePoints = new Array(len);
+      let linePoints = []
       let i = 0;
       for(let el of output) {
           for(let obj of el.samples) {
               obj.intTimestamp = moment(obj.timestamp).valueOf();
+              obj.intRecorded = moment(obj.recorded).valueOf();
+              let tmp = TrackStorage.transformCoords([obj.longitude, obj.latitude]);
+              tmp.push(i);
+              obj.coords = tmp;
+              obj.analysisMode = this.pointAnalysisMode(obj);
               this.data[i] = obj;
-              if(i > 0) {
-                  let obj0 = this.data[i - 1];
-                  let line = new ol.geom.LineString([
-                                  TrackStorage.transformCoords([obj0.longitude, obj0.latitude]),
-                                  TrackStorage.transformCoords([obj.longitude, obj.latitude])
-                                ]);
-                  let lineGeo = new ol.Feature({geometry: line});
-                  lineGeo.setId(i);
-                  this.lineFeatures.push(lineGeo);
-                  this.startTimeIndex[i] = obj0.intTimestamp;
-                  this.endTimeIndex[i] = obj.intTimestamp;
-              }
-              let point = new ol.geom.Point(TrackStorage.transformCoords([obj.longitude, obj.latitude]));
-              let pointLabel = new ol.geom.Point(TrackStorage.transformCoords([obj.longitude, obj.latitude]));
-              let pointGeo = new ol.Feature({
-                   labelPoint: point,
-                   geometry: point,
-                   time: obj.timestamp,
-                   recorded: obj.recorded,
-                   speed: obj.speed
-              });
-              pointGeo.setId(i);
-              this.pointFeatures.push(pointGeo);
+              linePoints.push(tmp);
               i++;
           }
       }
+      let vectorSource = new ol.source.Vector({
+          features: []
+      });
+      this.lineVectorLayer = new ol.layer.Vector({
+          source: vectorSource
+      });
+      this.map.addLayer(this.lineVectorLayer);
 
-      if (!this.lineVectorLayer) {
-          let vectorSource = new ol.source.Vector({
-              features: this.lineFeatures
-          });
+      let pointVectorSource = new ol.source.Vector({
+          features: []
+      });
 
-          this.lineVectorLayer = new ol.layer.Vector({
-              source: vectorSource
-          });
-          this.map.addLayer(this.lineVectorLayer);
-      } else {
-          this.lineVectorLayer.getSource().clear();
-          this.lineVectorLayer.getSource().addFeatures(this.lineFeatures);
-          this.lineVectorLayer.changed();
-      }
-      if (!this.pointVectorLayer) {
-          let vectorSource = new ol.source.Vector({
-              features: this.pointFeatures
-          });
-
-          this.pointVectorLayer = new ol.layer.Vector({
-              source: vectorSource
-              // ,
-              // minResolution: 0.001,
-              // maxResolution: 10
-          });
-          this.map.addLayer(this.pointVectorLayer);
-      }
-      else {
-          this.pointVectorLayer.getSource().clear();
-          this.pointVectorLayer.getSource().addFeatures(this.pointFeatures);
-          this.pointVectorLayer.changed();
-      }
-      // // set proper styles
-      // let minT = moment(TrackStorage.buildTimestamp(this.startDate, this.startTime)).valueOf();
-      // let maxT = moment(TrackStorage.buildTimestamp(this.endDate, this.endTime)).valueOf();
+      this.pointVectorLayer = new ol.layer.Vector({
+          source: pointVectorSource,
+      });
+      this.map.addLayer(this.pointVectorLayer);
       this.adjustVisibility(this.startDateTime, this.endDateTime);
   };
 
