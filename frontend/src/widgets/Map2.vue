@@ -151,6 +151,7 @@
         // // todo save clone last hovered and use it to compare
         // if (!this.lastHoveredFeature) {
         //     // Add feature to last hovered in case our touchy friends click
+            if(!this.$store.user.trackStorage.firstVisibleStorage) return;
             let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                 this.lastClickedFeature = feature;
                 let coordinate = this.map.getEventCoordinate(evt.originalEvent);

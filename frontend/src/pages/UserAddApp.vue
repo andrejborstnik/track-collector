@@ -25,7 +25,7 @@
                 <v-tabs-item
                         href="pr"
                         ripple
-                        v-on:click.native.stop="getPendingRequests">
+                >
                     Pending requests
                 </v-tabs-item>
             </v-tabs-bar>
@@ -34,38 +34,51 @@
                     <v-card-text>
                         <!-- ADD A USER -->
                         <!--Mozne ikone se pogleda na https://material.io/icons/-->
-                        <input v-model="searchAdd" placeholder="search">
-                        <v-list-tile twoline v-for="user in filteredDummyList" v-bind:key="user.name">
+
+                        <!--COMMENT
+                        <input v-model="searchAdd" placeholder="search (at least 3 letters)" @keyup.enter="getSearchResultsAdd">
+                        <v-btn icon v-on:click.native.stop="getSearchResultsAdd">
+                            <v-icon>search</v-icon>
+                        </v-btn>
+                        COMMENT-->
+
+                        <v-text-field
+                        name="inputSRCusr"
+                        autofocus
+                        label="Search (at least 3 letters)"
+                        single-line
+                        v-model="userQueryStr"
+                        ></v-text-field>
+
+                        <v-list-tile twoline v-for="user in searchResults" v-bind:key="user.name">
                             <v-list-tile-avatar>
                                 <v-icon>person</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
-                                <v-list-tile-title v-html="user.name"></v-list-tile-title>
-                                <v-list-tile-sub-title>{{user.status}}</v-list-tile-sub-title>
+                                <v-list-tile-title v-html="user.userId"></v-list-tile-title>
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="user.status=='Nothing'">
-                                <v-btn icon>
-                                    <v-icon>group_add</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Participating'">
-                                <v-btn icon>
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Requested'">
-                                <v-btn icon>
-                                    <v-icon>done</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                            <v-list-tile-avatar v-if="user.status=='Invited' || user.status=='Requested'">
-                                <v-btn icon>
-                                    <v-icon>clear</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
+                            <!--<v-list-tile-avatar v-if="user.inGroup==false">-->
+                            <!--<v-btn icon-->
+                            <!--v-on:click.native.stop="inviteUserVisible = true ; userToInvite=user ;">-->
+                            <!--<v-icon>add</v-icon>-->
+                            <!--</v-btn>-->
+                            <!--</v-list-tile-avatar>-->
+                            <v-menu v-if="user.inGroup==false" offset-y>
+                                <v-btn primary dark slot="activator">Invite</v-btn>
+                                <v-list>
+                                    <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN')">
+                                        <v-list-tile-title>As Admin</v-list-tile-title>
+                                    </v-list-tile>
+                                    <v-list-tile v-on:click.native.stop="createNewInvite(user,'USER')">
+                                        <v-list-tile-title>As User</v-list-tile-title>
+                                    </v-list-tile>
+                                </v-list>
+                            </v-menu>
+                            <v-btn v-if="user.inGroup==true" primary dark>Member</v-btn>
                         </v-list-tile>
-
-
+                        <div v-if="!searchResults">
+                            No results.
+                        </div>
                     </v-card-text>
                 </v-card>
             </v-tabs-content>
@@ -75,41 +88,50 @@
                     <v-card-text>
                         <!-- ADD A USER -->
                         <!--Mozne ikone se pogleda na https://material.io/icons/-->
-                        <input v-model="searchManage" placeholder="search">
+                        <input v-model="searchManage" placeholder="filter">
                         <v-list-tile twoline v-for="user in filteredUserList" v-bind:key="user.name">
                             <v-list-tile-avatar>
                                 <v-icon>person</v-icon>
                             </v-list-tile-avatar>
                             <v-list-tile-content>
-                                <v-list-tile-title v-html="user.userId"></v-list-tile-title>
-                                <v-list-tile-sub-title> Timestamp: {{user.timestamp}}</v-list-tile-sub-title>
+                                <v-list-tile-title>{{user.userId}}</v-list-tile-title>
+                                <v-list-tile-sub-title v-if="user.isAdmin"> Admin </v-list-tile-sub-title>
+                                <v-list-tile-sub-title v-if="!user.isAdmin"> User </v-list-tile-sub-title>
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="user.isAdmin==false">
+                            <v-list-tile-avatar v-if="!user.isAdmin">
                                 <v-btn icon>
                                     <v-icon>delete</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
                         </v-list-tile>
-
-
+                        <div v-if="filteredUserList.length==0">
+                            No results.
+                        </div>
                     </v-card-text>
                 </v-card>
             </v-tabs-content>
 
             <v-tabs-content id="ei">
                 <v-card flat>
-                    <v-list-tile twoline v-for="user in group.users" v-bind:key="user.name">
+                    <v-list-tile twoline v-for="invite in extendedInvitations">
                         <v-list-tile-avatar>
-                            <v-icon>person</v-icon>
-                        </v-list-tile-avatar>
-                        <v-list-tile-content>
-                            <v-list-tile-title v-html="user.userId"></v-list-tile-title>
-                            <v-list-tile-sub-title>{{user.isAdmin}}</v-list-tile-sub-title>
-                        </v-list-tile-content>
+                                <v-icon>person</v-icon>
+                            </v-list-tile-avatar>
+                            <v-list-tile-content>
+                                <v-list-tile-title>{{invite.userId}}</v-list-tile-title>
+                                <v-list-tile-sub-title> Role: {{invite.groupRole}} </v-list-tile-sub-title>
+                            </v-list-tile-content>
+                            <v-list-tile-avatar>
+                                <v-btn icon>
+                                    <v-icon>delete</v-icon>
+                                </v-btn>
+                            </v-list-tile-avatar>
                     </v-list-tile>
+                    <div v-if="extendedInvitations">
+                        No Extended Invitations
+                    </div>
                 </v-card>
             </v-tabs-content>
-
             <v-tabs-content id="pr">
                 <v-flex xs12>
                     <v-card v-for="request in pendingRequests">
@@ -127,12 +149,23 @@
                             <v-btn flat v-on:click.native.stop="handlePendingRequest(request,true)">Deny</v-btn>
                         </v-card-actions>
                     </v-card>
+                    <div v-if="pendingRequests">
+                        No Pending Requests
+                    </div>
                 </v-flex>
 
             </v-tabs-content>
 
         </v-tabs>
+        <!--<v-dialog v-model="inviteUserVisible" hide-overlay width="1000" content-class="z-index: 100">-->
+        <!--<v-card>-->
+        <!--<v-card-title>Inviting user {{userToInvite}} to group {{group.groupId}}. </v-card-title>-->
+        <!--</v-card>-->
+        <!--</v-dialog>-->
+
+
     </v-container>
+
 </template>
 
 
@@ -145,47 +178,110 @@
 
     import request from 'request';
     import * as config from 'config';
+    import moment from 'moment-timezone';
+    import {activate_mixin} from 'common/activate-mixin';
 
-    const getPendingRequests = function (group) {
+    const getGroupLinks = function () {
         request({
             method: "POST",
             uri: `${config.paths_api_prefix}/group/link/list`,
             json: {
-                "forGroupId": group.groupId,
-                "pendingOnly": false,
+                "forGroupId": this.group.groupId,
+                "pendingOnly": true,
                 "token": this.$store.user.token
             }
         }).then((body) => {
-            this.pendingRequests = body.assignments;
+            this.groupLinks = body.assignments;
+            console.log("group links:",this.groupLinks);
             return;
         }).catch((err) => {
-            console.log("Error with pending requsts");
+            console.log("Error with get pending requsts");
+        });
+    };
+
+
+    const timeDelaySearchResultsAdd = function () {
+        let searchStrFix = String(this.userQueryStr);
+        setTimeout(function(){ 
+            if (this.userQueryStr == searchStrFix) {
+                this.getSearchResultsAdd(searchStrFix);
+            }
+        }.bind(this), 300);
+    }
+
+    const getSearchResultsAdd = function (searchStrFix) {
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/authentication/list`,
+            json: {
+                "queryString": searchStrFix,//this.searchAdd,
+                "token": this.$store.user.token
+            }
+        }).then((body) => {
+            this.searchResults = body.users;
+            for (let i of this.searchResults) {
+                i.inGroup = this.group.users.some(function (el) {
+                    return el.userId === i.userId;
+                });
+            }
+            return;
+        }).catch((err) => {
+            console.log("Error with getSearchResultsAdd");
+        });
+    };
+
+    const createNewInvite = function (user, role) {
+        console.log("doing things", role);
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/register`,
+            json:
+                {
+                    "requests": [
+                        {
+                            "fromDate": moment().toISOString(),
+                            "grant": "ALLOW",
+                            "groupId": this.group.groupId,
+                            "groupRole": role,
+                            "inviteType": "GROUP",
+                            "untilDate": null,
+                            "userId": user.userId
+                        }
+                    ],
+                    "token": this.$store.user.token
+                }
+        }).then((body) => {
+            this.getGroupLinks();
+            console.log("greata - success", body);
+            return;
+        }).catch((err) => {
+            console.log("Error with createNewInvite", err);
         });
     };
 
     const handlePendingRequest = function (req, accepted) {
-            var req_json = {
-                "forUserId": this.$store.user.userId,
-                "forUserIdProvider": this.$store.user.provider,
-                "token": this.$store.user.token
-            }
-            if (accepted) {
-                req.confirmLinks = [req.id];
-            } else {
-                req.rejectLinks = [req.id];
-            }
+        var req_json = {
+            "forUserId": this.$store.user.email,
+            "forUserIdProvider": this.$store.user.provider,
+            "token": this.$store.user.token
+        }
+        if (accepted) {
+            req.confirmLinks = [req.id];
+        } else {
+            req.rejectLinks = [req.id];
+        }
 
 
-            request({
-                method: "POST",
-                uri: `${config.paths_api_prefix}/group/link/update`,
-                json: req_json
-            }).then((body) => {
-                this.getPendingRequests(this.group);
-                return;
-            }).catch((err) => {
-                console.log("Error with handling pending requst");
-            });
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/update`,
+            json: req_json
+        }).then((body) => {
+            this.getGroupLinks();
+            return;
+        }).catch((err) => {
+            console.log("Error with handling pending requst");
+        });
 
     };
 
@@ -194,57 +290,67 @@
         name: 'UserAddApp',
 
         props: ['group'],
+        mixins: [activate_mixin],
 
-
-        data () {
+        data() {
             return {
-                text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-                dummyList: [
-                    {
-                        name: "Alen",
-                        status: "Participating"
-                    },
-                    {
-                        name: "Alja",
-                        status: "Invited"
-                    },
-                    {
-                        name: "Ales",
-                        status: "Requested"
-                    },
-                    {
-                        name: "Joze",
-                        status: "Nothing"
-                    }
-                ],
-                searchAdd: "",
+                //searchAdd: "",
                 searchManage: "",
-                pendingRequests: null
+                groupLinks: null,
+                searchResults: null,
+                userToInvite: null,
+                inviteUserVisible: false,
+                userQueryStr: ""
             }
         },
         computed: {
-            filteredDummyList() {
-                return this.dummyList.filter(item => {
-                        return item.name.toLowerCase().indexOf(this.searchAdd.toLowerCase()) > -1
+            filteredUserList() {
+                if (this.group.users) {
+                    return this.group.users.filter(item => {
+                            return item.userId.toLowerCase().indexOf(this.searchManage.toLowerCase()) > -1
 
-                    }
-                )
+                        }
+                    )
+                } else return [];
             },
-            filteredUserList(){
-                return this.group.users.filter(item => {
-                    return item.userId.toLowerCase().indexOf(this.searchManage.toLowerCase()) > -1
-
-                    }
-                )
+            extendedInvitations() {
+                if (this.groupLinks) {
+                    return this.groupLinks.filter(el => {
+                        return el.groupId===this.group.groupId && el.inviteType==='GROUP'
+                    });
+                } else {
+                    return [];
+                }
+            },
+            pendingRequests() {
+                if (this.groupLinks) {
+                    return this.groupLinks.filter(el => {
+                        return el.groupId===this.group.groupId && el.inviteType==='USER'
+                    });
+                } else {
+                    return [];
+                }
             }
+
         }
 
         ,
         methods: {
-            getPendingRequests,
-            handlePendingRequest
-        }
+            getGroupLinks,
+            getSearchResultsAdd,
+            handlePendingRequest,
+            createNewInvite,
+            timeDelaySearchResultsAdd
+        },
+        watch: {
+            userQueryStr: function () {
+                this.timeDelaySearchResultsAdd(this.userQueryStr);
+            },
 
+            group: function () {
+                this.getGroupLinks();
+            }
+        }
 
     }
 
