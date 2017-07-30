@@ -148,9 +148,6 @@
     };
 
     let onMapClick = function(evt) {
-        // // todo save clone last hovered and use it to compare
-        // if (!this.lastHoveredFeature) {
-        //     // Add feature to last hovered in case our touchy friends click
             if(!this.$store.user.trackStorage.firstVisibleStorage) return;
             let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
                 this.lastClickedFeature = feature;
@@ -168,33 +165,14 @@
                     return layer == this.$store.user.trackStorage.firstVisibleStorage.pointLayer;
                 }.bind(this)
             });
-            // if (!hit)
-            //     return;
-        // }
-
-        // let lastHovered = this.lastHoveredFeature.getId();
-        // let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-        //     // if (this.lastHoveredFeature) {
-        //     //   this.$refs.popup.lastClickedFeature = this.lastHoveredFeature
-        //     // }
-        //     // else {
-        //     // this.$refs.popup.lastClickedFeature = feature
-        //     this.lastClickedFeature = this.vectorLayer.getSource().getFeatureById(lastHovered);
-        //     return true;
-        // }.bind(this), {
-        //     filterLayer: function (layer) {
-        //         return layer == this.vectorLayer;
-        //     }.bind(this)
-        // });
-
-        if (hit) {
-            this.popupStats(evt.coordinate);
-        } else {
-            this.overlay.setPosition();
-            // this.previousOverlay.setPosition();
-            this.previousClickedFeature = null;
-            this.lastClickedFeature = null;
-        }
+            if (hit) {
+                this.popupStats(evt.coordinate);
+            } else {
+                this.overlay.setPosition();
+                // this.previousOverlay.setPosition();
+                this.previousClickedFeature = null;
+                this.lastClickedFeature = null;
+            }
     };
 
     let initMap = function () {
@@ -264,8 +242,34 @@
         return color
     };
 
-    let onMapPointermove = function(e) {
-        return;  // too slow. Maybe enable if not too many pixels
+    let onMapPointermove = function(evt) {
+      if(!this.$store.user.trackStorage.firstVisibleStorage) return;
+      let hit = this.map.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
+          this.lastClickedFeature = feature;
+          let coordinate = this.map.getEventCoordinate(evt.originalEvent);
+          let point = feature.getGeometry().getClosestPoint(coordinate);
+          this.lastClickedFeatureData = this.$store.user.trackStorage.firstVisibleStorage.getDataForPointFeature(feature, point[2]);
+
+          this.previousClickedFeature = this.lastClickedFeature;
+          this.previousClickedFeatureData = this.lastClickedFeatureData;
+          // this.lastClickedFeature = feature;
+          // this.lastPointLayer = layer;
+          return true;
+      }.bind(this), {
+          layerFilter: function (layer) {
+              return layer == this.$store.user.trackStorage.firstVisibleStorage.pointLayer;
+          }.bind(this)
+      });
+      if (hit) {
+          this.popupStats(evt.coordinate);
+      } else {
+          this.overlay.setPosition();
+          // this.previousOverlay.setPosition();
+          this.previousClickedFeature = null;
+          this.lastClickedFeature = null;
+      }
+
+
         // let hit = this.map.forEachFeatureAtPixel(e.pixel, function (feature, layer) {
         //     this.lastClickedFeature = feature;
         //     this.lastPointLayer = layer;
