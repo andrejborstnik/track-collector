@@ -145,6 +145,20 @@
                     <v-card-text>Tretji text</v-card-text>
                 </v-card>
 
+                <!--COMMENT
+                
+                NOVA IDEJA:
+
+                Samo izpisemo vse grupe. Potem pa mora uporabnik klikniti na 
+                grupo in dobi vse njene informacije, torej ali je notri, 
+                ali se caka, da bo sprejet noti, ali je zaprosil za vstop, 
+                ali je uporabnik/admin.
+
+                Ce je admin, tudi dodatne informacije, ki so sicer dostopne 
+                pod list groups.
+                COMMENT-->
+
+
                 <v-card flat>
                     <v-card-text>
                         <v-text-field
