@@ -28,6 +28,12 @@
                 >
                     Pending requests
                 </v-tabs-item>
+                <v-tabs-item
+                        href="updategroup"
+                        ripple
+                >
+                    Update group
+                </v-tabs-item>
             </v-tabs-bar>
             <v-tabs-content id="aau">
                 <v-card flat>
@@ -156,6 +162,38 @@
 
             </v-tabs-content>
 
+            <v-tabs-content id="updategroup">
+                <v-dialog v-model="showAlert" persistent lazy>
+                    <v-card>
+                        <v-card-title>{{errorTitle}}</v-card-title>
+                        <v-card-text>{{errorMessage}}</v-card-text>
+                        <v-btn class="green--text darken-1" flat="flat" v-on:click.native="potrditevSporocila">Ok</v-btn>
+                    </v-card>
+                </v-dialog>
+
+                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="updateGroup">
+                    <v-layout column>
+                        <h5>Update group</h5>
+
+                        <v-text-field
+                                name="group_description"
+                                label="New group description"
+                                id="group_description"
+                                v-model="group_description"
+                                type="text"
+                                class="ma-0"
+                        ></v-text-field>
+
+                        <v-flex xm4 class="ma-0">
+                            <v-btn
+                                    @click.native.stop="updateGroup">Update
+                            </v-btn>
+                        </v-flex>
+                    </v-layout>
+                </v-card>
+            </v-tabs-content>
+
+
         </v-tabs>
         <!--<v-dialog v-model="inviteUserVisible" hide-overlay width="1000" content-class="z-index: 100">-->
         <!--<v-card>-->
@@ -180,6 +218,40 @@
     import * as config from 'config';
     import moment from 'moment-timezone';
     import {activate_mixin} from 'common/activate-mixin';
+
+    const updateGroup = function () {
+        let groupNewData = {
+            //groupId: this.group_name,
+            description: this.group_description,
+            token: this.$store.user.token
+        };
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/update`,
+            json: groupNewData
+        }).then((body) => {
+            if (body.status == "OK") {
+                this.errorTitle = "Group description updated.";
+                this.errorMessage = "";
+                this.showAlert = true;
+            }
+            else {
+                this.errorTitle = "Failed.";
+                this.errorMessage = "Group description update failed: " + String(body.error_message);
+                this.showAlert = true;
+            }
+        }).catch((err) => {
+            this.errorTitle = "Failed";
+            this.errorMessage = "System error.";
+            this.showAlert = true;
+        });
+    };
+
+    const potrditevSporocila = function () {
+        this.showAlert=false; 
+        //tu mogoce to smiselno ali pa ne, oboje se kar ok
+        this.$router.go(0);
+    };
 
     const getGroupLinks = function () {
         request({
@@ -295,6 +367,7 @@
         data() {
             return {
                 //searchAdd: "",
+                showAlert: false,
                 searchManage: "",
                 groupLinks: null,
                 searchResults: null,
@@ -340,7 +413,9 @@
             getSearchResultsAdd,
             handlePendingRequest,
             createNewInvite,
-            timeDelaySearchResultsAdd
+            timeDelaySearchResultsAdd,
+            updateGroup,
+            potrditevSporocila
         },
         watch: {
             userQueryStr: function () {

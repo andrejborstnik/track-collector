@@ -13,7 +13,15 @@
                         href="infogroups"
                         ripple>
                     Info groups 
-                    <!--COMMENT (tega ne bo) COMMENT -->
+                    <!--COMMENT (tega ne bo, je samo za debug) COMMENT -->
+                </v-tabs-item>
+
+                <v-tabs-item
+                        href="creategroup"
+                        ripple>
+                    Create group
+                    <!--COMMENT (to ne bo vec popout ampak svoj zavihtek, 
+                    se mi zdi da je to vizualno bolje) COMMENT -->
                 </v-tabs-item>
 
                 <v-tabs-item
@@ -39,65 +47,9 @@
 
             <v-tabs-content id="listgroups">
 
-                <v-flex xs4>
-                    <v-layout xs6>
-                        <v-flex xs3>
-                            <v-btn @click.native.stop="openCPW = !openCPW" class="button">Create new group</v-btn>
-                        </v-flex>
-                    </v-layout>
-                </v-flex>
-                <v-dialog v-model="openCPW" hide-overlay scrollable>
-                    <v-flex xs8>
-                        <v-layout align-center justify-center v-if="openCPW">
-                            <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="create_group">
-                                <v-layout column>
-                                    <h5>Create new group</h5>
-                                    <v-text-field
-                                            name="group_name"
-                                            label="Group name"
-                                            id="group_name"
-                                            v-model="group_name"
-                                            type="text"
-                                            class="ma-0"
-                                    ></v-text-field>
 
-                                    <v-text-field
-                                            name="group_description"
-                                            label="Description"
-                                            id="group_description"
-                                            v-model="group_description"
-                                            type="text"
-                                            class="ma-0"
-                                    ></v-text-field>
 
-                                    <v-flex xm4 class="ma-0">
-                                        <v-btn
-                                                @click.native.stop="create_group">Create
-                                        </v-btn>
-                                    </v-flex>
-                                </v-layout>
-                            </v-card>
-                        </v-layout>
-                    </v-flex>
-                </v-dialog>
-                <v-dialog v-model="showAlert" persistent lazy>
-                    <v-card>
-                        <v-card-title>{{errorTitle}}</v-card-title>
-                        <v-card-text>{{errorMessage}}</v-card-text>
-                        <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
-                        <!--COMMENT  
-                        <v-card-row>
-                            <v-card-title>{{errorTitle}}</v-card-title>
-                        </v-card-row>
-                        <v-card-row>
-                            <v-card-text>{{errorMessage}}</v-card-text>
-                        </v-card-row>
-                        <v-card-row actions>
-                            <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
-                        </v-card-row>
-                        COMMENT -->
-                    </v-card>
-                </v-dialog>
+                
 
                 <v-card flat>
                     <v-card-text>Prvi text</v-card-text>
@@ -111,7 +63,10 @@
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ group.description }} </v-list-tile-sub-title>
+                                <!--COMMENT  
                                 <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
+                                COMMENT -->
                             </v-list-tile-content>
                             <v-list-tile-avatar v-if="is_admin(group)">
                                 <v-btn icon v-on:click.native.stop="admin_action(group)">
@@ -136,6 +91,57 @@
                 {{ $store.user.groups }}
                 AAAAAAAAAAAAAAAA                  groupLinkList                 AAAAAAAAAAAAAAAAAAA
                 {{ filteredList }}
+
+
+            </v-tabs-content>
+
+            <v-tabs-content id="creategroup">
+                <v-dialog v-model="showAlert" persistent lazy>
+                    <v-card>
+                        <v-card-title>{{errorTitle}}</v-card-title>
+                        <v-card-text>{{errorMessage}}</v-card-text>
+                        <v-btn class="green--text darken-1" flat="flat" v-on:click.native="potrditevSporocila">Ok</v-btn>
+                    </v-card>
+                </v-dialog>
+
+
+                <v-card flat>
+                    <v-card-text>Sesti tekst med23</v-card-text>
+                </v-card>
+
+                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="create_group">
+                    <v-layout column>
+                        <h5>Create new group</h5>
+                        <v-text-field
+                                name="group_name"
+                                label="Group name"
+                                id="group_name"
+                                v-model="group_name"
+                                type="text"
+                                class="ma-0"
+                        ></v-text-field>
+
+                        <v-text-field
+                                name="group_description"
+                                label="Description"
+                                id="group_description"
+                                v-model="group_description"
+                                type="text"
+                                class="ma-0"
+                        ></v-text-field>
+
+                        <v-flex xm4 class="ma-0">
+                            <v-btn
+                                    @click.native.stop="create_group">Create
+                            </v-btn>
+                        </v-flex>
+                    </v-layout>
+                </v-card>
+                <!--COMMENT
+                ko ustvarimo novo skupino se mora stran osveziti, 
+                prav tako ko sprejemamo nova povabila 
+                (dodatno tudi ko zavrnemo povabila ali koncamo prosnje)
+                COMMENT -->
 
 
             </v-tabs-content>
@@ -175,7 +181,10 @@
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ group.description }} </v-list-tile-sub-title>
+                                <!--COMMENT  
                                 <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
+                                COMMENT -->
                             </v-list-tile-content>
 
 
@@ -648,6 +657,11 @@
         this.UserAddAppVisible = !this.UserAddAppVisible;
     };
 
+    const potrditevSporocila = function () {
+        this.showAlert=false; 
+        this.$router.go(0);
+    };
+
     const create_group = function () {
         let new_group_data = {
             groupId: this.group_name,
@@ -675,6 +689,16 @@
             this.showAlert = true;
         });
         console.info("create group end");
+        //this.$router.go(0);
+        //to je ok, meni se zdi smiselno, da te prestavi na list groups
+        //ampak sicer pa je treba vedeti, kako te lahko osvezi tudi na mestu,
+        //da ostanes na istem zavihtku (to se najvrjetnej v tem kontekstu sploh ne da 
+        //ampak ni pomembno ker se nebo rabilo, tu vedno zelimo iti na prvi zavihtek)
+
+        //Oziroma mogoce lehko osvezim le ko se klikne na search ali na list groups
+        //to je za premisliti
+
+        //tu naredimo osvezitev ko se potrdi sporocilo
     };
 
     export default {
@@ -684,7 +708,6 @@
 
         data () {
             return {
-                openCPW: false,
                 showAlert: false,
                 UserAddAppVisible: false,
                 UserAddAppGroup: "",
@@ -739,6 +762,7 @@
             acceptInvitation,
             cancelInvitation,
             cancelRequest,
+            potrditevSporocila
         },
         components: {
             UserAddApp
