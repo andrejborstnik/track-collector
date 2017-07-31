@@ -1,5 +1,14 @@
 <template>
     <v-container fluid class="text-xs-center">
+
+       <v-dialog v-model="showAlert" persistent lazy>
+            <v-card>
+                <v-card-title>{{mesegeTitle}}</v-card-title>
+                <v-card-text>{{mesegeText}}</v-card-text>
+                <v-btn class="green--text darken-1" flat="flat" v-on:click.native="potrditevSporocila">Ok</v-btn>
+            </v-card>
+        </v-dialog>
+
         <v-tabs dark fixed centered>
             <v-tabs-bar slot="activators" class="blue">
                 <v-tabs-slider class="orange"></v-tabs-slider>
@@ -93,14 +102,6 @@
             </v-tabs-content>
 
             <v-tabs-content id="creategroup">
-                <v-dialog v-model="showAlert" persistent lazy>
-                    <v-card>
-                        <v-card-title>{{mesegeTitle}}</v-card-title>
-                        <v-card-text>{{mesegeText}}</v-card-text>
-                        <v-btn class="green--text darken-1" flat="flat" v-on:click.native="potrditevSporocila">Ok</v-btn>
-                    </v-card>
-                </v-dialog>
-
 
                 <v-card flat>
                     <v-card-text>Sesti tekst med23</v-card-text>
@@ -198,7 +199,7 @@
                                 </v-list-tile-avatar>
 
                                 <v-list-tile-avatar v-else>
-                                    <v-btn icon v-on:click.native.stop="leaveGroup">
+                                    <v-btn icon v-on:click.native.stop="leaveGroup(group)">
                                         <v-icon>directions_run</v-icon>
                                     </v-btn>
                                 </v-list-tile-avatar>
@@ -388,7 +389,7 @@
         return false;
     };
 
-    const leaveGroup = function () {
+    const leaveGroup = function (group) {
         console.info("leaveGroup");
 
         let leaveGroupData = {
@@ -405,21 +406,33 @@
             ],
             token: this.$store.user.token
         }
+        console.info("leaveGroup A");
 
         request({
             method: "POST",
             uri: `${config.paths_api_prefix}/group/link/register`,
-            json: joinGroupData
+            json: leaveGroupData
         }).then((body) => {
             if (body.status == "OK") {
-                console.info("leaveGroup ok");
-                console.info(body);
+                this.mesegeTitle = "You left group.";
+                this.mesegeText = "";
+                this.showAlert = true;
+
+                console.info("leaveGroup B");
             }
             else {
-                console.info("leaveGroup failed");
+                this.mesegeTitle = "Failed.";
+                this.mesegeText = "Unsuported error(leaveGroup). Please contact ADMIN."
+                this.showAlert = true;
+
+                console.info("leaveGroup C");
             }
         }).catch((err) => {
-            console.info("leaveGroup error");
+            this.mesegeTitle = "Failed";
+            this.mesegeText = "System error.";
+            this.showAlert = true;
+
+            console.info("leaveGroup D");
         });
     };
 
@@ -447,14 +460,19 @@
             json: joinGroupData
         }).then((body) => {
             if (body.status == "OK") {
-                console.info("joinGroup ok");
-                console.info(body);
+                this.mesegeTitle = "You sended join request.";
+                this.mesegeText = "";
+                this.showAlert = true;
             }
             else {
-                console.info("joinGroup failed");
+                this.mesegeTitle = "Failed.";
+                this.mesegeText = "Join request failed."
+                this.showAlert = true;
             }
         }).catch((err) => {
-            console.info("joinGroup error");
+            this.mesegeTitle = "Failed";
+            this.mesegeText = "System error.";
+            this.showAlert = true;
         });
     };
 
@@ -488,7 +506,7 @@
             console.info("acceptInvitation error");
         });
 
-        ////this.getUserGroupLinks();
+        this.getUserGroupLinks();
     };
 
     const declineInvitation = function (assigData) {
@@ -519,7 +537,7 @@
             console.info("declineInvitation error");
         });
 
-        ////this.getUserGroupLinks();
+        this.getUserGroupLinks();
     };
 
     const cancelRequest = function (assigData) {
@@ -552,7 +570,7 @@
             console.info("cancelRequest error");
         });
 
-        ////this.getUserGroupLinks();
+        this.getUserGroupLinks();
     };
 
 
