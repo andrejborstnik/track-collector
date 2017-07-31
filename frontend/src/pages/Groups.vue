@@ -403,23 +403,15 @@
     const joinGroup = function (group) {
         console.info("you join group TODO");
 
-        //je treba vprasat kaj je tu treba podati
-        /*
         let joinGroupData = {
-          "requests": [
-            {
-              "fromDate": "2017-07-28T10:27:59.812Z",
-              "grant": "string",
-              "groupId": "string",
-              "groupRole": "string",
-              "inviteType": "string",
-              "periodic": "string",
-              "repeatTimes": 0,
-              "untilDate": "2017-07-28T10:27:59.812Z",
-              "userId": "string"
-            }
-          ],
-          "token": "string"
+            requests: [{
+                grant: "ALLOW",
+                groupId: group.groupId,
+                groupRole: "USER",
+                inviteType: "USER"
+                //userId: "string"
+            }],
+            token: this.$store.user.token
         }
 
         request({
@@ -428,15 +420,15 @@
             json: joinGroupData
         }).then((body) => {
             if (body.status == "OK") {
-                //console.info("joinGroup ok");
+                console.info("joinGroup ok");
+                console.info(body);
             }
             else {
-                //console.info("joinGroup failed");
+                console.info("joinGroup failed");
             }
         }).catch((err) => {
-            //console.info("joinGroup error");
+            console.info("joinGroup error");
         });
-        */
     };
 
     const acceptInvitation = function (assigData) {
@@ -445,8 +437,8 @@
         console.info(assigData.id);
         console.info(assigData);
         let acceptInvitationData = {
-            confirmLinks: [0],//POZOR: nekaj smiselnega tu
-            forUserId: this.$store.user.email,
+            confirmLinks: [assigData.id],//POZOR: nekaj smiselnega tu
+            //forUserId: this.$store.user.email,
             //forUserIdProvider: "string",
             //rejectLinks: [0],
             token: this.$store.user.token
@@ -462,10 +454,14 @@
             }
             else {
                 console.info("acceptInvitation body failed");
+                console.info(body);
+                console.info(body.error_message);
             }
         }).catch((err) => {
             console.info("acceptInvitation error");
         });
+
+        ////this.getUserGroupLinks();
     };
 
     const declineInvitation = function (assigData) {
@@ -475,9 +471,9 @@
         console.info(assigData);
         let declineInvitationData = {
             //confirmLinks: [0],
-            forUserId: this.$store.user.email,
+            //forUserId: this.$store.user.email,
             //forUserIdProvider: "string",
-            rejectLinks: [0],//POZOR: nekaj smiselnega tu
+            rejectLinks: [assigData.id],//POZOR: nekaj smiselnega tu
             token: this.$store.user.token
         }
 
@@ -495,6 +491,8 @@
         }).catch((err) => {
             console.info("declineInvitation error");
         });
+
+        ////this.getUserGroupLinks();
     };
 
     const cancelRequest = function (assigData) {
@@ -506,7 +504,7 @@
         console.info(assigData.userId);
         let cancelRequestData = {
             //confirmLinks: [0],
-            forUserId: this.$store.user.email,
+            //forUserId: this.$store.user.email,
             //forUserIdProvider: "string",
             rejectLinks: [assigData.id],//POZOR: nekaj smiselnega tu
             token: this.$store.user.token
@@ -526,6 +524,8 @@
         }).catch((err) => {
             console.info("cancelRequest error");
         });
+
+        ////this.getUserGroupLinks();
     };
 
 
@@ -636,10 +636,11 @@
             //to najbrz ne bo potrebno
             //if (assigData.accetped == false){}
 
-            if (assigData.userId != this.$store.user.email){
+            if (assigData.inviteType=="GROUP"){
                 console.info("extractInvitations B");
                 invitations.push({
-                    //accepted: assigData.accepted,
+                    id: assigData.id,
+                    accepted: assigData.accepted,
                     groupId: assigData.groupId,
                     groupRole: assigData.groupRole,
                     groupUserId: assigData.groupUserId,
@@ -658,10 +659,11 @@
             //to najbrz ne bo potrebno
             //if (assigData.accetped == false){}
 
-            if (assigData.userId == this.$store.user.email){
+            if (assigData.inviteType=="USER"){
                 console.info("extractRequest B");
                 requests.push({
-                    //accepted: assigData.accepted,
+                    id: assigData.id,
+                    accepted: assigData.accepted,
                     groupId: assigData.groupId,
                     groupRole: assigData.groupRole,
                     groupUserId: assigData.groupUserId,

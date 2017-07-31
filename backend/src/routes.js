@@ -156,6 +156,7 @@ router.post('/api/group/link/list', function (req, res) {
 
 router.post('/api/group/link/register', function (req, res) {
     let params = req.body; // todo parse safely
+    console.log('/api/group/link/register');
     console.log(req.body);
     request({
         method: "POST",
