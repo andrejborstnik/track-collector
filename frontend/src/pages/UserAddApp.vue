@@ -36,108 +36,115 @@
                 </v-tabs-item>
             </v-tabs-bar>
             <v-tabs-content id="aau">
-                <v-card flat>
-                    <v-card-text>
-                        <!-- ADD A USER -->
-                        <!--Mozne ikone se pogleda na https://material.io/icons/-->
+                <v-flex xs12>
+                    <v-card flat>
+                        <v-card-text>
+                            <!-- ADD A USER -->
+                            <!--Mozne ikone se pogleda na https://material.io/icons/-->
 
-                        <!--COMMENT
-                        <input v-model="searchAdd" placeholder="search (at least 3 letters)" @keyup.enter="getSearchResultsAdd">
-                        <v-btn icon v-on:click.native.stop="getSearchResultsAdd">
-                            <v-icon>search</v-icon>
-                        </v-btn>
-                        COMMENT-->
+                            <!--COMMENT
+                            <input v-model="searchAdd" placeholder="search (at least 3 letters)" @keyup.enter="getSearchResultsAdd">
+                            <v-btn icon v-on:click.native.stop="getSearchResultsAdd">
+                                <v-icon>search</v-icon>
+                            </v-btn>
+                            COMMENT-->
 
-                        <v-text-field
-                        name="inputSRCusr"
-                        autofocus
-                        label="Search (at least 3 letters)"
-                        single-line
-                        v-model="userQueryStr"
-                        ></v-text-field>
+                            <v-text-field
+                            name="inputSRCusr"
+                            autofocus
+                            label="Search (at least 3 letters)"
+                            single-line
+                            v-model="userQueryStr"
+                            ></v-text-field>
 
-                        <v-list-tile twoline v-for="user in searchResults" v-bind:key="user.name">
-                            <v-list-tile-avatar>
-                                <v-icon>person</v-icon>
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title v-html="user.userId"></v-list-tile-title>
-                            </v-list-tile-content>
-                            <!--<v-list-tile-avatar v-if="user.inGroup==false">-->
-                            <!--<v-btn icon-->
-                            <!--v-on:click.native.stop="inviteUserVisible = true ; userToInvite=user ;">-->
-                            <!--<v-icon>add</v-icon>-->
-                            <!--</v-btn>-->
-                            <!--</v-list-tile-avatar>-->
-                            <v-menu v-if="user.inGroup==false" offset-y>
-                                <v-btn primary dark slot="activator">Invite</v-btn>
-                                <v-list>
-                                    <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN')">
-                                        <v-list-tile-title>As Admin</v-list-tile-title>
-                                    </v-list-tile>
-                                    <v-list-tile v-on:click.native.stop="createNewInvite(user,'USER')">
-                                        <v-list-tile-title>As User</v-list-tile-title>
-                                    </v-list-tile>
-                                </v-list>
-                            </v-menu>
-                            <v-btn v-if="user.inGroup==true" primary dark>Member</v-btn>
-                        </v-list-tile>
-                        <div v-if="!searchResults">
-                            No results.
-                        </div>
-                    </v-card-text>
-                </v-card>
+                            <v-list-tile twoline v-for="user in searchResults" v-bind:key="user.name">
+                                <v-list-tile-avatar>
+                                    <v-icon>person</v-icon>
+                                </v-list-tile-avatar>
+                                <v-list-tile-content>
+                                    <v-list-tile-title v-html="user.userId"></v-list-tile-title>
+                                </v-list-tile-content>
+                                <!--<v-list-tile-avatar v-if="user.inGroup==false">-->
+                                <!--<v-btn icon-->
+                                <!--v-on:click.native.stop="inviteUserVisible = true ; userToInvite=user ;">-->
+                                <!--<v-icon>add</v-icon>-->
+                                <!--</v-btn>-->
+                                <!--</v-list-tile-avatar>-->
+                                <v-menu v-if="user.inGroup==false" offset-y>
+                                    <v-btn primary dark slot="activator">Invite</v-btn>
+                                    <v-list>
+                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN')">
+                                            <v-list-tile-title>As Admin</v-list-tile-title>
+                                        </v-list-tile>
+                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'USER')">
+                                            <v-list-tile-title>As User</v-list-tile-title>
+                                        </v-list-tile>
+                                    </v-list>
+                                </v-menu>
+                                <v-btn v-if="user.inGroup==true" primary dark>Member</v-btn>
+                            </v-list-tile>
+                            <div v-if="!searchResults">
+                                No results.
+                            </div>
+                        </v-card-text>
+                    </v-card>
+                </v-flex>
             </v-tabs-content>
 
             <v-tabs-content id="mu">
-                <v-card flat>
-                    <v-card-text>
-                        <!-- ADD A USER -->
-                        <!--Mozne ikone se pogleda na https://material.io/icons/-->
-                        <input v-model="searchManage" placeholder="filter">
-                        <v-list-tile twoline v-for="user in filteredUserList" v-bind:key="user.name">
-                            <v-list-tile-avatar>
-                                <v-icon>person</v-icon>
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title>{{user.userId}}</v-list-tile-title>
-                                <v-list-tile-sub-title v-if="user.isAdmin"> Admin </v-list-tile-sub-title>
-                                <v-list-tile-sub-title v-if="!user.isAdmin"> User </v-list-tile-sub-title>
-                            </v-list-tile-content>
-                            <v-list-tile-avatar v-if="!user.isAdmin">
-                                <v-btn icon>
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                        </v-list-tile>
-                        <div v-if="filteredUserList.length==0">
-                            No results.
-                        </div>
-                    </v-card-text>
-                </v-card>
+                <v-flex xs12>
+                    <v-card flat>
+                        <v-card-text>
+                            <!-- ADD A USER -->
+                            <!--Mozne ikone se pogleda na https://material.io/icons/-->
+                            <input v-model="searchManage" placeholder="filter">
+                            <v-list-tile twoline v-for="user in filteredUserList" v-bind:key="user.name">
+                                <v-list-tile-avatar>
+                                    <v-icon>person</v-icon>
+                                </v-list-tile-avatar>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{user.userId}}</v-list-tile-title>
+                                    <v-list-tile-sub-title v-if="user.isAdmin"> Admin </v-list-tile-sub-title>
+                                    <v-list-tile-sub-title v-if="!user.isAdmin"> User </v-list-tile-sub-title>
+                                </v-list-tile-content>
+                                <v-list-tile-avatar v-if="!user.isAdmin">
+                                    <v-btn icon>
+                                        <v-icon>delete</v-icon>
+                                    </v-btn>
+                                </v-list-tile-avatar>
+                            </v-list-tile>
+                            <div v-if="filteredUserList.length==0">
+                                No results.
+                            </div>
+                        </v-card-text>
+                    </v-card>
+                </v-flex>
             </v-tabs-content>
 
             <v-tabs-content id="ei">
-                <v-card flat>
-                    <v-list-tile twoline v-for="invite in extendedInvitations">
-                        <v-list-tile-avatar>
-                                <v-icon>person</v-icon>
-                            </v-list-tile-avatar>
-                            <v-list-tile-content>
-                                <v-list-tile-title>{{invite.userId}}</v-list-tile-title>
-                                <v-list-tile-sub-title> Role: {{invite.groupRole}} </v-list-tile-sub-title>
-                            </v-list-tile-content>
+                <v-flex xs12>
+                    <v-card flat>
+                        <v-list-tile twoline v-for="invite in extendedInvitations">
                             <v-list-tile-avatar>
-                                <v-btn icon>
-                                    <v-icon>delete</v-icon>
-                                </v-btn>
-                            </v-list-tile-avatar>
-                    </v-list-tile>
-                    <div v-if="extendedInvitations">
-                        No Extended Invitations
-                    </div>
-                </v-card>
+                                    <v-icon>person</v-icon>
+                                </v-list-tile-avatar>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{invite.userId}}</v-list-tile-title>
+                                    <v-list-tile-sub-title> Role: {{invite.groupRole}} </v-list-tile-sub-title>
+                                </v-list-tile-content>
+                                <v-list-tile-avatar>
+                                    <v-btn icon>
+                                        <v-icon>delete</v-icon>
+                                    </v-btn>
+                                </v-list-tile-avatar>
+                        </v-list-tile>
+                        <div v-if="extendedInvitations">
+                            No Extended Invitations
+                        </div>
+                    </v-card>
+                </v-flex>
             </v-tabs-content>
+
             <v-tabs-content id="pr">
                 <v-flex xs12>
                     <v-card v-for="request in pendingRequests">
