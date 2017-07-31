@@ -163,34 +163,36 @@
             </v-tabs-content>
 
             <v-tabs-content id="updategroup">
-                <v-dialog v-model="showAlert" persistent lazy>
-                    <v-card>
-                        <v-card-title>{{errorTitle}}</v-card-title>
-                        <v-card-text>{{errorMessage}}</v-card-text>
-                        <v-btn class="green--text darken-1" flat="flat" v-on:click.native="potrditevSporocila">Ok</v-btn>
+                <v-flex xs12>
+                    <v-dialog v-model="showAlert" persistent lazy>
+                        <v-card>
+                            <v-card-title>{{errorTitle}}</v-card-title>
+                            <v-card-text>{{errorMessage}}</v-card-text>
+                            <v-btn class="green--text darken-1" flat="flat" v-on:click.native="potrditevSporocila">Ok</v-btn>
+                        </v-card>
+                    </v-dialog>
+
+                    <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="updateGroup">
+                        <v-layout column>
+                            <h5>Update group</h5>
+
+                            <v-text-field
+                                    name="group_description"
+                                    label="New group description"
+                                    id="group_description"
+                                    v-model="group_description"
+                                    type="text"
+                                    class="ma-0"
+                            ></v-text-field>
+
+                            <v-flex xm4 class="ma-0">
+                                <v-btn
+                                        @click.native.stop="updateGroup">Update
+                                </v-btn>
+                            </v-flex>
+                        </v-layout>
                     </v-card>
-                </v-dialog>
-
-                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="updateGroup">
-                    <v-layout column>
-                        <h5>Update group</h5>
-
-                        <v-text-field
-                                name="group_description"
-                                label="New group description"
-                                id="group_description"
-                                v-model="group_description"
-                                type="text"
-                                class="ma-0"
-                        ></v-text-field>
-
-                        <v-flex xm4 class="ma-0">
-                            <v-btn
-                                    @click.native.stop="updateGroup">Update
-                            </v-btn>
-                        </v-flex>
-                    </v-layout>
-                </v-card>
+                </v-flex>
             </v-tabs-content>
 
 
