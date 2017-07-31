@@ -6,8 +6,7 @@
                 <v-tabs-item
                         href="listgroups"
                         ripple>
-                    List groups 
-                    <!--COMMENT (my groups) COMMENT -->
+                    MY groups
                 </v-tabs-item>
                 <v-tabs-item
                         href="infogroups"
@@ -28,7 +27,8 @@
                         href="searchgroups"
                         ripple>
                     Search groups 
-                    <!--COMMENT (join groups) COMMENT -->
+                    <!--COMMENT (join groups)
+                    COMMENT -->
                 </v-tabs-item>
 
                 <v-tabs-item
@@ -46,11 +46,6 @@
 
 
             <v-tabs-content id="listgroups">
-
-
-
-                
-
                 <v-card flat>
                     <v-card-text>Prvi text</v-card-text>
                 </v-card>
@@ -100,8 +95,8 @@
             <v-tabs-content id="creategroup">
                 <v-dialog v-model="showAlert" persistent lazy>
                     <v-card>
-                        <v-card-title>{{errorTitle}}</v-card-title>
-                        <v-card-text>{{errorMessage}}</v-card-text>
+                        <v-card-title>{{mesegeTitle}}</v-card-title>
+                        <v-card-text>{{mesegeText}}</v-card-text>
                         <v-btn class="green--text darken-1" flat="flat" v-on:click.native="potrditevSporocila">Ok</v-btn>
                     </v-card>
                 </v-dialog>
@@ -356,8 +351,6 @@
     import UserAddApp from 'pages/UserAddApp.vue';
     import GroupsStorage from 'common/GroupsStorage';
 
-
-
     const activate = function () {
         this.$store.user.leftMenuEnabled = false;
         this.$store.user.rightMenuEnabled = true;
@@ -368,7 +361,6 @@
     };
 
     const isAdmin = function (group) {
-
         for (let user of group.users) {
             //POZOR
             //tole je sedaj nekonsisteno
@@ -397,11 +389,42 @@
     };
 
     const leaveGroup = function () {
-        console.info("you left group TODO");
+        console.info("leaveGroup");
+
+        let leaveGroupData = {
+            requests: [
+                {
+                    //fromDate: moment().toISOString(),
+                    grant: "DENAY",
+                    groupId: group.groupId,
+                    groupRole: "USER",
+                    inviteType: "USER",
+                    //untilDate: null,
+                    userId: this.$store.user.email
+                }
+            ],
+            token: this.$store.user.token
+        }
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/register`,
+            json: joinGroupData
+        }).then((body) => {
+            if (body.status == "OK") {
+                console.info("leaveGroup ok");
+                console.info(body);
+            }
+            else {
+                console.info("leaveGroup failed");
+            }
+        }).catch((err) => {
+            console.info("leaveGroup error");
+        });
     };
 
     const joinGroup = function (group) {
-        console.info("you join group TODO");
+        console.info("joinGroup");
 
         let joinGroupData = {
             requests: [
@@ -417,7 +440,6 @@
             ],
             token: this.$store.user.token
         }
-        console.info("you join group TODO AAA");
 
         request({
             method: "POST",
@@ -759,18 +781,18 @@
             json: new_group_data
         }).then((body) => {
             if (body.status == "OK") {
-                this.errorTitle = "New group created.";
-                this.errorMessage = "";
+                this.mesegeTitle = "New group created.";
+                this.mesegeText = "";
                 this.showAlert = true;
             }
             else {
-                this.errorTitle = "Failed.";
-                this.errorMessage = "Group creation faild: " + String(body.error_message);
+                this.mesegeTitle = "Failed.";
+                this.mesegeText = "Group creation faild: " + String(body.error_message);
                 this.showAlert = true;
             }
         }).catch((err) => {
-            this.errorTitle = "Failed";
-            this.errorMessage = "System error.";
+            this.mesegeTitle = "Failed";
+            this.mesegeText = "System error.";
             this.showAlert = true;
         });
         console.info("create group end");
