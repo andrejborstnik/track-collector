@@ -73,17 +73,17 @@
                                 <v-menu v-if="user.inGroup==false" offset-y>
                                     <v-btn primary dark slot="activator">Invite</v-btn>
                                     <v-list>
-                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN')">
+                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN','ALLOW')">
                                             <v-list-tile-title>As Admin</v-list-tile-title>
                                         </v-list-tile>
-                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'USER')">
+                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'USER','ALLOW')">
                                             <v-list-tile-title>As User</v-list-tile-title>
                                         </v-list-tile>
                                     </v-list>
                                 </v-menu>
                                 <v-btn v-if="user.inGroup==true" primary dark>Member</v-btn>
                             </v-list-tile>
-                            <div v-if="!searchResults">
+                            <div v-if="searchResults.length==0">
                                 No results.
                             </div>
                         </v-card-text>
@@ -108,7 +108,7 @@
                                     <v-list-tile-sub-title v-if="!user.isAdmin"> User </v-list-tile-sub-title>
                                 </v-list-tile-content>
                                 <v-list-tile-avatar v-if="!user.isAdmin">
-                                    <v-btn icon>
+                                    <v-btn icon v-on:click.native.stop="createNewInvite(user,'USER','DENY')">
                                         <v-icon>delete</v-icon>
                                     </v-btn>
                                 </v-list-tile-avatar>
@@ -133,12 +133,12 @@
                                     <v-list-tile-sub-title> Role: {{invite.groupRole}} </v-list-tile-sub-title>
                                 </v-list-tile-content>
                                 <v-list-tile-avatar>
-                                    <v-btn icon>
+                                    <v-btn icon v-on:click.native.stop="handlePendingRequest(invite,true)">
                                         <v-icon>delete</v-icon>
                                     </v-btn>
                                 </v-list-tile-avatar>
                         </v-list-tile>
-                        <div v-if="extendedInvitations">
+                        <div v-if="extendedInvitations.length==0">
                             No Extended Invitations
                         </div>
                     </v-card>
@@ -159,7 +159,7 @@
                         </v-card-title>
                         <v-card-actions center>
                             <v-btn flat v-on:click.native.stop="handlePendingRequest(request,true)">Accept</v-btn>
-                            <v-btn flat v-on:click.native.stop="handlePendingRequest(request,true)">Deny</v-btn>
+                            <v-btn flat v-on:click.native.stop="handlePendingRequest(request,false)">Deny</v-btn>
                         </v-card-actions>
                     </v-card>
                     <div v-if="pendingRequests">
@@ -313,7 +313,7 @@
         });
     };
 
-    const createNewInvite = function (user, role) {
+    const createNewInvite = function (user, role, grant) {
         console.log("doing things", role);
         request({
             method: "POST",
@@ -323,7 +323,7 @@
                     "requests": [
                         {
                             "fromDate": moment().toISOString(),
-                            "grant": "ALLOW",
+                            "grant": grant,
                             "groupId": this.group.groupId,
                             "groupRole": role,
                             "inviteType": "GROUP",
@@ -335,6 +335,9 @@
                 }
         }).then((body) => {
             this.getGroupLinks();
+            if (grant='DENY'){
+                this.$router.go(0);
+            }
             console.log("greata - success", body);
             return;
         }).catch((err) => {
@@ -361,6 +364,7 @@
             json: req_json
         }).then((body) => {
             this.getGroupLinks();
+            console.log(body);
             return;
         }).catch((err) => {
             console.log("Error with handling pending requst");
@@ -381,7 +385,7 @@
                 showAlert: false,
                 searchManage: "",
                 groupLinks: null,
-                searchResults: null,
+                searchResults: [],
                 userToInvite: null,
                 inviteUserVisible: false,
                 userQueryStr: "",
