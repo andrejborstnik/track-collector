@@ -354,7 +354,6 @@
         } else {
             req_json.rejectLinks = [req.id];
         }
-        console.log(req_json);
 
 
         request({
