@@ -133,7 +133,7 @@
                                     <v-list-tile-sub-title> Role: {{invite.groupRole}} </v-list-tile-sub-title>
                                 </v-list-tile-content>
                                 <v-list-tile-avatar>
-                                    <v-btn icon>
+                                    <v-btn icon v-on:click.native.stop="handlePendingRequest(invite,true)">
                                         <v-icon>delete</v-icon>
                                     </v-btn>
                                 </v-list-tile-avatar>
@@ -159,7 +159,7 @@
                         </v-card-title>
                         <v-card-actions center>
                             <v-btn flat v-on:click.native.stop="handlePendingRequest(request,true)">Accept</v-btn>
-                            <v-btn flat v-on:click.native.stop="handlePendingRequest(request,true)">Deny</v-btn>
+                            <v-btn flat v-on:click.native.stop="handlePendingRequest(request,false)">Deny</v-btn>
                         </v-card-actions>
                     </v-card>
                     <div v-if="pendingRequests">
@@ -361,6 +361,7 @@
             json: req_json
         }).then((body) => {
             this.getGroupLinks();
+            console.log(body);
             return;
         }).catch((err) => {
             console.log("Error with handling pending requst");
