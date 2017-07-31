@@ -347,14 +347,12 @@
 
     const handlePendingRequest = function (req, accepted) {
         var req_json = {
-            "forUserId": this.$store.user.email,
-            "forUserIdProvider": this.$store.user.provider,
             "token": this.$store.user.token
         }
         if (accepted) {
-            req.confirmLinks = [req.id];
+            req_json.confirmLinks = [req.id];
         } else {
-            req.rejectLinks = [req.id];
+            req_json.rejectLinks = [req.id];
         }
 
 
