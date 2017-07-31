@@ -404,15 +404,20 @@
         console.info("you join group TODO");
 
         let joinGroupData = {
-            requests: [{
-                grant: "ALLOW",
-                groupId: group.groupId,
-                groupRole: "USER",
-                inviteType: "USER"
-                //userId: "string"
-            }],
+            requests: [
+                {
+                    //fromDate: moment().toISOString(),
+                    grant: "ALLOW",
+                    groupId: group.groupId,
+                    groupRole: "USER",
+                    inviteType: "USER",
+                    //untilDate: null,
+                    userId: this.$store.user.email
+                }
+            ],
             token: this.$store.user.token
         }
+        console.info("you join group TODO AAA");
 
         request({
             method: "POST",
