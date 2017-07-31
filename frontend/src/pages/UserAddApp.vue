@@ -83,7 +83,7 @@
                                 </v-menu>
                                 <v-btn v-if="user.inGroup==true" primary dark>Member</v-btn>
                             </v-list-tile>
-                            <div v-if="!searchResults">
+                            <div v-if="searchResults.length==0">
                                 No results.
                             </div>
                         </v-card-text>
@@ -138,7 +138,7 @@
                                     </v-btn>
                                 </v-list-tile-avatar>
                         </v-list-tile>
-                        <div v-if="extendedInvitations">
+                        <div v-if="extendedInvitations.length==0">
                             No Extended Invitations
                         </div>
                     </v-card>
@@ -381,7 +381,7 @@
                 showAlert: false,
                 searchManage: "",
                 groupLinks: null,
-                searchResults: null,
+                searchResults: [],
                 userToInvite: null,
                 inviteUserVisible: false,
                 userQueryStr: "",
