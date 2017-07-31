@@ -73,10 +73,10 @@
                                 <v-menu v-if="user.inGroup==false" offset-y>
                                     <v-btn primary dark slot="activator">Invite</v-btn>
                                     <v-list>
-                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN')">
+                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'ADMIN','ALLOW')">
                                             <v-list-tile-title>As Admin</v-list-tile-title>
                                         </v-list-tile>
-                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'USER')">
+                                        <v-list-tile v-on:click.native.stop="createNewInvite(user,'USER','ALLOW')">
                                             <v-list-tile-title>As User</v-list-tile-title>
                                         </v-list-tile>
                                     </v-list>
@@ -108,7 +108,7 @@
                                     <v-list-tile-sub-title v-if="!user.isAdmin"> User </v-list-tile-sub-title>
                                 </v-list-tile-content>
                                 <v-list-tile-avatar v-if="!user.isAdmin">
-                                    <v-btn icon>
+                                    <v-btn icon v-on:click.native.stop="createNewInvite(user,'USER','DENY')">
                                         <v-icon>delete</v-icon>
                                     </v-btn>
                                 </v-list-tile-avatar>
@@ -313,7 +313,7 @@
         });
     };
 
-    const createNewInvite = function (user, role) {
+    const createNewInvite = function (user, role, grant) {
         console.log("doing things", role);
         request({
             method: "POST",
@@ -323,7 +323,7 @@
                     "requests": [
                         {
                             "fromDate": moment().toISOString(),
-                            "grant": "ALLOW",
+                            "grant": grant,
                             "groupId": this.group.groupId,
                             "groupRole": role,
                             "inviteType": "GROUP",
@@ -335,6 +335,9 @@
                 }
         }).then((body) => {
             this.getGroupLinks();
+            if (grant='DENY'){
+                this.$router.go(0);
+            }
             console.log("greata - success", body);
             return;
         }).catch((err) => {
