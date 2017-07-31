@@ -187,7 +187,7 @@
                                     name="group_description"
                                     label="New group description"
                                     id="group_description"
-                                    v-model="group_description"
+                                    v-model="groupDescription"
                                     type="text"
                                     class="ma-0"
                             ></v-text-field>
@@ -233,7 +233,7 @@
         console.info(this.group.groupId);
         let groupNewData = {
             groupId: this.group.groupId,
-            description: this.group_description,
+            description: this.groupDescription,
             token: this.$store.user.token
         };
         request({
@@ -384,7 +384,8 @@
                 searchResults: null,
                 userToInvite: null,
                 inviteUserVisible: false,
-                userQueryStr: ""
+                userQueryStr: "",
+                groupDescription : ""
             }
         },
         computed: {
@@ -435,6 +436,7 @@
 
             group: function () {
                 this.getGroupLinks();
+                this.groupDescription = this.group.description;
             }
         }
 
