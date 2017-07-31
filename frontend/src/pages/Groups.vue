@@ -68,13 +68,13 @@
                                 <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
                                 COMMENT -->
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="is_admin(group)">
+                            <v-list-tile-avatar v-if="isAdmin(group)">
                                 <v-btn icon v-on:click.native.stop="admin_action(group)">
                                     <v-icon>bubble_chart</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="leave_group">
+                                <v-btn icon v-on:click.native="leaveGroup">
                                     <v-icon>directions_run</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -89,7 +89,9 @@
                     <v-card-text>Drugi text</v-card-text>
                 </v-card>
                 {{ $store.user.groups }}
-                AAAAAAAAAAAAAAAA                  groupLinkList                 AAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAA___________________________groupLinkList___________________________AAAAAAAAAAAAAAAAAAA
+                {{ groupLinkList }}
+                AAAAAAAAAAAAAAAA___________________________filteredList___________________________AAAAAAAAAAAAAAAAAAA
                 {{ filteredList }}
 
 
@@ -109,7 +111,7 @@
                     <v-card-text>Sesti tekst med23</v-card-text>
                 </v-card>
 
-                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="create_group">
+                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="createGroup">
                     <v-layout column>
                         <h5>Create new group</h5>
                         <v-text-field
@@ -132,7 +134,7 @@
 
                         <v-flex xm4 class="ma-0">
                             <v-btn
-                                    @click.native.stop="create_group">Create
+                                    @click.native.stop="createGroup">Create
                             </v-btn>
                         </v-flex>
                     </v-layout>
@@ -201,14 +203,14 @@
                                 </v-list-tile-avatar>
 
                                 <v-list-tile-avatar v-else>
-                                    <v-btn icon v-on:click.native.stop="leave_group">
+                                    <v-btn icon v-on:click.native.stop="leaveGroup">
                                         <v-icon>directions_run</v-icon>
                                     </v-btn>
                                 </v-list-tile-avatar>
                             </div>
                             <div v-else>
                                 <v-list-tile-avatar>
-                                    <v-btn icon v-on:click.native.stop="join_group(group)">
+                                    <v-btn icon v-on:click.native.stop="joinGroup(group)">
                                         <!--COMMENT 
                                         <v-icon>foreword</v-icon>
                                         COMMENT-->
@@ -223,7 +225,7 @@
 
                             <!--COMMENT 
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="leave_group">
+                                <v-btn icon v-on:click.native="leaveGroup">
                                     <v-icon>directions_run</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -281,12 +283,12 @@
                             </v-list-tile-content>
 
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="acceptInvitation">
+                                <v-btn icon v-on:click.native="acceptInvitation(assigData)">
                                     <v-icon>done</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="cancelInvitation">
+                                <v-btn icon v-on:click.native="declineInvitation(assigData)">
                                     <v-icon>clear</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -316,7 +318,7 @@
                             </v-list-tile-content>
 
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="cancelRequest">
+                                <v-btn icon v-on:click.native="cancelRequest(assigData)">
                                     <v-icon>clear</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -365,7 +367,7 @@
         grpStr.getGroups();
     };
 
-    const is_admin = function (group) {
+    const isAdmin = function (group) {
 
         for (let user of group.users) {
             //POZOR
@@ -394,11 +396,11 @@
         return false;
     };
 
-    const leave_group = function () {
+    const leaveGroup = function () {
         console.info("you left group TODO");
     };
 
-    const join_group = function (group) {
+    const joinGroup = function (group) {
         console.info("you join group TODO");
 
         //je treba vprasat kaj je tu treba podati
@@ -426,34 +428,110 @@
             json: joinGroupData
         }).then((body) => {
             if (body.status == "OK") {
-                //console.info("join_group ok");
+                //console.info("joinGroup ok");
             }
             else {
-                //console.info("join_group failed");
+                //console.info("joinGroup failed");
             }
         }).catch((err) => {
-            //console.info("join_group error");
+            //console.info("joinGroup error");
         });
         */
     };
 
-    const acceptInvitation = function () {
-        console.info("acceptInvitation TODO");
+    const acceptInvitation = function (assigData) {
+        console.info("declineInvitation");
+        console.info("assigData.id");
+        console.info(assigData.id);
+        console.info(assigData);
+        let acceptInvitationData = {
+            confirmLinks: [0],//POZOR: nekaj smiselnega tu
+            forUserId: this.$store.user.email,
+            //forUserIdProvider: "string",
+            //rejectLinks: [0],
+            token: this.$store.user.token
+        }
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/update`,
+            json: acceptInvitationData
+        }).then((body) => {
+            if (body.status == "OK") {
+                console.info("acceptInvitation body ok");
+            }
+            else {
+                console.info("acceptInvitation body failed");
+            }
+        }).catch((err) => {
+            console.info("acceptInvitation error");
+        });
     };
 
-    const cancelInvitation = function () {
-        console.info("cancelInvitation TODO");
+    const declineInvitation = function (assigData) {
+        console.info("declineInvitation");
+        console.info("assigData.id");
+        console.info(assigData.id);
+        console.info(assigData);
+        let declineInvitationData = {
+            //confirmLinks: [0],
+            forUserId: this.$store.user.email,
+            //forUserIdProvider: "string",
+            rejectLinks: [0],//POZOR: nekaj smiselnega tu
+            token: this.$store.user.token
+        }
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/update`,
+            json: declineInvitationData
+        }).then((body) => {
+            if (body.status == "OK") {
+                console.info("declineInvitation body ok");
+            }
+            else {
+                console.info("declineInvitation body failed");
+            }
+        }).catch((err) => {
+            console.info("declineInvitation error");
+        });
     };
 
-    const cancelRequest = function () {
-        console.info("cancelRequest TODO");
+    const cancelRequest = function (assigData) {
+        console.info("cancelRequest");
+        console.info("assigData.id");
+        console.info(assigData.id);
+        console.info(assigData);
+        console.info(assigData.groupUserId);
+        console.info(assigData.userId);
+        let cancelRequestData = {
+            //confirmLinks: [0],
+            forUserId: this.$store.user.email,
+            //forUserIdProvider: "string",
+            rejectLinks: [assigData.id],//POZOR: nekaj smiselnega tu
+            token: this.$store.user.token
+        }
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/update`,
+            json: cancelRequestData
+        }).then((body) => {
+            if (body.status == "OK") {
+                console.info("cancelRequest body ok");
+            }
+            else {
+                console.info("cancelRequest body failed");
+            }
+        }).catch((err) => {
+            console.info("cancelRequest error");
+        });
     };
 
+
+    //POZOR
     //vse zgornje treba naresti
-    //moram vprasati kaksen je request
-
-
-
+    //moram vprasati kaksen je request confirm/reject Link
 
 
     const time_delay_search_groups = function (searchStr) {
@@ -662,7 +740,7 @@
         this.$router.go(0);
     };
 
-    const create_group = function () {
+    const createGroup = function () {
         let new_group_data = {
             groupId: this.group_name,
             description: this.group_description,
@@ -746,10 +824,10 @@
 
         methods: {
             activate,
-            is_admin,
-            leave_group,
+            isAdmin,
+            leaveGroup,
             admin_action,
-            create_group,
+            createGroup,
             search_groups,
             time_delay_search_groups,
             getUserGroupLinks,
@@ -757,10 +835,10 @@
             extractRequest,
             simpleInGroup,
             isInAdminRole,
-            leave_group,
-            join_group,
+            //leaveGroup,
+            joinGroup,
             acceptInvitation,
-            cancelInvitation,
+            declineInvitation,
             cancelRequest,
             potrditevSporocila
         },
