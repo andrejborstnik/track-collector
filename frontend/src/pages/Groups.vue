@@ -478,7 +478,8 @@
             //forGroupId: "string",
             //forUserId: this.$store.user.email,
             //forUserIdProvider: "string",
-            //pendingOnly: true,
+            //## ker zelim samo tiste ki se niso razresene:
+            pendingOnly: true, 
             token: this.$store.user.token
         }
         console.info("userRequestData");
@@ -691,6 +692,8 @@
                 console.info(this.groupLinkList);
                 this.invitationLinkList = this.extractInvitations(this.groupLinkList);
                 console.info("OK 1");
+                // mogoce boljsa prakas ce se vrednost this.requestLinkList nastavi
+                //znotraj funkcije this.extractRequest ponavadi ne, ampak tu je watch, zato ne vem.
                 this.requestLinkList = this.extractRequest(this.groupLinkList);
                 console.info("OK 2");
             }
