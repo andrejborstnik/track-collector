@@ -220,8 +220,10 @@
     import {activate_mixin} from 'common/activate-mixin';
 
     const updateGroup = function () {
+        console.info("Spreminjamo:");
+        console.info(this.group.groupId);
         let groupNewData = {
-            //groupId: this.group_name,
+            groupId: this.group.groupId,
             description: this.group_description,
             token: this.$store.user.token
         };
