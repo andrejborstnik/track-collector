@@ -1,26 +1,43 @@
 <template>
     <v-container fluid class="text-xs-center">
+
+       <v-dialog v-model="showAlert" persistent lazy>
+            <v-card>
+                <v-card-title>{{mesegeTitle}}</v-card-title>
+                <v-card-text>{{mesegeText}}</v-card-text>
+                <v-btn class="green--text darken-1" flat="flat" v-on:click.native="potrditevSporocila">Ok</v-btn>
+            </v-card>
+        </v-dialog>
+
         <v-tabs dark fixed centered>
             <v-tabs-bar slot="activators" class="blue">
                 <v-tabs-slider class="orange"></v-tabs-slider>
                 <v-tabs-item
                         href="listgroups"
                         ripple>
-                    List groups 
-                    <!--COMMENT (my groups) COMMENT -->
+                    MY groups
                 </v-tabs-item>
                 <v-tabs-item
                         href="infogroups"
                         ripple>
                     Info groups 
-                    <!--COMMENT (tega ne bo) COMMENT -->
+                    <!--COMMENT (tega ne bo, je samo za debug) COMMENT -->
+                </v-tabs-item>
+
+                <v-tabs-item
+                        href="creategroup"
+                        ripple>
+                    Create group
+                    <!--COMMENT (to ne bo vec popout ampak svoj zavihtek, 
+                    se mi zdi da je to vizualno bolje) COMMENT -->
                 </v-tabs-item>
 
                 <v-tabs-item
                         href="searchgroups"
                         ripple>
                     Search groups 
-                    <!--COMMENT (join groups) COMMENT -->
+                    <!--COMMENT (join groups)
+                    COMMENT -->
                 </v-tabs-item>
 
                 <v-tabs-item
@@ -38,67 +55,6 @@
 
 
             <v-tabs-content id="listgroups">
-
-                <v-flex xs4>
-                    <v-layout xs6>
-                        <v-flex xs3>
-                            <v-btn @click.native.stop="openCPW = !openCPW" class="button">Create new group</v-btn>
-                        </v-flex>
-                    </v-layout>
-                </v-flex>
-                <v-dialog v-model="openCPW" hide-overlay scrollable>
-                    <v-flex xs8>
-                        <v-layout align-center justify-center v-if="openCPW">
-                            <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="create_group">
-                                <v-layout column>
-                                    <h5>Create new group</h5>
-                                    <v-text-field
-                                            name="group_name"
-                                            label="Group name"
-                                            id="group_name"
-                                            v-model="group_name"
-                                            type="text"
-                                            class="ma-0"
-                                    ></v-text-field>
-
-                                    <v-text-field
-                                            name="group_description"
-                                            label="Description"
-                                            id="group_description"
-                                            v-model="group_description"
-                                            type="text"
-                                            class="ma-0"
-                                    ></v-text-field>
-
-                                    <v-flex xm4 class="ma-0">
-                                        <v-btn
-                                                @click.native.stop="create_group">Create
-                                        </v-btn>
-                                    </v-flex>
-                                </v-layout>
-                            </v-card>
-                        </v-layout>
-                    </v-flex>
-                </v-dialog>
-                <v-dialog v-model="showAlert" persistent lazy>
-                    <v-card>
-                        <v-card-title>{{errorTitle}}</v-card-title>
-                        <v-card-text>{{errorMessage}}</v-card-text>
-                        <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
-                        <!--COMMENT  
-                        <v-card-row>
-                            <v-card-title>{{errorTitle}}</v-card-title>
-                        </v-card-row>
-                        <v-card-row>
-                            <v-card-text>{{errorMessage}}</v-card-text>
-                        </v-card-row>
-                        <v-card-row actions>
-                            <v-btn class="green--text darken-1" flat="flat" v-on:click.native="showAlert=false">Ok</v-btn>
-                        </v-card-row>
-                        COMMENT -->
-                    </v-card>
-                </v-dialog>
-
                 <v-card flat>
                     <v-card-text>Prvi text</v-card-text>
                 </v-card>
@@ -111,15 +67,18 @@
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ group.description }} </v-list-tile-sub-title>
+                                <!--COMMENT  
                                 <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
+                                COMMENT -->
                             </v-list-tile-content>
-                            <v-list-tile-avatar v-if="is_admin(group)">
+                            <v-list-tile-avatar v-if="isAdmin(group)">
                                 <v-btn icon v-on:click.native.stop="admin_action(group)">
                                     <v-icon>bubble_chart</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="leave_group">
+                                <v-btn icon v-on:click.native="leaveGroup">
                                     <v-icon>directions_run</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -134,8 +93,53 @@
                     <v-card-text>Drugi text</v-card-text>
                 </v-card>
                 {{ $store.user.groups }}
-                AAAAAAAAAAAAAAAA                  groupLinkList                 AAAAAAAAAAAAAAAAAAA
+                AAAAAAAAAAAAAAAA___________________________groupLinkList___________________________AAAAAAAAAAAAAAAAAAA
+                {{ groupLinkList }}
+                AAAAAAAAAAAAAAAA___________________________filteredList___________________________AAAAAAAAAAAAAAAAAAA
                 {{ filteredList }}
+
+
+            </v-tabs-content>
+
+            <v-tabs-content id="creategroup">
+
+                <v-card flat>
+                    <v-card-text>Sesti tekst med23</v-card-text>
+                </v-card>
+
+                <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="createGroup">
+                    <v-layout column>
+                        <h5>Create new group</h5>
+                        <v-text-field
+                                name="group_name"
+                                label="Group name"
+                                id="group_name"
+                                v-model="group_name"
+                                type="text"
+                                class="ma-0"
+                        ></v-text-field>
+
+                        <v-text-field
+                                name="group_description"
+                                label="Description"
+                                id="group_description"
+                                v-model="group_description"
+                                type="text"
+                                class="ma-0"
+                        ></v-text-field>
+
+                        <v-flex xm4 class="ma-0">
+                            <v-btn
+                                    @click.native.stop="createGroup">Create
+                            </v-btn>
+                        </v-flex>
+                    </v-layout>
+                </v-card>
+                <!--COMMENT
+                ko ustvarimo novo skupino se mora stran osveziti, 
+                prav tako ko sprejemamo nova povabila 
+                (dodatno tudi ko zavrnemo povabila ali koncamo prosnje)
+                COMMENT -->
 
 
             </v-tabs-content>
@@ -144,6 +148,20 @@
                 <v-card flat>
                     <v-card-text>Tretji text</v-card-text>
                 </v-card>
+
+                <!--COMMENT
+                
+                NOVA IDEJA:
+
+                Samo izpisemo vse grupe. Potem pa mora uporabnik klikniti na 
+                grupo in dobi vse njene informacije, torej ali je notri, 
+                ali se caka, da bo sprejet noti, ali je zaprosil za vstop, 
+                ali je uporabnik/admin.
+
+                Ce je admin, tudi dodatne informacije, ki so sicer dostopne 
+                pod list groups.
+                COMMENT-->
+
 
                 <v-card flat>
                     <v-card-text>
@@ -161,7 +179,10 @@
                             </v-list-tile-avatar>
                             <v-list-tile-content>
                                 <v-list-tile-title v-html="group.groupId"></v-list-tile-title>
+                                <v-list-tile-sub-title>{{ group.description }} </v-list-tile-sub-title>
+                                <!--COMMENT  
                                 <v-list-tile-sub-title>{{ group.creatorId }} </v-list-tile-sub-title>
+                                COMMENT -->
                             </v-list-tile-content>
 
 
@@ -178,14 +199,14 @@
                                 </v-list-tile-avatar>
 
                                 <v-list-tile-avatar v-else>
-                                    <v-btn icon v-on:click.native.stop="leave_group">
+                                    <v-btn icon v-on:click.native.stop="leaveGroup(group)">
                                         <v-icon>directions_run</v-icon>
                                     </v-btn>
                                 </v-list-tile-avatar>
                             </div>
                             <div v-else>
                                 <v-list-tile-avatar>
-                                    <v-btn icon v-on:click.native.stop="join_group(group)">
+                                    <v-btn icon v-on:click.native.stop="joinGroup(group)">
                                         <!--COMMENT 
                                         <v-icon>foreword</v-icon>
                                         COMMENT-->
@@ -200,7 +221,7 @@
 
                             <!--COMMENT 
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="leave_group">
+                                <v-btn icon v-on:click.native="leaveGroup">
                                     <v-icon>directions_run</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -258,12 +279,12 @@
                             </v-list-tile-content>
 
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="acceptInvitation">
+                                <v-btn icon v-on:click.native="acceptInvitation(assigData)">
                                     <v-icon>done</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="cancelInvitation">
+                                <v-btn icon v-on:click.native="declineInvitation(assigData)">
                                     <v-icon>clear</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -293,7 +314,7 @@
                             </v-list-tile-content>
 
                             <v-list-tile-avatar>
-                                <v-btn icon v-on:click.native="cancelRequest">
+                                <v-btn icon v-on:click.native="cancelRequest(assigData)">
                                     <v-icon>clear</v-icon>
                                 </v-btn>
                             </v-list-tile-avatar>
@@ -331,8 +352,6 @@
     import UserAddApp from 'pages/UserAddApp.vue';
     import GroupsStorage from 'common/GroupsStorage';
 
-
-
     const activate = function () {
         this.$store.user.leftMenuEnabled = false;
         this.$store.user.rightMenuEnabled = true;
@@ -342,8 +361,7 @@
         grpStr.getGroups();
     };
 
-    const is_admin = function (group) {
-
+    const isAdmin = function (group) {
         for (let user of group.users) {
             //POZOR
             //tole je sedaj nekonsisteno
@@ -371,30 +389,69 @@
         return false;
     };
 
-    const leave_group = function () {
-        console.info("you left group TODO");
+    const leaveGroup = function (group) {
+        console.info("leaveGroup");
+
+        let leaveGroupData = {
+            requests: [
+                {
+                    //fromDate: moment().toISOString(),
+                    grant: "DENAY",
+                    groupId: group.groupId,
+                    groupRole: "USER",
+                    inviteType: "USER",
+                    //untilDate: null,
+                    userId: this.$store.user.email
+                }
+            ],
+            token: this.$store.user.token
+        }
+        console.info("leaveGroup A");
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/register`,
+            json: leaveGroupData
+        }).then((body) => {
+            if (body.status == "OK") {
+                this.mesegeTitle = "You left group.";
+                this.mesegeText = "";
+                this.showAlert = true;
+
+                console.info("leaveGroup B");
+            }
+            else {
+                this.mesegeTitle = "Failed.";
+                this.mesegeText = "Unsuported error(leaveGroup). Please contact ADMIN."
+                this.showAlert = true;
+
+                console.info("leaveGroup C");
+            }
+        }).catch((err) => {
+            this.mesegeTitle = "Failed";
+            this.mesegeText = "System error.";
+            this.showAlert = true;
+
+            console.info("leaveGroup D");
+        });
     };
 
-    const join_group = function (group) {
-        console.info("you join group TODO");
+    const joinGroup = function (group) {
+        console.info("joinGroup");
 
-        //je treba vprasat kaj je tu treba podati
-        /*
         let joinGroupData = {
-          "requests": [
-            {
-              "fromDate": "2017-07-28T10:27:59.812Z",
-              "grant": "string",
-              "groupId": "string",
-              "groupRole": "string",
-              "inviteType": "string",
-              "periodic": "string",
-              "repeatTimes": 0,
-              "untilDate": "2017-07-28T10:27:59.812Z",
-              "userId": "string"
-            }
-          ],
-          "token": "string"
+            requests: [
+                {
+                    //fromDate: moment().toISOString(),
+                    grant: "ALLOW",
+                    groupId: group.groupId,
+                    groupRole: "USER",
+                    inviteType: "USER",
+                    //untilDate: null,
+                    userId: this.$store.user.email
+                }
+            ],
+            token: this.$store.user.token
         }
 
         request({
@@ -403,34 +460,123 @@
             json: joinGroupData
         }).then((body) => {
             if (body.status == "OK") {
-                //console.info("join_group ok");
+                this.mesegeTitle = "You sended join request.";
+                this.mesegeText = "";
+                this.showAlert = true;
             }
             else {
-                //console.info("join_group failed");
+                this.mesegeTitle = "Failed.";
+                this.mesegeText = "Join request failed."
+                this.showAlert = true;
             }
         }).catch((err) => {
-            //console.info("join_group error");
+            this.mesegeTitle = "Failed";
+            this.mesegeText = "System error.";
+            this.showAlert = true;
         });
-        */
     };
 
-    const acceptInvitation = function () {
-        console.info("acceptInvitation TODO");
+    const acceptInvitation = function (assigData) {
+        console.info("declineInvitation");
+        console.info("assigData.id");
+        console.info(assigData.id);
+        console.info(assigData);
+        let acceptInvitationData = {
+            confirmLinks: [assigData.id],//POZOR: nekaj smiselnega tu
+            //forUserId: this.$store.user.email,
+            //forUserIdProvider: "string",
+            //rejectLinks: [0],
+            token: this.$store.user.token
+        }
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/update`,
+            json: acceptInvitationData
+        }).then((body) => {
+            if (body.status == "OK") {
+                console.info("acceptInvitation body ok");
+            }
+            else {
+                console.info("acceptInvitation body failed");
+                console.info(body);
+                console.info(body.error_message);
+            }
+        }).catch((err) => {
+            console.info("acceptInvitation error");
+        });
+
+        this.getUserGroupLinks();
     };
 
-    const cancelInvitation = function () {
-        console.info("cancelInvitation TODO");
+    const declineInvitation = function (assigData) {
+        console.info("declineInvitation");
+        console.info("assigData.id");
+        console.info(assigData.id);
+        console.info(assigData);
+        let declineInvitationData = {
+            //confirmLinks: [0],
+            //forUserId: this.$store.user.email,
+            //forUserIdProvider: "string",
+            rejectLinks: [assigData.id],//POZOR: nekaj smiselnega tu
+            token: this.$store.user.token
+        }
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/update`,
+            json: declineInvitationData
+        }).then((body) => {
+            if (body.status == "OK") {
+                console.info("declineInvitation body ok");
+            }
+            else {
+                console.info("declineInvitation body failed");
+            }
+        }).catch((err) => {
+            console.info("declineInvitation error");
+        });
+
+        this.getUserGroupLinks();
     };
 
-    const cancelRequest = function () {
-        console.info("cancelRequest TODO");
+    const cancelRequest = function (assigData) {
+        console.info("cancelRequest");
+        console.info("assigData.id");
+        console.info(assigData.id);
+        console.info(assigData);
+        console.info(assigData.groupUserId);
+        console.info(assigData.userId);
+        let cancelRequestData = {
+            //confirmLinks: [0],
+            //forUserId: this.$store.user.email,
+            //forUserIdProvider: "string",
+            rejectLinks: [assigData.id],//POZOR: nekaj smiselnega tu
+            token: this.$store.user.token
+        }
+
+        request({
+            method: "POST",
+            uri: `${config.paths_api_prefix}/group/link/update`,
+            json: cancelRequestData
+        }).then((body) => {
+            if (body.status == "OK") {
+                console.info("cancelRequest body ok");
+            }
+            else {
+                console.info("cancelRequest body failed");
+            }
+        }).catch((err) => {
+            console.info("cancelRequest error");
+        });
+
+        this.getUserGroupLinks();
     };
 
+
+    //POZOR
     //vse zgornje treba naresti
-    //moram vprasati kaksen je request
-
-
-
+    //moram vprasati kaksen je request confirm/reject Link
 
 
     const time_delay_search_groups = function (searchStr) {
@@ -478,7 +624,8 @@
             //forGroupId: "string",
             //forUserId: this.$store.user.email,
             //forUserIdProvider: "string",
-            //pendingOnly: true,
+            //## ker zelim samo tiste ki se niso razresene:
+            pendingOnly: true, 
             token: this.$store.user.token
         }
         console.info("userRequestData");
@@ -534,10 +681,11 @@
             //to najbrz ne bo potrebno
             //if (assigData.accetped == false){}
 
-            if (assigData.userId != this.$store.user.email){
+            if (assigData.inviteType=="GROUP"){
                 console.info("extractInvitations B");
                 invitations.push({
-                    //accepted: assigData.accepted,
+                    id: assigData.id,
+                    accepted: assigData.accepted,
                     groupId: assigData.groupId,
                     groupRole: assigData.groupRole,
                     groupUserId: assigData.groupUserId,
@@ -556,10 +704,11 @@
             //to najbrz ne bo potrebno
             //if (assigData.accetped == false){}
 
-            if (assigData.userId == this.$store.user.email){
+            if (assigData.inviteType=="USER"){
                 console.info("extractRequest B");
                 requests.push({
-                    //accepted: assigData.accepted,
+                    id: assigData.id,
+                    accepted: assigData.accepted,
                     groupId: assigData.groupId,
                     groupRole: assigData.groupRole,
                     groupUserId: assigData.groupUserId,
@@ -633,7 +782,12 @@
         this.UserAddAppVisible = !this.UserAddAppVisible;
     };
 
-    const create_group = function () {
+    const potrditevSporocila = function () {
+        this.showAlert=false; 
+        this.$router.go(0);
+    };
+
+    const createGroup = function () {
         let new_group_data = {
             groupId: this.group_name,
             description: this.group_description,
@@ -645,21 +799,31 @@
             json: new_group_data
         }).then((body) => {
             if (body.status == "OK") {
-                this.errorTitle = "New group created.";
-                this.errorMessage = "";
+                this.mesegeTitle = "New group created.";
+                this.mesegeText = "";
                 this.showAlert = true;
             }
             else {
-                this.errorTitle = "Failed.";
-                this.errorMessage = "Group creation faild: " + String(body.error_message);
+                this.mesegeTitle = "Failed.";
+                this.mesegeText = "Group creation faild: " + String(body.error_message);
                 this.showAlert = true;
             }
         }).catch((err) => {
-            this.errorTitle = "Failed";
-            this.errorMessage = "System error.";
+            this.mesegeTitle = "Failed";
+            this.mesegeText = "System error.";
             this.showAlert = true;
         });
         console.info("create group end");
+        //this.$router.go(0);
+        //to je ok, meni se zdi smiselno, da te prestavi na list groups
+        //ampak sicer pa je treba vedeti, kako te lahko osvezi tudi na mestu,
+        //da ostanes na istem zavihtku (to se najvrjetnej v tem kontekstu sploh ne da 
+        //ampak ni pomembno ker se nebo rabilo, tu vedno zelimo iti na prvi zavihtek)
+
+        //Oziroma mogoce lehko osvezim le ko se klikne na search ali na list groups
+        //to je za premisliti
+
+        //tu naredimo osvezitev ko se potrdi sporocilo
     };
 
     export default {
@@ -669,7 +833,6 @@
 
         data () {
             return {
-                openCPW: false,
                 showAlert: false,
                 UserAddAppVisible: false,
                 UserAddAppGroup: "",
@@ -691,6 +854,8 @@
                 console.info(this.groupLinkList);
                 this.invitationLinkList = this.extractInvitations(this.groupLinkList);
                 console.info("OK 1");
+                // mogoce boljsa prakas ce se vrednost this.requestLinkList nastavi
+                //znotraj funkcije this.extractRequest ponavadi ne, ampak tu je watch, zato ne vem.
                 this.requestLinkList = this.extractRequest(this.groupLinkList);
                 console.info("OK 2");
             }
@@ -706,10 +871,10 @@
 
         methods: {
             activate,
-            is_admin,
-            leave_group,
+            isAdmin,
+            leaveGroup,
             admin_action,
-            create_group,
+            createGroup,
             search_groups,
             time_delay_search_groups,
             getUserGroupLinks,
@@ -717,11 +882,12 @@
             extractRequest,
             simpleInGroup,
             isInAdminRole,
-            leave_group,
-            join_group,
+            //leaveGroup,
+            joinGroup,
             acceptInvitation,
-            cancelInvitation,
+            declineInvitation,
             cancelRequest,
+            potrditevSporocila
         },
         components: {
             UserAddApp
