@@ -236,6 +236,7 @@
                 <v-layout row>
                     <v-radio class="ml-5" label="Speed" v-model="pointAnalysisType" value="SPEED"></v-radio>
                     <v-radio label="Delay" v-model="pointAnalysisType" value="DELAY"></v-radio>
+                    <v-radio label="Battery" v-model="pointAnalysisType" value="BATTERY"></v-radio>
                 </v-layout>
               </v-card>
             </v-flex>
@@ -406,7 +407,7 @@
 
     const toggleHistoryMode = function() {
           this.$store.user.historyMode = !this.$store.user.historyMode;
-          console.log(this.$store.user.historyMode)
+          // console.log(this.$store.user.historyMode)
     };
 
 

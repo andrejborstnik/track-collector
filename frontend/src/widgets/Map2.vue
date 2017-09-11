@@ -7,6 +7,7 @@
             borderColor="white"
             :speed="popupSpeed"
             :delay="popupDelay"
+            :battery="popupBattery"
             ></Popup>
 
         <!-- <Popup :title="previousPopupTitle"
@@ -71,6 +72,11 @@
             this.popupDelay = moment.duration(moment(this.lastClickedFeatureData.recorded).diff(moment(this.lastClickedFeatureData.timestamp)))/1000 + "s";//.humanize();
         } else {
             this.popupDelay = null;
+        }
+        if(this.lastClickedFeatureData.batteryLevel) {
+            this.popupBattery = Math.round(this.lastClickedFeatureData.batteryLevel*100);
+        } else {
+            this.popupBattery = null;
         }
 
         this.popupSpeed = Math.round(this.lastClickedFeatureData.speed*3.6);
@@ -373,6 +379,7 @@
                 popupTitle: '',
                 popupSpeed: null,
                 popupDelay: null,
+                popupBattery: null,
                 previousPopupTitle: '',
                 popupContent: null,
                 previousPopupContent: null,

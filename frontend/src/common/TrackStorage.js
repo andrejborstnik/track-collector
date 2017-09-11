@@ -144,21 +144,34 @@ export default class TrackStorage {
           this.pointAnalysisType = 1;
           return;
       }
+      if(type == "BATTERY") {
+          this.pointAnalysisType = 2;
+          return;
+      }
       this.pointAnalysisType = 0;   // SPEED is default
   }
 
-  analysisStyle(obj) {
-      if(this.pointAnalysisType == null) return this.onPointStyle;
-      if(this.pointAnalysisType == 1) {  // delay
-          let delay = obj.intRecorded - obj.intTimestamp;
-          if(delay <= this.delaySmall) return this.analysisPallete[0];
-          if(delay <= this.delayBig) return this.analysisPallete[1];
-          return this.analysisPallete[2];;
-      }
-      if(obj.speed <= this.speedLimitSmall) return this.analysisPallete[0];
-      if(obj.speed <= this.speedLimitBig) return this.analysisPallete[1];
-      return this.analysisPallete[2];
-  }
+  // analysisStyle(obj) {
+  //     if(this.pointAnalysisType == null) return this.onPointStyle;
+  //     if(this.pointAnalysisType == 1) {  // delay
+  //         let delay = obj.intRecorded - obj.intTimestamp;
+  //         if(delay <= this.delaySmall) return this.analysisPallete[0];
+  //         if(delay <= this.delayBig) return this.analysisPallete[1];
+  //         return this.analysisPallete[2];;
+  //     }
+  //     if(this.pointAnalysisType == 2) {  // battery
+  //         let battery = obj.batteryLevel;
+  //         console.log(battery);
+  //         if(battery > 0.5) return this.analysisPallete[0];
+  //         if(battery > 0.15) return this.analysisPallete[1];
+  //         return this.analysisPallete[2];
+  //     }
+  //
+  //     // pointAnalysisType == 0
+  //     if(obj.speed <= this.speedLimitSmall) return this.analysisPallete[0];
+  //     if(obj.speed <= this.speedLimitBig) return this.analysisPallete[1];
+  //     return this.analysisPallete[2];
+  // }
 
   pointAnalysisMode(obj) {
       if(this.pointAnalysisType == null) return 0;
@@ -168,6 +181,14 @@ export default class TrackStorage {
           if(delay <= this.delayBig) return 1;
           return 2;
       }
+      if(this.pointAnalysisType == 2) {  // battery
+          let battery = obj.batteryLevel;
+          if(battery > 0.5) return 0;
+          if(battery > 0.15) return 1;
+          return 2;
+      }
+
+
       if(obj.speed <= this.speedLimitSmall) return 0;
       if(obj.speed <= this.speedLimitBig) return 1;
       return 2;
@@ -250,7 +271,7 @@ export default class TrackStorage {
       }
       this.adjustVisibility(this.startDateTime, this.endDateTime);
   }
-  
+
   getExtent() {
       // if (this.lineVectorLayer == null) return null;
       // let src = this.lineVectorLayer.getSource();

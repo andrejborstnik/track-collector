@@ -7,6 +7,8 @@
                     <br/> Delay: {{delay}}
                     <br/>
                     Speed: {{speed}} km/h
+                    <br/>
+                    Battery: {{battery}} %
             </div>
             <div class="ol-popup-triangle" :style="{ 'border-top-color': borderColor}"></div>
 
@@ -134,6 +136,10 @@
           },
           delay: {
                 type: String,
+                default: null
+          },
+          battery: {
+                type: Number,
                 default: null
           },
           orientation: {
