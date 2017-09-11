@@ -248,6 +248,7 @@
             <v-toolbar-side-icon @click.native.stop="toggleLeftMenu" v-if="$store.user.leftMenuEnabled"></v-toolbar-side-icon>
             <v-toolbar-title class="white--text">{{$store.user.toolbarTitle}}</v-toolbar-title>
             <v-spacer></v-spacer>
+            <v-btn-toggle class="white" v-bind:items="operationModeChoices" v-model="operationMode"></v-btn-toggle>
             <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled">
                 <v-icon >account_circle</v-icon>
             </v-btn>
@@ -403,8 +404,9 @@
           this.toggleRightMenu();
     };
 
-    const toggleShowPointLayer = function() {
-          this.$store.user.showPointLayer = !this.$store.user.showPointLayer;
+    const toggleHistoryMode = function() {
+          this.$store.user.historyMode = !this.$store.user.historyMode;
+          console.log(this.$store.user.historyMode)
     };
 
 
@@ -550,7 +552,12 @@
                 messagesTitle: "Messages",
                 sendingType: "NOTIFICATION",
                 settingsBox: false,
-                pointAnalysisType: "SPEED"
+                pointAnalysisType: "SPEED",
+                operationModeChoices: [
+                          { icon: 'timeline', value: 'HISTORY' },
+                          { icon: 'tv', value: 'LIVE' }
+                        ],
+                operationMode: 'HISTORY'
             }
         },
         methods: {
@@ -573,7 +580,7 @@
             processMessages,
             triggerAlert,
             toggleSettings,
-            toggleShowPointLayer
+            toggleHistoryMode
         },
         watch: {
             groupFilter: function() {
@@ -608,6 +615,9 @@
                   this.$store.user.pointAnalysisType = this.pointAnalysisType;
                   this.$store.user.trackStorage.setPointAnalysisType(this.pointAnalysisType);
                   this.$store.user.trackStorage.runAnalysis();
+            },
+            operationMode: function() {
+                  console.log(this.operationMode);
             }
         },
         components: {

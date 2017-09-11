@@ -43,7 +43,7 @@ export default class GroupsStorage {
         // initializes non-initialized groups
         let toGroupNew = new Map();
         let toUserInGroupNew = new Map();
-        for (let grp of this.$storage.user.groups) {
+        for (let grp of this.store.user.groups) {
             toGroupOld.set(grp.groupId, grp);
             let tmpMap = new Map();
             toUserInGroupNew.set(grp.groupId, tmpMap);

@@ -355,6 +355,7 @@
         this.$store.user.leftMenuEnabled = true;
         this.$store.user.rightMenuEnabled = true;
         this.$store.user.messagesEnabled = true;
+        this.$store.user.historyEnabled = true;
         this.setDate();
         var grpStor = new GroupsStorage(this.$store);
         grpStor.getGroups(this.startLoading, this.endLoading, this.loadSeparateTrack);

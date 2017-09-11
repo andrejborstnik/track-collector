@@ -33,6 +33,7 @@ let store = {
         leftMenuEnabled: false,
         rightMenuEnable: false,
         messagesEnabled: true,
+        historyEnabled: false,
         toolbarTitle: 'Tracker',
         messages: null,
         messageTo: null,   // linked to user receiver, if specified
@@ -44,7 +45,8 @@ let store = {
         errorMessage: '',
         showAlert: false,
         pointAnalysisType: "SPEED",   // 0-SPEED, 1-DELAY
-        showPointLayer: true
+        showPointLayer: true,
+        historyMode: true
     },
     state: {
         path_to: null,
