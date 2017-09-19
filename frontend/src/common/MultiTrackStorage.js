@@ -112,4 +112,16 @@ export default class MultiTrackStorage {
         }
         return null;
     }
+
+    setHistoryMode(mode) {
+        for(let key of this.toStorage.keys()) {
+            this.toStorage.get(key).setHistoryMode(mode);
+        }
+    }
+
+    emptyLinePointVectors() {
+        for(let key of this.toStorage.keys()) {
+            this.toStorage.get(key).emptyLinePointVectors();
+        }
+    }
 }

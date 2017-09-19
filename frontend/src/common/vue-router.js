@@ -46,7 +46,7 @@ let store = {
         showAlert: false,
         pointAnalysisType: "SPEED",   // 0-SPEED, 1-DELAY
         showPointLayer: true,
-        historyMode: true
+        operationMode: 'HISTORY'
     },
     state: {
         path_to: null,

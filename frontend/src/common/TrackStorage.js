@@ -106,6 +106,7 @@ export default class TrackStorage {
       this.loadedEndDateTime = null;
       this.currentExtent = [];
       //  [1301438.3041983845, 5697931.47271672, 1620677.9131304354, 5789591.817239217]
+      this.historyMode = true; //HISTORY mode
   };
 
   setColor(color) {
@@ -151,6 +152,18 @@ export default class TrackStorage {
       this.pointAnalysisType = 0;   // SPEED is default
   }
 
+  setHistoryMode(mode) {
+    if(mode == 'LIVE'){
+      this.historyMode = false;
+      return ;
+    }
+    this.historyMode = true;
+  }
+
+  emptyLinePointVectors() {
+    if(this.lineVectorLayer) this.lineVectorLayer.getSource().clear();
+    if (this.pointVectorLayer) this.pointVectorLayer.getSource().clear();
+  }
   // analysisStyle(obj) {
   //     if(this.pointAnalysisType == null) return this.onPointStyle;
   //     if(this.pointAnalysisType == 1) {  // delay
@@ -295,9 +308,11 @@ export default class TrackStorage {
               requiredAccuracy: 0,
               singlePointStops: true,
               token: token,
-              userIds: [this.userId]
+              userIds: [this.userId],
+              lastPositionsOnly: !this.historyMode,
           }
       }).then((body) => {
+          this.emptyLinePointVectors();
           this.mergeData(body.tracks);
           if(endCallback != null) endCallback();
       });
@@ -321,7 +336,6 @@ export default class TrackStorage {
       this.loadedEndDateTime = this.endDateTime;
       // this.startDateTimeChanged = false;
       // this.endDateTimeChanged = false;
-
       let len = 0;
       let j = 0;
       for (let el of output) {

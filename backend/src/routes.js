@@ -63,7 +63,8 @@ router.post('/api/track', function (req, res) {
             singlePointStops: params.singlePointStops,
             startDate: moment(params.startDate).format(),
             token: params.token,
-            userIds: params.userIds
+            userIds: params.userIds,
+            lastPositionsOnly: params.lastPositionsOnly
         }
     }).then((body) => {
         res.send(body);

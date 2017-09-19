@@ -326,6 +326,8 @@
         this.timeSettings = !this.timeSettings;
         this.zoomSettings = false;
         this.refreshBottomNavigation();
+        this.$store.user.operationMode = 'HISTORY';
+        this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode);
         // this.$store.user.bottomNavigation[0].value = this.timeSettings;
     };
 

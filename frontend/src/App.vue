@@ -249,7 +249,7 @@
             <v-toolbar-side-icon @click.native.stop="toggleLeftMenu" v-if="$store.user.leftMenuEnabled"></v-toolbar-side-icon>
             <v-toolbar-title class="white--text">{{$store.user.toolbarTitle}}</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn-toggle class="white" v-bind:items="operationModeChoices" v-model="operationMode"></v-btn-toggle>
+            <v-btn-toggle mandatory class="white" v-bind:items="operationModeChoices" v-model="$store.user.operationMode" @change='toggleLiveHistoryMode'></v-btn-toggle>
             <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled">
                 <v-icon >account_circle</v-icon>
             </v-btn>
@@ -405,12 +405,6 @@
           this.toggleRightMenu();
     };
 
-    const toggleHistoryMode = function() {
-          this.$store.user.historyMode = !this.$store.user.historyMode;
-          // console.log(this.$store.user.historyMode)
-    };
-
-
     const formatGroupName = function(group) {
         return group.replace(/^([^#]*)#([^#]*)$/, "#$2").replace(/^([^#]*)$/, "#$1");
     };
@@ -525,6 +519,18 @@
           });
     };
 
+    const toggleLiveHistoryMode = function (event) {
+        this.$store.user.trackStorage.setHistoryMode(event);
+        if(event == 'LIVE') {
+            this.$store.user.trackStorage.setStartDateTime(moment().format("YYYY-MM-DD"), "00:00", 'Europe/Berlin'); // set dates for today
+            this.$store.user.trackStorage.setEndDateTime(moment().format("YYYY-MM-DD"), "23:59", 'Europe/Berlin'); // set dates for today
+            this.$store.user.trackStorage.getTrack(this.$store.user.token);
+        }
+        if(event == 'HISTORY') {
+            this.$store.user.trackStorage.emptyLinePointVectors();
+        }
+    };
+
     export default {
         name: 'App',
         data () {
@@ -558,7 +564,6 @@
                           { icon: 'timeline', value: 'HISTORY' },
                           { icon: 'tv', value: 'LIVE' }
                         ],
-                operationMode: 'HISTORY'
             }
         },
         methods: {
@@ -581,7 +586,7 @@
             processMessages,
             triggerAlert,
             toggleSettings,
-            toggleHistoryMode
+            toggleLiveHistoryMode
         },
         watch: {
             groupFilter: function() {
@@ -617,9 +622,6 @@
                   this.$store.user.trackStorage.setPointAnalysisType(this.pointAnalysisType);
                   this.$store.user.trackStorage.runAnalysis();
             },
-            operationMode: function() {
-                  console.log(this.operationMode);
-            }
         },
         components: {
             'MessageCallout': MessageCallout
