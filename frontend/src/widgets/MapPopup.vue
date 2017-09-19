@@ -3,8 +3,11 @@
         <div class="ol-popup" id="olpopup" :style="{ 'background-color': borderColor }">
             <!-- <a @click="closePopup" id="popup-closer" class="ol-popup-closer"></a> -->
             <div style="flex-grow: 1;">
+                    <b>{{name}}</b>
+                    <br/>
                     Time: {{title}}
-                    <br/> Delay: {{delay}}
+                    <br/> 
+                    Delay: {{delay}}
                     <br/>
                     Speed: {{speed}} km/h
                     <br/>
@@ -154,6 +157,10 @@
           },
           width: {
               default: '200px'
+          },
+          name: {
+            type: String,
+            default: null
           }
 	  },
 

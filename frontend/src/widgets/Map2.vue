@@ -8,6 +8,7 @@
             :speed="popupSpeed"
             :delay="popupDelay"
             :battery="popupBattery"
+            :name="driverName"
             ></Popup>
 
         <!-- <Popup :title="previousPopupTitle"
@@ -386,7 +387,8 @@
                 popupCoords: '',
                 previousPopupCoords: '',
                 initing: false,
-                mydatachanged: false
+                mydatachanged: false,
+                driverName: this.$store.user.email
             }
         },
 

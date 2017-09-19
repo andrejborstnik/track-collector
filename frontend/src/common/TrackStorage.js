@@ -107,6 +107,37 @@ export default class TrackStorage {
       this.currentExtent = [];
       //  [1301438.3041983845, 5697931.47271672, 1620677.9131304354, 5789591.817239217]
       this.historyMode = true; //HISTORY mode
+      this.liveModeColorSample = '#00FF00'; //green
+      this.liveModeColorLateSample = '#FF0000'; // red
+
+      this.onPointStyleLiveMode = new ol.style.Style({
+          image: new ol.style.Circle({
+               radius: this.radius,
+               fill: new ol.style.Fill({
+                 color: this.liveModeColorSample
+               })
+               ,
+               stroke: new ol.style.Stroke({
+                 color: this.pointStrokeColor,
+                 width: this.pointStrokeWidth
+               })
+             })
+      });
+      this.onPointStyleLateLiveMode = new ol.style.Style({
+          image: new ol.style.Circle({
+               radius: this.radius,
+               fill: new ol.style.Fill({
+                 color: this.liveModeColorLateSample
+               })
+               ,
+               stroke: new ol.style.Stroke({
+                 color: this.pointStrokeColor,
+                 width: this.pointStrokeWidth
+               })
+             })
+      });
+      this.analysisPalleteLiveMode = [this.onPointStyleLiveMode, this.onPointStyleLateLiveMode];
+      this.oldSampleLive = 3600000; //old sample in Live mode
   };
 
   setColor(color) {
@@ -207,6 +238,14 @@ export default class TrackStorage {
       return 2;
   }
 
+  pointAnalysisLiveMode(obj) {
+    var now = moment.tz('Europe/Berlin').valueOf();
+    if((now - obj.intRecorded) < this.oldSampleLive) {
+      return 0;
+    } else {
+      return 1;
+    }    
+  }
 
   adjustVisibility(minTime, maxTime) {
       // let startDateTime = this.startDateTime();
@@ -264,6 +303,57 @@ export default class TrackStorage {
 
   };
 
+  adjustVisibilityLiveMode(minTime, maxTime) {
+      if(this.dataLength == null) return;
+      // let minT = Math.min(Math.max(minTime, this.startDateTime), this.endDateTime);
+      // let maxT = Math.max(Math.min(maxTime, this.endDateTime), this.startDateTime);
+      let minx = Infinity;
+      let miny = Infinity;
+      let maxx = -Infinity;
+      let maxy = - Infinity;
+      let linePoints = [];
+
+      this.indexMap = new Map();
+      let analysisLength = 2;
+      let pointGroups = [];
+      for(let j = 0; j < analysisLength; j++) {
+          this.indexMap.set(j, new Map());
+          pointGroups.push([]);
+      }
+      let i = 0;
+      for(let obj of this.data) {
+          this.pointAnalysisLiveMode(obj);
+          let x = obj.coords[0];
+          let y = obj.coords[1];
+
+          // if(obj.intTimestamp >= minT && maxT >= obj.intTimestamp) {
+              minx = x < minx ? x : minx;
+              miny = y < miny ? y : miny;
+              maxx = x > maxx ? x : maxx;
+              maxy = y > maxy ? y : maxy;
+              linePoints.push(obj.coords);
+              let tmpLst = pointGroups[obj.analysisMode];
+              this.indexMap.get(obj.analysisMode).set(tmpLst.length, i);
+              tmpLst.push(obj.coords);
+          // }
+          i++;
+      }
+      this.currentExtent = [minx, miny, maxx, maxy];
+
+      let pointFeatures = [];
+      for(let j = 0; j < analysisLength; j++) {
+          let ptFeature = new ol.Feature({geometry: new ol.geom.MultiPoint(pointGroups[j])});
+          ptFeature.setId(j);
+          ptFeature.setStyle(this.analysisPalleteLiveMode[j]);
+          pointFeatures.push(ptFeature);
+      }
+
+      this.pointVectorLayer.getSource().clear();
+      this.pointVectorLayer.getSource().addFeatures(pointFeatures);
+
+  };
+
+
   getDataForPointFeature(feature, index) {
       // debugger
       // let id = feature.getId();
@@ -313,7 +403,9 @@ export default class TrackStorage {
           }
       }).then((body) => {
           this.emptyLinePointVectors();
-          this.mergeData(body.tracks);
+          if(this.historyMode) {this.mergeData(body.tracks);}
+          else {this.mergeDataLiveMode(body.tracks);}
+
           if(endCallback != null) endCallback();
       });
   };
@@ -376,6 +468,46 @@ export default class TrackStorage {
       });
       this.map.addLayer(this.pointVectorLayer);
       this.adjustVisibility(this.startDateTime, this.endDateTime);
+  };
+
+  mergeDataLiveMode(output) {
+      this.loadedStartDateTime = this.startDateTime;
+      this.loadedEndDateTime = this.endDateTime;
+      // this.startDateTimeChanged = false;
+      // this.endDateTimeChanged = false;
+      let len = 0;
+      let j = 0;
+      for (let el of output) {
+          len += el.samples.length;
+      }
+      this.dataLength = len;
+      this.data = new Array(len);
+      // let linePoints = new Array(len);
+      let linePoints = []
+      let i = 0;
+      for(let el of output) {
+          for(let obj of el.samples) {
+              obj.intTimestamp = moment(obj.timestamp).valueOf();
+              obj.intRecorded = moment(obj.recorded).valueOf();
+              let tmp = TrackStorage.transformCoords([obj.longitude, obj.latitude]);
+              tmp.push(i);
+              obj.coords = tmp;
+              obj.analysisMode = this.pointAnalysisLiveMode(obj);
+              this.data[i] = obj;
+              linePoints.push(tmp);
+              i++;
+          }
+      }
+
+      let pointVectorSource = new ol.source.Vector({
+          features: []
+      });
+
+      this.pointVectorLayer = new ol.layer.Vector({
+          source: pointVectorSource,
+      });
+      this.map.addLayer(this.pointVectorLayer);
+      this.adjustVisibilityLiveMode(this.startDateTime, this.endDateTime);
   };
 
   get pointLayer() {
