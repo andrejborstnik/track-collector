@@ -294,6 +294,7 @@
     //
     // EXPORT
     //
+    import GroupsStorage from 'common/GroupsStorage'
     import MessageCallout from 'widgets/MessageCallout.vue';
     import * as cookies from 'common/cookies';
 
@@ -530,11 +531,12 @@
     };
 
     const toggleLiveHistoryMode = function (event) {
-        this.$store.user.trackStorage.setHistoryMode(event);
+        var grpStor = new GroupsStorage(this.$store);
+        var usersLive = this.$store.user.trackStorage.setHistoryMode(event, this.$store);
         if(event == 'LIVE') {
             this.$store.user.trackStorage.setStartDateTime(moment().format("YYYY-MM-DD"), "00:00", 'Europe/Berlin'); // set dates for today
             this.$store.user.trackStorage.setEndDateTime(moment().format("YYYY-MM-DD"), "23:59", 'Europe/Berlin'); // set dates for today
-            this.$store.user.trackStorage.getTrack(this.$store.user.token);
+            this.$store.user.trackStorage.getTrack(this.$store.user.token, null, null, usersLive);
         }
         if(event == 'HISTORY') {
             this.$store.user.trackStorage.emptyLinePointVectors();

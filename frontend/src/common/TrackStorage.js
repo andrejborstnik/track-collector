@@ -2,6 +2,7 @@ import * as config from 'config';
 import moment from 'moment-timezone';
 import ol from 'openlayers';
 import request from 'request-promise-native';
+import GroupsStorage from 'common/GroupsStorage'
 
 export default class TrackStorage {
 
@@ -183,12 +184,14 @@ export default class TrackStorage {
       this.pointAnalysisType = 0;   // SPEED is default
   }
 
-  setHistoryMode(mode) {
+  setHistoryMode(mode, store) {
+    var grpStor = new GroupsStorage(store);
     if(mode == 'LIVE'){
       this.historyMode = false;
-      return ;
+      return grpStor.setAllVisible(); 
     }
     this.historyMode = true;
+    grpStor.setLoginUserVisibleOnly()
   }
 
   emptyLinePointVectors() {
@@ -383,7 +386,7 @@ export default class TrackStorage {
       return this.currentExtent;
   };
 
-  getTrack (token, startCallback, endCallback) {
+  getTrack (token, startCallback, endCallback, usersLive) {
       // if(!this.startDateTimeChanged && !this.endDateTimeChanged) return;
       let path = `/track`;
       if(startCallback != null) startCallback();
@@ -398,7 +401,7 @@ export default class TrackStorage {
               requiredAccuracy: 0,
               singlePointStops: true,
               token: token,
-              userIds: [this.userId],
+              userIds: (usersLive) ? usersLive : [this.userId],
               lastPositionsOnly: !this.historyMode,
           }
       }).then((body) => {
@@ -446,6 +449,7 @@ export default class TrackStorage {
               tmp.push(i);
               obj.coords = tmp;
               obj.analysisMode = this.pointAnalysisMode(obj);
+              obj.username = el.userId;
               this.data[i] = obj;
               linePoints.push(tmp);
               i++;
@@ -493,6 +497,7 @@ export default class TrackStorage {
               tmp.push(i);
               obj.coords = tmp;
               obj.analysisMode = this.pointAnalysisLiveMode(obj);
+              obj.username = el.userId;
               this.data[i] = obj;
               linePoints.push(tmp);
               i++;

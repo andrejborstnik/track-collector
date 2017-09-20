@@ -89,5 +89,30 @@ export default class GroupsStorage {
               user.visibleCallback = fun;
           }
       }
-    }
+    };
+
+    setAllVisible() {
+        let usersArray = [];
+        for (let grp of this.store.user.groups) {
+            for (let user of grp.users) {
+                if (usersArray.indexOf(user.userId) == -1) usersArray.push(user.userId);
+                user.visible = true;
+            }
+        }
+        return usersArray;
+    };
+
+    setLoginUserVisibleOnly() {
+        for (let grp of this.store.user.groups) {
+            grp.visible = false
+            for (let user of grp.users) {
+                if (grp.personalGroupUserId === user.userId) {
+                    user.visible = true;
+                    grp.withVisibleUser = true;
+                } else {
+                    user.visible = false;
+                }
+            }
+        }
+    };
 }

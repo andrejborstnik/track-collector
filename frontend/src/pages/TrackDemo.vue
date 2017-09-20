@@ -234,6 +234,8 @@
     };
 
     const getTrack = function () {
+        this.$store.user.operationMode = 'HISTORY';
+        this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode, this.$store);
         this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
         this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
         this.sliderValue = [0, Number.MAX_VALUE];
@@ -336,7 +338,7 @@
         this.zoomSettings = false;
         this.refreshBottomNavigation();
         this.$store.user.operationMode = 'HISTORY';
-        this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode);
+        this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode, this.$store);
     };
 
     const toggleZoomSettings = function () {

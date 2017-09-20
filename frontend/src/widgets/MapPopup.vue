@@ -3,7 +3,7 @@
         <div class="ol-popup" id="olpopup" :style="{ 'background-color': borderColor }">
             <!-- <a @click="closePopup" id="popup-closer" class="ol-popup-closer"></a> -->
             <div style="flex-grow: 1;">
-                    <b>{{name}}</b>
+                    <b>{{username}}</b>
                     <br/>
                     Time: {{title}}
                     <br/> 
@@ -158,7 +158,7 @@
           width: {
               default: '200px'
           },
-          name: {
+          username: {
             type: String,
             default: null
           }

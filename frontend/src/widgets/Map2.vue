@@ -8,7 +8,7 @@
             :speed="popupSpeed"
             :delay="popupDelay"
             :battery="popupBattery"
-            :name="driverName"
+            :username="driverName"
             ></Popup>
 
         <!-- <Popup :title="previousPopupTitle"
@@ -82,6 +82,7 @@
 
         this.popupSpeed = Math.round(this.lastClickedFeatureData.speed*3.6);
 
+        this.driverName = this.lastClickedFeatureData.username;
 
         // delete data.geometry;
         // delete data.labelPoint;
@@ -388,7 +389,7 @@
                 previousPopupCoords: '',
                 initing: false,
                 mydatachanged: false,
-                driverName: this.$store.user.email
+                driverName: null,
             }
         },
 

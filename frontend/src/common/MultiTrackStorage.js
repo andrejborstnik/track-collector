@@ -87,9 +87,9 @@ export default class MultiTrackStorage {
         }
     }
 
-    getTrack (token, startCallback, endCallback) {
+    getTrack (token, startCallback, endCallback, usersLive) {
         for(let userId of this.toStorage.keys()) {
-            this.toStorage.get(userId).getTrack(token, startCallback, endCallback);
+            this.toStorage.get(userId).getTrack(token, startCallback, endCallback, usersLive);
         }
     }
 
@@ -113,9 +113,9 @@ export default class MultiTrackStorage {
         return null;
     }
 
-    setHistoryMode(mode) {
+    setHistoryMode(mode, store) {
         for(let key of this.toStorage.keys()) {
-            this.toStorage.get(key).setHistoryMode(mode);
+            return this.toStorage.get(key).setHistoryMode(mode, store);
         }
     }
 
