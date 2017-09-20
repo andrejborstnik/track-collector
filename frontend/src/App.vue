@@ -10,7 +10,7 @@
                             <v-list-tile-title>Groups</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
-                            <v-btn icon dark @click.native.stop="toggleLeftMenu">
+                            <v-btn icon @click.native.stop="toggleLeftMenu">
                                 <v-icon>chevron_left</v-icon>
                             </v-btn>
                         </v-list-tile-action>
@@ -202,11 +202,13 @@
                          v-model="$store.user.messageText"
                          multi-line
                        ></v-text-field>
-                       <v-layout row>
-                         <v-radio label="Mobile notification" v-model="sendingType" value="NOTIFICATION"></v-radio>
-                         <v-radio label="Email" v-model="sendingType" value="EMAIL_TEXT"></v-radio>
-                         <v-radio label="For group admins" v-model="sendingType" value="GROUP_NOTIFICATION"></v-radio>
-                       </v-layout>
+                        <v-radio-group v-model="sendingType" :mandatory="false">
+                           <v-layout row>
+                             <v-radio label="Mobile notification" value="NOTIFICATION"></v-radio>
+                             <v-radio label="Email" value="EMAIL_TEXT"></v-radio>
+                             <v-radio label="For group admins" value="GROUP_NOTIFICATION"></v-radio>
+                           </v-layout>
+                        </v-radio-group>
                      </v-card>
                      <div style="overflow-y: scroll;">
                          <v-flex xs12 v-for="message in $store.user.messages">
@@ -233,11 +235,13 @@
                 <v-card-title>
                     <span class="title mb-0">Point analysis type</span>
                 </v-card-title>
-                <v-layout row>
-                    <v-radio class="ml-5" label="Speed" v-model="pointAnalysisType" value="SPEED"></v-radio>
-                    <v-radio label="Delay" v-model="pointAnalysisType" value="DELAY"></v-radio>
-                    <v-radio label="Battery" v-model="pointAnalysisType" value="BATTERY"></v-radio>
-                </v-layout>
+                <v-radio-group v-model="pointAnalysisType" :mandatory="false">
+                    <v-layout row>
+                        <v-radio class="ml-5" label="Speed" value="SPEED"></v-radio>
+                        <v-radio label="Delay" value="DELAY"></v-radio>
+                        <v-radio label="Battery" value="BATTERY"></v-radio>
+                    </v-layout>
+                </v-radio-group>
               </v-card>
             </v-flex>
            </v-layout>
@@ -249,17 +253,23 @@
             <v-toolbar-side-icon @click.native.stop="toggleLeftMenu" v-if="$store.user.leftMenuEnabled"></v-toolbar-side-icon>
             <v-toolbar-title class="white--text">{{$store.user.toolbarTitle}}</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-btn-toggle mandatory class="white" v-bind:items="operationModeChoices" v-model="$store.user.operationMode" @change='toggleLiveHistoryMode'></v-btn-toggle>
+            <v-btn-toggle mandatory class="white"  v-model="$store.user.operationMode" @change='toggleLiveHistoryMode'>
+                <v-btn v-for="btn in operationModeChoices"
+                :value="btn.value"
+                >
+                <v-icon class="blue--text">{{btn.icon}}</v-icon>
+                </v-btn>
+            </v-btn-toggle>
             <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled">
                 <v-icon >account_circle</v-icon>
             </v-btn>
         </v-toolbar>
-        <v-bottom-nav absolute value="true"
+        <v-bottom-nav absolute value="true" :active.sync='$store.user.bottomNavState'
             :class="{'white': true}"
             v-if="$store.user.bottomNavigation.length > 0"
         >
           <v-btn v-for="btn in $store.user.bottomNavigation"
-            :value="btn.value"
+            :value="btn.key"
             :key="btn.key"
             flat dark class="teal--text" @click.native="btn.action"
             style="width: 96px"
@@ -561,8 +571,8 @@
                 settingsBox: false,
                 pointAnalysisType: "SPEED",
                 operationModeChoices: [
-                          { icon: 'timeline', value: 'HISTORY' },
-                          { icon: 'tv', value: 'LIVE' }
+                          { icon: 'timeline', value: 'HISTORY', key: 'historyMode' },
+                          { icon: 'tv', value: 'LIVE', key: 'liveMode' }
                         ],
             }
         },

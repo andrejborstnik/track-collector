@@ -320,6 +320,15 @@
                     break;
             }
         }
+        if(this.timeSettings) {
+            this.$store.user.bottomNavState = "timeSettings";
+        } else if (this.zoomSettings) {
+            this.$store.user.bottomNavState = "zoomSettings";
+        } else if(this.sliderSettings) {
+            this.$store.user.bottomNavState = "sliderSettings";
+        } else {
+            this.$store.user.bottomNavState = null;
+        }
     };
 
     const toggleTimeSettings = function () {
@@ -328,7 +337,6 @@
         this.refreshBottomNavigation();
         this.$store.user.operationMode = 'HISTORY';
         this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode);
-        // this.$store.user.bottomNavigation[0].value = this.timeSettings;
     };
 
     const toggleZoomSettings = function () {
@@ -340,6 +348,8 @@
 
     const toggleSliderSettings = function () {
         this.sliderSettings = !this.sliderSettings;
+        this.zoomSettings = false;
+        this.timeSettings = false;
         this.refreshBottomNavigation();
         // this.$store.user.bottomNavigation[1].value = this.zoomSettings;
     };
