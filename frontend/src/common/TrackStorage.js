@@ -190,8 +190,10 @@ export default class TrackStorage {
       this.historyMode = false;
       return grpStor.setAllVisible(); 
     }
+    clearInterval(store.user.intervalLiveLoad);
     this.historyMode = true;
     grpStor.setLoginUserVisibleOnly()
+    this.emptyLinePointVectors();
   }
 
   emptyLinePointVectors() {

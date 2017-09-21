@@ -534,13 +534,17 @@
         var grpStor = new GroupsStorage(this.$store);
         var usersLive = this.$store.user.trackStorage.setHistoryMode(event, this.$store);
         if(event == 'LIVE') {
-            this.$store.user.trackStorage.setStartDateTime(moment().format("YYYY-MM-DD"), "00:00", 'Europe/Berlin'); // set dates for today
-            this.$store.user.trackStorage.setEndDateTime(moment().format("YYYY-MM-DD"), "23:59", 'Europe/Berlin'); // set dates for today
-            this.$store.user.trackStorage.getTrack(this.$store.user.token, null, null, usersLive);
+            this.liveModeRun(this.$store.user.token, usersLive);
+            this.$store.user.intervalLiveLoad = setInterval(() => {
+                this.liveModeRun(this.$store.user.token, usersLive);
+            }, this.liveTracksUpdateInterval);
         }
-        if(event == 'HISTORY') {
-            this.$store.user.trackStorage.emptyLinePointVectors();
-        }
+    };
+
+    const liveModeRun = function(token, users) {
+        this.$store.user.trackStorage.setStartDateTime(moment().format("YYYY-MM-DD"), "00:00", 'Europe/Berlin'); // set dates for today
+        this.$store.user.trackStorage.setEndDateTime(moment().format("YYYY-MM-DD"), "23:59", 'Europe/Berlin'); // set dates for today
+        this.$store.user.trackStorage.getTrack(token, null, null, users);
     };
 
     export default {
@@ -576,6 +580,7 @@
                           { icon: 'timeline', value: 'HISTORY', key: 'historyMode' },
                           { icon: 'tv', value: 'LIVE', key: 'liveMode' }
                         ],
+                liveTracksUpdateInterval: 5000,
             }
         },
         methods: {
@@ -598,7 +603,8 @@
             processMessages,
             triggerAlert,
             toggleSettings,
-            toggleLiveHistoryMode
+            toggleLiveHistoryMode,
+            liveModeRun
         },
         watch: {
             groupFilter: function() {
@@ -637,6 +643,9 @@
         },
         components: {
             'MessageCallout': MessageCallout
+        },
+        beforeDestroy() {
+            clearInterval(this.$store.user.intervalLiveLoad);
         }
     }
 
