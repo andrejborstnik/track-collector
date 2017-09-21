@@ -53,7 +53,7 @@
                         </v-list-tile-content>
                         <v-list-tile-action>
                           <v-btn icon v-on:click.native="toggleVisibility(user, group)">
-                              <v-icon v-if="user.visible && colorEyeIcon && user.userId == $store.user.selectedUser && group.withVisibleUser" light class="blue--text" >visibility</v-icon>
+                              <v-icon v-if="user.visible && colorEyeIcon && user.userId == $store.user.selectedUser.username && group.withVisibleUser" light class="blue--text" >visibility</v-icon>
                               <v-icon v-else-if="user.visible" light>visibility</v-icon>
                               <v-icon v-else="!user.visible" light>visibility_off</v-icon>
                           </v-btn>
@@ -328,8 +328,13 @@
     };
 
     const toggleVisibility = function(userInGroup, group) {
-        this.$store.user.selectedUser = (this.$store.user.selectedUser == userInGroup.userId) ? null : userInGroup.userId;
-        if(this.$store.user.selectedUser && this.$store.user.operationMode == 'LIVE') {
+        if(this.$store.user.selectedUser.username == userInGroup.userId && this.$store.user.selectedUser.groupId == group.groupId) {
+            this.$store.user.selectedUser = {'username': null, 'groupId': null};         
+        } else {
+            this.$store.user.selectedUser = {'username': userInGroup.userId, 'groupId': group.groupId};
+        }
+
+        if(this.$store.user.selectedUser.username && this.$store.user.operationMode == 'LIVE') {
             this.colorEyeIcon = true;
             this.$store.user.trackStorage.setGroupWithVisibleUser(group.groupId, this.$store)
         } else {
@@ -338,7 +343,7 @@
         }
             
         if(this.$store.user.operationMode == 'LIVE') {
-            this.$store.user.trackStorage.setPopupLiveMode(this.$store.user.selectedUser);
+            this.$store.user.trackStorage.setPopupLiveMode(this.$store.user.selectedUser.username);
         } else {
             for(let group of this.$store.user.groups) {
                 let visibleUserGroup = false;
@@ -558,7 +563,7 @@
     const liveModeRun = function(token, users) {
         this.$store.user.trackStorage.setStartDateTime(moment().format("YYYY-MM-DD"), "00:00", 'Europe/Berlin'); // set dates for today
         this.$store.user.trackStorage.setEndDateTime(moment().format("YYYY-MM-DD"), "23:59", 'Europe/Berlin'); // set dates for today
-        this.$store.user.trackStorage.getTrack(token, null, null, users, this.$store.user.selectedUser);
+        this.$store.user.trackStorage.getTrack(token, null, null, users, this.$store.user.selectedUser.username);
     };
 
 

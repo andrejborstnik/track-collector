@@ -49,7 +49,7 @@ let store = {
         operationMode: 'HISTORY',
         bottomNavState: null,
         intervalLiveLoad: null,
-        selectedUser: null
+        selectedUser: {'username': null, 'groupId': null}
     },
     state: {
         path_to: null,
