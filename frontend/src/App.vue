@@ -52,9 +52,10 @@
                             >{{ user.userId }}</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
-                          <v-btn icon v-on:click.native="toggleVisibility(user)">
-                              <v-icon v-if="user.visible" light>visibility</v-icon>
-                              <v-icon v-if="!user.visible" light>visibility_off</v-icon>
+                          <v-btn icon v-on:click.native="toggleVisibility(user, group)">
+                              <v-icon v-if="user.visible && colorEyeIcon && user.userId == $store.user.selectedUser && group.withVisibleUser" light class="blue--text" >visibility</v-icon>
+                              <v-icon v-else-if="user.visible" light>visibility</v-icon>
+                              <v-icon v-else="!user.visible" light>visibility_off</v-icon>
                           </v-btn>
                         </v-list-tile-action>
                     </v-list-tile>
@@ -326,36 +327,49 @@
         console.info("EDIT_TEMPLATE spremeni vse te oblike za nov meni.");
     };
 
-    const toggleVisibility = function(userInGroup) {
-        for(let group of this.$store.user.groups) {
-            let visibleUserGroup = false;
-            for(let user of group.users) {
-                if(user == userInGroup) {
-                    if(!userInGroup.visible) {  // will become visible
-                        visibleUserGroup = true;
-                    }
-                } else {
-                    if(user.visible) {
-                        let current = user.visible;
-                        user.visible = !current;
-                        let tmpStr = this.$store.user.trackStorage.registerUser(user.userId, user.style.color);
-                        tmpStr.visible = user.visible;
+    const toggleVisibility = function(userInGroup, group) {
+        this.$store.user.selectedUser = (this.$store.user.selectedUser == userInGroup.userId) ? null : userInGroup.userId;
+        if(this.$store.user.selectedUser && this.$store.user.operationMode == 'LIVE') {
+            this.colorEyeIcon = true;
+            this.$store.user.trackStorage.setGroupWithVisibleUser(group.groupId, this.$store)
+        } else {
+            this.colorEyeIcon = false;
+            this.$store.user.trackStorage.setGroupWithVisibleUser(null, this.$store)
+        }
+            
+        if(this.$store.user.operationMode == 'LIVE') {
+            this.$store.user.trackStorage.setPopupLiveMode(this.$store.user.selectedUser);
+        } else {
+            for(let group of this.$store.user.groups) {
+                let visibleUserGroup = false;
+                for(let user of group.users) {
+                    if(user == userInGroup) {
+                        if(!userInGroup.visible) {  // will become visible
+                            visibleUserGroup = true;
+                        }
+                    } else {
+                        if(user.visible) {
+                            let current = user.visible;
+                            user.visible = !current;
+                            let tmpStr = this.$store.user.trackStorage.registerUser(user.userId, user.style.color);
+                            tmpStr.visible = user.visible;
+                        }
                     }
                 }
+                group.withVisibleUser = visibleUserGroup;
             }
-            group.withVisibleUser = visibleUserGroup;
+            // set visibility only once per layer
+            this.$store.user.toolbarTitle = userInGroup.userId;
+            let current = userInGroup.visible;
+            userInGroup.visible = !current;
+            let tmpStr = this.$store.user.trackStorage.registerUser(userInGroup.userId, userInGroup.style.color);
+            tmpStr.visible = userInGroup.visible;
+            if(userInGroup.visibleCallback) {
+                userInGroup.visibleCallback(userInGroup.userId);
+            }
+            this.toggleLeftMenu()
+            // tmpStr.setPointAnalysisType(this.$store.user.pointAnalysisType);
         }
-        // set visibility only once per layer
-        this.$store.user.toolbarTitle = userInGroup.userId;
-        let current = userInGroup.visible;
-        userInGroup.visible = !current;
-        let tmpStr = this.$store.user.trackStorage.registerUser(userInGroup.userId, userInGroup.style.color);
-        tmpStr.visible = userInGroup.visible;
-        if(userInGroup.visibleCallback) {
-            userInGroup.visibleCallback(userInGroup.userId);
-        }
-        this.toggleLeftMenu()
-        // tmpStr.setPointAnalysisType(this.$store.user.pointAnalysisType);
     };
 
     const toggleGroupVisibility = function(group) {
@@ -544,8 +558,10 @@
     const liveModeRun = function(token, users) {
         this.$store.user.trackStorage.setStartDateTime(moment().format("YYYY-MM-DD"), "00:00", 'Europe/Berlin'); // set dates for today
         this.$store.user.trackStorage.setEndDateTime(moment().format("YYYY-MM-DD"), "23:59", 'Europe/Berlin'); // set dates for today
-        this.$store.user.trackStorage.getTrack(token, null, null, users);
+        this.$store.user.trackStorage.getTrack(token, null, null, users, this.$store.user.selectedUser);
     };
+
+
 
     export default {
         name: 'App',
@@ -581,6 +597,7 @@
                           { icon: 'tv', value: 'LIVE', key: 'liveMode' }
                         ],
                 liveTracksUpdateInterval: 5000,
+                colorEyeIcon: false
             }
         },
         methods: {

@@ -87,9 +87,9 @@ export default class MultiTrackStorage {
         }
     }
 
-    getTrack (token, startCallback, endCallback, usersLive) {
+    getTrack (token, startCallback, endCallback, usersLive, selectedUsername) {
         for(let userId of this.toStorage.keys()) {
-            this.toStorage.get(userId).getTrack(token, startCallback, endCallback, usersLive);
+            this.toStorage.get(userId).getTrack(token, startCallback, endCallback, usersLive, selectedUsername);
         }
     }
 
@@ -123,5 +123,17 @@ export default class MultiTrackStorage {
         for(let key of this.toStorage.keys()) {
             this.toStorage.get(key).emptyLinePointVectors();
         }
+    }
+
+    setPopupLiveMode(el) {
+        for(let key of this.toStorage.keys()) {
+            this.toStorage.get(key).setPopupLiveMode(el);
+        }
+    }
+
+    setGroupWithVisibleUser(groupId, store) {
+        for(let key of this.toStorage.keys()) {
+            this.toStorage.get(key).setGroupWithVisibleUser(groupId, store);
+        } 
     }
 }

@@ -48,7 +48,8 @@ let store = {
         showPointLayer: true,
         operationMode: 'HISTORY',
         bottomNavState: null,
-        intervalLiveLoad: null
+        intervalLiveLoad: null,
+        selectedUser: null
     },
     state: {
         path_to: null,

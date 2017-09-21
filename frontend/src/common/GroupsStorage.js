@@ -94,6 +94,7 @@ export default class GroupsStorage {
     setAllVisible() {
         let usersArray = [];
         for (let grp of this.store.user.groups) {
+            grp.withVisibleUser = false;
             for (let user of grp.users) {
                 if (usersArray.indexOf(user.userId) == -1) usersArray.push(user.userId);
                 user.visible = true;
@@ -115,4 +116,16 @@ export default class GroupsStorage {
             }
         }
     };
+
+    setGroupWithVisibleUser(groupId) {
+        for (let grp of this.store.user.groups) {
+            grp.visible = false
+            if(groupId && grp.groupId == groupId) {
+                grp.withVisibleUser = true;
+            } else {
+                grp.withVisibleUser = false;
+            }
+        }
+    };
+
 }

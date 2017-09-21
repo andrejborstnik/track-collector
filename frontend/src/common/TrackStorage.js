@@ -110,6 +110,7 @@ export default class TrackStorage {
       this.historyMode = true; //HISTORY mode
       this.liveModeColorSample = '#00FF00'; //green
       this.liveModeColorLateSample = '#FF0000'; // red
+      this.liveModeColorSelectedSample = color; //blue
 
       this.onPointStyleLiveMode = new ol.style.Style({
           image: new ol.style.Circle({
@@ -137,7 +138,20 @@ export default class TrackStorage {
                })
              })
       });
-      this.analysisPalleteLiveMode = [this.onPointStyleLiveMode, this.onPointStyleLateLiveMode];
+      this.onPointStyleLiveModeSelected = new ol.style.Style({
+          image: new ol.style.Circle({
+               radius: this.bigRadius,
+               fill: new ol.style.Fill({
+                 color: this.liveModeColorSelectedSample
+               })
+               ,
+               stroke: new ol.style.Stroke({
+                 color: this.pointStrokeColor,
+                 width: this.pointStrokeWidth
+               })
+             })
+      });
+      this.analysisPalleteLiveMode = [this.onPointStyleLiveMode, this.onPointStyleLateLiveMode, this.onPointStyleLiveModeSelected];
       this.oldSampleLive = 3600000; //old sample in Live mode
   };
 
@@ -200,6 +214,20 @@ export default class TrackStorage {
     if(this.lineVectorLayer) this.lineVectorLayer.getSource().clear();
     if (this.pointVectorLayer) this.pointVectorLayer.getSource().clear();
   }
+
+  setPopupLiveMode(user) {
+    for (let obj of this.data) {
+      if(user && user == obj.username) obj.analysisMode = this.pointAnalysisLiveMode(obj, true);
+      else obj.analysisMode = this.pointAnalysisLiveMode(obj);
+    }
+    this.adjustVisibilityLiveMode()
+  }
+
+  setGroupWithVisibleUser(groupId, store) {
+    var grpStor = new GroupsStorage(store);
+    grpStor.setGroupWithVisibleUser(groupId);
+  }
+
   // analysisStyle(obj) {
   //     if(this.pointAnalysisType == null) return this.onPointStyle;
   //     if(this.pointAnalysisType == 1) {  // delay
@@ -243,7 +271,8 @@ export default class TrackStorage {
       return 2;
   }
 
-  pointAnalysisLiveMode(obj) {
+  pointAnalysisLiveMode(obj, selected) {
+    if(selected) return 2;
     var now = moment.tz('Europe/Berlin').valueOf();
     if((now - obj.intRecorded) < this.oldSampleLive) {
       return 0;
@@ -308,10 +337,8 @@ export default class TrackStorage {
 
   };
 
-  adjustVisibilityLiveMode(minTime, maxTime) {
+  adjustVisibilityLiveMode() {
       if(this.dataLength == null) return;
-      // let minT = Math.min(Math.max(minTime, this.startDateTime), this.endDateTime);
-      // let maxT = Math.max(Math.min(maxTime, this.endDateTime), this.startDateTime);
       let minx = Infinity;
       let miny = Infinity;
       let maxx = -Infinity;
@@ -319,7 +346,7 @@ export default class TrackStorage {
       let linePoints = [];
 
       this.indexMap = new Map();
-      let analysisLength = 2;
+      let analysisLength = this.analysisPalleteLiveMode.length;
       let pointGroups = [];
       for(let j = 0; j < analysisLength; j++) {
           this.indexMap.set(j, new Map());
@@ -327,7 +354,6 @@ export default class TrackStorage {
       }
       let i = 0;
       for(let obj of this.data) {
-          this.pointAnalysisLiveMode(obj);
           let x = obj.coords[0];
           let y = obj.coords[1];
 
@@ -358,7 +384,6 @@ export default class TrackStorage {
 
   };
 
-
   getDataForPointFeature(feature, index) {
       // debugger
       // let id = feature.getId();
@@ -388,7 +413,7 @@ export default class TrackStorage {
       return this.currentExtent;
   };
 
-  getTrack (token, startCallback, endCallback, usersLive) {
+  getTrack (token, startCallback, endCallback, usersLive, selectedUsername) {
       // if(!this.startDateTimeChanged && !this.endDateTimeChanged) return;
       let path = `/track`;
       if(startCallback != null) startCallback();
@@ -409,7 +434,7 @@ export default class TrackStorage {
       }).then((body) => {
           this.emptyLinePointVectors();
           if(this.historyMode) {this.mergeData(body.tracks);}
-          else {this.mergeDataLiveMode(body.tracks);}
+          else {this.mergeDataLiveMode(body.tracks, selectedUsername);}
 
           if(endCallback != null) endCallback();
       });
@@ -476,11 +501,7 @@ export default class TrackStorage {
       this.adjustVisibility(this.startDateTime, this.endDateTime);
   };
 
-  mergeDataLiveMode(output) {
-      this.loadedStartDateTime = this.startDateTime;
-      this.loadedEndDateTime = this.endDateTime;
-      // this.startDateTimeChanged = false;
-      // this.endDateTimeChanged = false;
+  mergeDataLiveMode(output, selectedUsername) {
       let len = 0;
       let j = 0;
       for (let el of output) {
@@ -498,8 +519,9 @@ export default class TrackStorage {
               let tmp = TrackStorage.transformCoords([obj.longitude, obj.latitude]);
               tmp.push(i);
               obj.coords = tmp;
-              obj.analysisMode = this.pointAnalysisLiveMode(obj);
               obj.username = el.userId;
+              if(selectedUsername && selectedUsername == obj.username) obj.analysisMode = this.pointAnalysisLiveMode(obj, true);
+              else obj.analysisMode = this.pointAnalysisLiveMode(obj);
               this.data[i] = obj;
               linePoints.push(tmp);
               i++;
@@ -514,7 +536,7 @@ export default class TrackStorage {
           source: pointVectorSource,
       });
       this.map.addLayer(this.pointVectorLayer);
-      this.adjustVisibilityLiveMode(this.startDateTime, this.endDateTime);
+      this.adjustVisibilityLiveMode();
   };
 
   get pointLayer() {
