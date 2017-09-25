@@ -152,8 +152,8 @@ export default class MultiTrackStorage {
         store.user.selectedUser = {'username': null, 'groupId': null};
     }
 
-    zoomToDefault() {
-        this.map.getView().setCenter(ol.proj.transform([14.5, 46], 'EPSG:4326', 'EPSG:3857'));
-        this.map.getView().setZoom(8);
+    zoomToDefault(store) {
+        this.map.getView().setCenter(ol.proj.transform(store.user.defaultCenterCoordinates, 'EPSG:4326', 'EPSG:3857'));
+        this.map.getView().setZoom(store.user.defaultZoom);
     }
 }

@@ -221,7 +221,7 @@
             overlays: [this.overlay], //, this.previousOverlay],
             view: new ol.View({
                 center: [this.centerCoords[0], this.centerCoords[1]],
-                zoom: 8,
+                zoom: this.$store.user.defaultZoom
                 // minZoom: 5
             })
         });
@@ -370,7 +370,7 @@
                 previousOverlay: undefined,
                 overlay: undefined,
                 lastHoveredFeature: undefined,
-                centerCoords1: [14.5, 46],
+                centerCoords1: this.$store.user.defaultCenterCoordinates,
                 centerCoords: undefined,
                 maxDepth: 2,
                 vectorLayer: undefined,

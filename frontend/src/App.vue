@@ -329,7 +329,8 @@
 
     const toggleVisibility = function(userInGroup, group) {
         if(this.$store.user.selectedUser.username == userInGroup.userId && this.$store.user.selectedUser.groupId == group.groupId) { // set selected user
-            this.$store.user.trackStorage.resetSelectedUser(this.$store);         
+            this.$store.user.trackStorage.resetSelectedUser(this.$store);
+            if(this.$store.user.operationMode == 'HISTORY') { this.$store.user.trackStorage.zoomToDefault(this.$store); }
         } else {
             this.$store.user.selectedUser = {'username': userInGroup.userId, 'groupId': group.groupId};
         }
@@ -537,7 +538,7 @@
         this.$store.user.trackStorage.resetSelectedUser(this.$store);
         var grpStor = new GroupsStorage(this.$store);
         var usersLive = this.$store.user.trackStorage.setHistoryMode(event, this.$store, this.$store.user.selectedUser);
-        this.$store.user.trackStorage.zoomToDefault();
+        this.$store.user.trackStorage.zoomToDefault(this.$store);
 
         if(event == 'LIVE') {
             this.liveModeRun(this.$store.user.token, usersLive);
