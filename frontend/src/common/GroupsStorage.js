@@ -73,6 +73,7 @@ export default class GroupsStorage {
                 if (grp.personalGroupUserId === user.userId) {
                     user.visible = true;
                     grp.withVisibleUser = true;
+                    this.store.user.selectedUser = {"username": user.userId, "groupId": grp.groupId}
                 } else {
                     user.visible = false;
                 }
@@ -91,7 +92,7 @@ export default class GroupsStorage {
       }
     };
 
-    setAllVisible() {
+    setAllVisible() { //set of drivers logged in user can see
         let usersArray = [];
         for (let grp of this.store.user.groups) {
             grp.withVisibleUser = false;
@@ -103,11 +104,11 @@ export default class GroupsStorage {
         return usersArray;
     };
 
-    setLoginUserVisibleOnly() {
+    setSelectedUserVisibleOnly(selectedUser) { // when switching from LIVE to HISTORY mode
         for (let grp of this.store.user.groups) {
             grp.visible = false
             for (let user of grp.users) {
-                if (grp.personalGroupUserId === user.userId) {
+                if (selectedUser.groupId == grp.groupId && selectedUser.username === user.userId) {
                     user.visible = true;
                     grp.withVisibleUser = true;
                 } else {
@@ -117,13 +118,21 @@ export default class GroupsStorage {
         }
     };
 
-    setGroupWithVisibleUser(groupId) {
+    setGroupWithVisibleUser(groupId, historyMode, username) { // set group with visible user, also set user visible in history mode
         for (let grp of this.store.user.groups) {
             grp.visible = false
             if(groupId && grp.groupId == groupId) {
                 grp.withVisibleUser = true;
+                if(historyMode) {
+                    let tmp = grp.users.map((user) => { user.visible = (username == user.userId) ? true : false; return user; })
+                    grp.users = tmp;
+                }             
             } else {
                 grp.withVisibleUser = false;
+                if(historyMode) {
+                    let tmp = grp.users.map((user) => { user.visible = false; return user; })
+                    grp.users = tmp;
+                }
             }
         }
     };

@@ -33,7 +33,7 @@
                     <v-list-tile slot="item">
                         <v-list-tile-content>
                             <v-list-tile-title style="font-weight: normal;" v-if="!group.withVisibleUser">{{ formatGroupName(group.groupId) }}</v-list-tile-title>
-                            <v-list-tile-title style="font-weight: bold;" v-if="group.withVisibleUser">{{ formatGroupName(group.groupId) }}</v-list-tile-title>
+                            <v-list-tile-title style="font-weight: bold;" class="blue--text" v-if="group.withVisibleUser">{{ formatGroupName(group.groupId) }}</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action style="display: flex; justify-content: flex-end">
                             <v-btn icon @click.native.stop="toggleGroupMessages(group)">
@@ -53,9 +53,9 @@
                         </v-list-tile-content>
                         <v-list-tile-action>
                           <v-btn icon v-on:click.native="toggleVisibility(user, group)">
-                              <v-icon v-if="user.visible && colorEyeIcon && user.userId == $store.user.selectedUser.username && group.withVisibleUser" light class="blue--text" >visibility</v-icon>
-                              <v-icon v-else-if="user.visible" light>visibility</v-icon>
-                              <v-icon v-else="!user.visible" light>visibility_off</v-icon>
+                              <v-icon v-if="toggleEyeColor(user, group) == 0" light class="blue--text" >visibility</v-icon>
+                              <v-icon v-else-if="toggleEyeColor(user, group) == 1" light>visibility</v-icon>
+                              <v-icon v-else="toggleEyeColor(user, group) == 2" light>visibility_off</v-icon>
                           </v-btn>
                         </v-list-tile-action>
                     </v-list-tile>
@@ -328,52 +328,36 @@
     };
 
     const toggleVisibility = function(userInGroup, group) {
-        if(this.$store.user.selectedUser.username == userInGroup.userId && this.$store.user.selectedUser.groupId == group.groupId) {
-            this.$store.user.selectedUser = {'username': null, 'groupId': null};         
+        if(this.$store.user.selectedUser.username == userInGroup.userId && this.$store.user.selectedUser.groupId == group.groupId) { // set selected user
+            this.$store.user.trackStorage.resetSelectedUser(this.$store);         
         } else {
             this.$store.user.selectedUser = {'username': userInGroup.userId, 'groupId': group.groupId};
         }
 
-        if(this.$store.user.selectedUser.username && this.$store.user.operationMode == 'LIVE') {
+        if(this.$store.user.selectedUser.username) { // set visible color and set group with visible user, also set user visible in history mode
             this.colorEyeIcon = true;
-            this.$store.user.trackStorage.setGroupWithVisibleUser(group.groupId, this.$store)
+            this.$store.user.trackStorage.setGroupWithVisibleUser(group.groupId, this.$store, this.$store.user.operationMode == 'HISTORY', this.$store.user.selectedUser.username)
         } else {
             this.colorEyeIcon = false;
-            this.$store.user.trackStorage.setGroupWithVisibleUser(null, this.$store)
+            this.$store.user.trackStorage.setGroupWithVisibleUser(null, this.$store, this.$store.user.operationMode == 'HISTORY')
         }
             
         if(this.$store.user.operationMode == 'LIVE') {
             this.$store.user.trackStorage.setPopupLiveMode(this.$store.user.selectedUser.username);
         } else {
-            for(let group of this.$store.user.groups) {
-                let visibleUserGroup = false;
-                for(let user of group.users) {
-                    if(user == userInGroup) {
-                        if(!userInGroup.visible) {  // will become visible
-                            visibleUserGroup = true;
-                        }
-                    } else {
-                        if(user.visible) {
-                            let current = user.visible;
-                            user.visible = !current;
-                            let tmpStr = this.$store.user.trackStorage.registerUser(user.userId, user.style.color);
-                            tmpStr.visible = user.visible;
-                        }
-                    }
-                }
-                group.withVisibleUser = visibleUserGroup;
-            }
+
             // set visibility only once per layer
-            this.$store.user.toolbarTitle = userInGroup.userId;
-            let current = userInGroup.visible;
-            userInGroup.visible = !current;
-            let tmpStr = this.$store.user.trackStorage.registerUser(userInGroup.userId, userInGroup.style.color);
-            tmpStr.visible = userInGroup.visible;
-            if(userInGroup.visibleCallback) {
+            if(this.$store.user.selectedUser.username) {
+              this.$store.user.trackStorage.emptyLinePointVectors();
+              this.$store.user.toolbarTitle = this.$store.user.selectedUser.username
+              let tmpStr = this.$store.user.trackStorage.registerUser(userInGroup.userId, userInGroup.style.color);
+              if(userInGroup.visibleCallback) {
                 userInGroup.visibleCallback(userInGroup.userId);
+              }
+            } else {
+              this.$store.user.toolbarTitle = this.$store.user.email
+              this.$store.user.trackStorage.emptyLinePointVectors();
             }
-            this.toggleLeftMenu()
-            // tmpStr.setPointAnalysisType(this.$store.user.pointAnalysisType);
         }
     };
 
@@ -550,8 +534,11 @@
     };
 
     const toggleLiveHistoryMode = function (event) {
+        this.$store.user.trackStorage.resetSelectedUser(this.$store);
         var grpStor = new GroupsStorage(this.$store);
-        var usersLive = this.$store.user.trackStorage.setHistoryMode(event, this.$store);
+        var usersLive = this.$store.user.trackStorage.setHistoryMode(event, this.$store, this.$store.user.selectedUser);
+        this.$store.user.trackStorage.zoomToDefault();
+
         if(event == 'LIVE') {
             this.liveModeRun(this.$store.user.token, usersLive);
             this.$store.user.intervalLiveLoad = setInterval(() => {
@@ -566,7 +553,16 @@
         this.$store.user.trackStorage.getTrack(token, null, null, users, this.$store.user.selectedUser.username);
     };
 
-
+    const toggleEyeColor = function(user, group) {
+      if((user.visible && this.colorEyeIcon && user.userId == this.$store.user.selectedUser.username && group.withVisibleUser)
+       || (user.visible && this.$store.user.operationMode == 'HISTORY') ) {
+        return 0;
+      }
+      if(user.visible && this.$store.user.operationMode == 'LIVE') {
+        return 1;
+      }
+      return 2;
+    }
 
     export default {
         name: 'App',
@@ -626,7 +622,8 @@
             triggerAlert,
             toggleSettings,
             toggleLiveHistoryMode,
-            liveModeRun
+            liveModeRun,
+            toggleEyeColor
         },
         watch: {
             groupFilter: function() {

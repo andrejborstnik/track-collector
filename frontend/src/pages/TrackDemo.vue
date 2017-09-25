@@ -234,21 +234,30 @@
     };
 
     const getTrack = function () {
-        this.$store.user.operationMode = 'HISTORY';
-        this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode, this.$store);
-        this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
-        this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
-        this.sliderValue = [0, Number.MAX_VALUE];
-        this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoadingWithZoom);
+        if (this.$store.user.selectedUser.username) {
+            this.$store.user.operationMode = 'HISTORY';
+            this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode, this.$store, this.$store.user.selectedUser);
+            this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
+            this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
+            this.sliderValue = [0, Number.MAX_VALUE];
+            this.$store.user.trackStorage.setGroupWithVisibleUser(this.$store.user.selectedUser.groupId, this.$store, this.$store.user.operationMode == 'HISTORY', this.$store.user.selectedUser.username)
+            this.$store.user.trackStorage.getTrack(this.$store.user.token, this.startLoading, this.endLoadingWithZoom, null, this.$store.user.selectedUser.username);
+            // this.$store.user.trackStorage.getTrackForUser(this.$store.user.token, this.$store.user.selectedUser.username, this.startLoading, this.endLoadingWithZoom);
+            this.toggleTimeSettings();
+        } 
+        else {
+            this.$store.user.errorTitle = "Visibility error.";
+            this.$store.user.errorMessage = "Please select user, you would like to watch.";
+            this.$store.user.showAlert = true;
+        }
 
-        this.toggleTimeSettings();
     };
 
     const loadSeparateTrack = function(userId) {
-      this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
-      this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
-      this.sliderValue = [0, Number.MAX_VALUE];
-      this.$store.user.trackStorage.getTrackForUser(this.$store.user.token, userId, this.startLoading, this.endLoadingWithZoom);
+        this.$store.user.trackStorage.setStartDateTime(this.startDate, this.startTime, 'Europe/Berlin');
+        this.$store.user.trackStorage.setEndDateTime(this.endDate, this.endTime, 'Europe/Berlin');
+        this.sliderValue = [0, Number.MAX_VALUE];
+        this.$store.user.trackStorage.getTrackForUser(this.$store.user.token, userId, this.startLoading, this.endLoadingWithZoom);
     }
 
     const startLoading = function () {
@@ -338,7 +347,7 @@
         this.zoomSettings = false;
         this.refreshBottomNavigation();
         this.$store.user.operationMode = 'HISTORY';
-        this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode, this.$store);
+        this.$store.user.trackStorage.setHistoryMode(this.$store.user.operationMode, this.$store, this.$store.user.selectedUser);
     };
 
     const toggleZoomSettings = function () {

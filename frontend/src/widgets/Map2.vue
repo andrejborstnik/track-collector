@@ -221,7 +221,7 @@
             overlays: [this.overlay], //, this.previousOverlay],
             view: new ol.View({
                 center: [this.centerCoords[0], this.centerCoords[1]],
-                zoom: 9,
+                zoom: 8,
                 // minZoom: 5
             })
         });

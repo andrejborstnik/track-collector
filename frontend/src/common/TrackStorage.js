@@ -198,7 +198,7 @@ export default class TrackStorage {
       this.pointAnalysisType = 0;   // SPEED is default
   }
 
-  setHistoryMode(mode, store) {
+  setHistoryMode(mode, store, selectedUser) {
     var grpStor = new GroupsStorage(store);
     if(mode == 'LIVE'){
       this.historyMode = false;
@@ -206,26 +206,34 @@ export default class TrackStorage {
     }
     clearInterval(store.user.intervalLiveLoad);
     this.historyMode = true;
-    grpStor.setLoginUserVisibleOnly()
+    grpStor.setSelectedUserVisibleOnly(selectedUser);
     this.emptyLinePointVectors();
   }
 
   emptyLinePointVectors() {
-    if(this.lineVectorLayer) this.lineVectorLayer.getSource().clear();
-    if (this.pointVectorLayer) this.pointVectorLayer.getSource().clear();
+    if(this.lineVectorLayer) {
+      this.lineVectorLayer.getSource().clear();
+      this.map.removeLayer(this.lineVectorLayer);
+      
+    }
+    if (this.pointVectorLayer) {
+      this.pointVectorLayer.getSource().clear();
+      this.map.removeLayer(this.pointVectorLayer);
+    }
+    
   }
 
   setPopupLiveMode(user) {
     for (let obj of this.data) {
-      if(user && user == obj.username) obj.analysisMode = this.pointAnalysisLiveMode(obj, true);
-      else obj.analysisMode = this.pointAnalysisLiveMode(obj);
+      if(user && user == obj.username) {obj.analysisMode = this.pointAnalysisLiveMode(obj, true);}
+      else {obj.analysisMode = this.pointAnalysisLiveMode(obj);}
     }
     this.adjustVisibilityLiveMode()
   }
 
-  setGroupWithVisibleUser(groupId, store) {
+  setGroupWithVisibleUser(groupId, store, historyMode, username) {
     var grpStor = new GroupsStorage(store);
-    grpStor.setGroupWithVisibleUser(groupId);
+    grpStor.setGroupWithVisibleUser(groupId, historyMode, username);
   }
 
   // analysisStyle(obj) {
@@ -330,10 +338,15 @@ export default class TrackStorage {
           ptFeature.setStyle(this.analysisPallete[j]);
           pointFeatures.push(ptFeature);
       }
-      this.lineVectorLayer.getSource().clear();
-      this.lineVectorLayer.getSource().addFeatures(lineFeatures)
-      this.pointVectorLayer.getSource().clear();
-      this.pointVectorLayer.getSource().addFeatures(pointFeatures);
+
+      if(this.lineVectorLayer) {
+        this.lineVectorLayer.getSource().clear();
+        this.lineVectorLayer.getSource().addFeatures(lineFeatures)
+      }
+      if(this.pointVectorLayer) {
+        this.pointVectorLayer.getSource().clear();
+        this.pointVectorLayer.getSource().addFeatures(pointFeatures);
+      }
 
   };
 
@@ -381,7 +394,8 @@ export default class TrackStorage {
 
       this.pointVectorLayer.getSource().clear();
       this.pointVectorLayer.getSource().addFeatures(pointFeatures);
-
+      
+      if(this.getExtent()) this.map.getView().fit(this.getExtent(), this.map.getSize());
   };
 
   getDataForPointFeature(feature, index) {
@@ -428,14 +442,13 @@ export default class TrackStorage {
               requiredAccuracy: 0,
               singlePointStops: true,
               token: token,
-              userIds: (usersLive) ? usersLive : [this.userId],
+              userIds: (usersLive) ? usersLive : ((selectedUsername) ? [selectedUsername] : [this.userId]),
               lastPositionsOnly: !this.historyMode,
           }
       }).then((body) => {
           this.emptyLinePointVectors();
           if(this.historyMode) {this.mergeData(body.tracks);}
           else {this.mergeDataLiveMode(body.tracks, selectedUsername);}
-
           if(endCallback != null) endCallback();
       });
   };

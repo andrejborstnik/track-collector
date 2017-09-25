@@ -17,11 +17,16 @@ export default class MultiTrackStorage {
         if(this.toStorage.has(userId)) {
            let tmpStr = this.toStorage.get(userId);
            tmpStr.setColor(color);
+           tmpStr.visible = true;
+           this.setOtherStoragesInvisible(userId);
            return tmpStr;
         }
+
         // let newStorage = new TrackStorage(this.map, userId, color);
         let newStorage = new TrackStorage(this.map, userId, '#0000FF');
         this.toStorage.set(userId, newStorage);
+        newStorage.visible = true;
+        this.setOtherStoragesInvisible(userId);
         return newStorage;
     }
 
@@ -94,7 +99,7 @@ export default class MultiTrackStorage {
     }
 
     getTrackForUser (token, userId, startCallback, endCallback) {
-            this.toStorage.get(userId).getTrack(token, startCallback, endCallback);
+        this.toStorage.get(userId).getTrack(token, startCallback, endCallback);
     }
 
     get pointLayers() {
@@ -113,9 +118,9 @@ export default class MultiTrackStorage {
         return null;
     }
 
-    setHistoryMode(mode, store) {
+    setHistoryMode(mode, store, selectedUser) {
         for(let key of this.toStorage.keys()) {
-            return this.toStorage.get(key).setHistoryMode(mode, store);
+            return this.toStorage.get(key).setHistoryMode(mode, store, selectedUser);
         }
     }
 
@@ -131,9 +136,24 @@ export default class MultiTrackStorage {
         }
     }
 
-    setGroupWithVisibleUser(groupId, store) {
+    setGroupWithVisibleUser(groupId, store, historyMode, username) {
         for(let key of this.toStorage.keys()) {
-            this.toStorage.get(key).setGroupWithVisibleUser(groupId, store);
+            this.toStorage.get(key).setGroupWithVisibleUser(groupId, store, historyMode, username);
         } 
+    }
+
+    setOtherStoragesInvisible(userId) {
+        for (var [key, value] of this.toStorage) {
+            if(key != userId) value.visible = false;
+        }
+    }
+
+    resetSelectedUser(store) {
+        store.user.selectedUser = {'username': null, 'groupId': null};
+    }
+
+    zoomToDefault() {
+        this.map.getView().setCenter(ol.proj.transform([14.5, 46], 'EPSG:4326', 'EPSG:3857'));
+        this.map.getView().setZoom(8);
     }
 }
