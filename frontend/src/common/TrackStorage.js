@@ -107,10 +107,11 @@ export default class TrackStorage {
       this.loadedEndDateTime = null;
       this.currentExtent = [];
       //  [1301438.3041983845, 5697931.47271672, 1620677.9131304354, 5789591.817239217]
-      this.historyMode = true; //HISTORY mode
-      this.liveModeColorSample = '#00FF00'; //green
+      this.historyMode = true; // HISTORY mode
+      this.setDefaultZoomLivemode = true; // helper variable
+      this.liveModeColorSample = '#00FF00'; // green
       this.liveModeColorLateSample = '#FF0000'; // red
-      this.liveModeColorSelectedSample = color; //blue
+      this.liveModeColorSelectedSample = color; // blue
 
       this.onPointStyleLiveMode = new ol.style.Style({
           image: new ol.style.Circle({
@@ -202,7 +203,8 @@ export default class TrackStorage {
     var grpStor = new GroupsStorage(store);
     if(mode == 'LIVE'){
       this.historyMode = false;
-      return grpStor.setAllVisible(); 
+      this.setDefaultZoomLivemode = true;
+      return grpStor.setAllVisible();
     }
     clearInterval(store.user.intervalLiveLoad);
     this.historyMode = true;
@@ -395,7 +397,8 @@ export default class TrackStorage {
       this.pointVectorLayer.getSource().clear();
       this.pointVectorLayer.getSource().addFeatures(pointFeatures);
       
-      if(this.getExtent()) this.map.getView().fit(this.getExtent(), this.map.getSize());
+      if(this.getExtent() && this.setDefaultZoomLivemode) this.map.getView().fit(this.getExtent(), this.map.getSize());
+      if(this.setDefaultZoomLivemode) this.setDefaultZoomLivemode = false;
   };
 
   getDataForPointFeature(feature, index) {
