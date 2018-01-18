@@ -3,11 +3,11 @@
         <v-navigation-drawer temporary hide-overlay v-model="drawerLeft" v-bind:close-on-click="false" light>
             <v-list class="pa-0">
                     <v-list-tile avatar tag="div">
-                        <v-list-tile-avatar>
+                        <!-- v-list-tile-avatar>
                             <v-icon :class="['amber white--text']">{{ 'call_to_action' }}</v-icon>
-                        </v-list-tile-avatar>
+                        </v-list-tile-avatar-->
                         <v-list-tile-content>
-                            <v-list-tile-title>Groups</v-list-tile-title>
+                            <v-list-tile-title class="title">Groups</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
                             <v-btn icon @click.native.stop="toggleLeftMenu">
@@ -48,8 +48,8 @@
                     </v-list-tile>
                     <v-list-tile v-for="user in group.users" :key="user.userId" v-if="!user.filteredOut">
                         <v-list-tile-content>
-                            <v-list-tile-title
-                            >{{ user.userId }}</v-list-tile-title>
+                          <v-list-tile-title>{{ user.name }}</v-list-tile-title>
+                          <v-list-tile-sub-title>{{ user.userId }}</v-list-tile-sub-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
                           <v-btn icon v-on:click.native="toggleVisibility(user, group)">
@@ -66,11 +66,16 @@
         <v-navigation-drawer temporary hide-overlay v-model="drawerRight" :close-on-click="false" right light>
             <v-list class="pa-0">
                     <v-list-tile avatar tag="div">
-                        <v-list-tile-avatar>
+                        <v-list-tile-action>
+                            <v-btn icon @click.native.stop="toggleRightMenu">
+                                <v-icon>chevron_right</v-icon>
+                            </v-btn>
+                        </v-list-tile-action>
+                        <!--v-list-tile-avatar>
                             <v-icon v-bind:class="['amber white--text']">{{ 'call_to_action' }}</v-icon>
-                        </v-list-tile-avatar>
+                        </v-list-tile-avatar-->
                         <v-list-tile-content>
-                            <v-list-tile-title>{{$store.user.name}}</v-list-tile-title>
+                            <v-list-tile-title class="title">{{$store.user.name}}</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
                             <v-btn icon dark v-on:click.native.stop="toggleRightMenu">
@@ -315,13 +320,11 @@
     };
 
     const profile = function () {
-        console.info("Profile function.");
         //this.$router.go('profile');
         this.$router.push('profile');
     };
 
     const groups = function () {
-        console.info("Groups function.");
         this.$router.push('groups');
     };
 
@@ -644,7 +647,7 @@
                             if(activateAll) {
                                 user.filteredOut = false;
                             } else {
-                                if(user.userId.toLowerCase().indexOf(filterString) >= 0) {
+                                if(user.name.toLowerCase().indexOf(filterString) >= 0) {
                                     user.filteredOut = false;
                                     isActivated = true;
                                 } else {

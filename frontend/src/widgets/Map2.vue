@@ -8,7 +8,7 @@
             :speed="popupSpeed"
             :delay="popupDelay"
             :battery="popupBattery"
-            :username="driverName"
+            :driverName="driverName"
             ></Popup>
 
         <!-- <Popup :title="previousPopupTitle"
@@ -82,7 +82,7 @@
 
         this.popupSpeed = Math.round(this.lastClickedFeatureData.speed*3.6);
 
-        this.driverName = this.lastClickedFeatureData.username;
+        this.driverName = this.lastClickedFeatureData.name;
 
         // delete data.geometry;
         // delete data.labelPoint;

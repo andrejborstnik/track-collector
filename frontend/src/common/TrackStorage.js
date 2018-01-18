@@ -493,6 +493,7 @@ export default class TrackStorage {
               obj.coords = tmp;
               obj.analysisMode = this.pointAnalysisMode(obj);
               obj.username = el.userId;
+              obj.name = el.name;
               this.data[i] = obj;
               linePoints.push(tmp);
               i++;
