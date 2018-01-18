@@ -140,17 +140,17 @@
                         </v-list-tile-content>
                     </v-list-tile>
 
-                    <v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
-                        <v-list-tile-action>
+                    <!--v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
+                        <v-list-tile-action-->
                             <!--COMMENT
                             <v-icon>dashboard</v-icon>
                             COMMENT-->
-                            <v-icon>mode_edit</v-icon>
+                            <!--v-icon>mode_edit</v-icon>
                         </v-list-tile-action>
                         <v-list-tile-content>
                             <v-list-tile-title>Edit_TEMPLATE</v-list-tile-title>
                         </v-list-tile-content>
-                    </v-list-tile>
+                    </v-list-tile-->
             </v-list>
         </v-navigation-drawer>
         <v-dialog v-model="this.$store.user.showAlert" persistent lazy>
