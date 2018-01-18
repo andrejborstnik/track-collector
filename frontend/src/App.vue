@@ -70,7 +70,7 @@
                             <v-icon v-bind:class="['amber white--text']">{{ 'call_to_action' }}</v-icon>
                         </v-list-tile-avatar>
                         <v-list-tile-content>
-                            <v-list-tile-title>{{$store.user.email}}</v-list-tile-title>
+                            <v-list-tile-title>{{$store.user.name}}</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action>
                             <v-btn icon dark v-on:click.native.stop="toggleRightMenu">
@@ -254,6 +254,7 @@
             <v-toolbar-side-icon @click.native.stop="toggleLeftMenu" v-if="$store.user.leftMenuEnabled"></v-toolbar-side-icon>
             <v-toolbar-title class="white--text">{{$store.user.toolbarTitle}}</v-toolbar-title>
             <v-spacer></v-spacer>
+          
             <v-btn-toggle mandatory class="white"  v-model="$store.user.operationMode" @change='toggleLiveHistoryMode'>
                 <v-btn v-for="btn in operationModeChoices"
                 :value="btn.value"
@@ -261,8 +262,13 @@
                 <v-icon class="blue--text">{{btn.icon}}</v-icon>
                 </v-btn>
             </v-btn-toggle>
-            <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled">
-                <v-icon >account_circle</v-icon>
+
+            <v-btn  @click.native="go_to_map"  icon color="white" style="marginBottom: 16px" depressed>
+                <v-icon class="white--text" large >explore</v-icon>
+            </v-btn>
+
+            <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled" style="marginBottom: 16px" depressed>
+                <v-icon large >account_circle</v-icon>
             </v-btn>
         </v-toolbar>
         <v-bottom-nav absolute value="true" :active.sync='$store.user.bottomNavState'
@@ -350,13 +356,13 @@
             // set visibility only once per layer
             if(this.$store.user.selectedUser.username) {
               this.$store.user.trackStorage.emptyLinePointVectors();
-              this.$store.user.toolbarTitle = this.$store.user.selectedUser.username
+              this.$store.user.toolbarTitle = this.$store.user.selectedUser.name
               let tmpStr = this.$store.user.trackStorage.registerUser(userInGroup.userId, userInGroup.style.color);
               if(userInGroup.visibleCallback) {
                 userInGroup.visibleCallback(userInGroup.userId);
               }
             } else {
-              this.$store.user.toolbarTitle = this.$store.user.email
+              this.$store.user.toolbarTitle = this.$store.user.name
               this.$store.user.trackStorage.emptyLinePointVectors();
             }
         }
@@ -378,7 +384,7 @@
 
     const toggleUserMessages = function() {
             this.$store.user.messageBaseGroup = null;
-            this.messagesTitle = this.$store.user.email;
+            this.messagesTitle = this.$store.user.name;
             this.toggleRightMenu();
             this.toggleMessages();
     };

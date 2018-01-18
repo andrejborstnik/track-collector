@@ -1,5 +1,6 @@
 <template>
-    <v-container fluid class="text-xs-center">
+    <v-container id="profilePage" fluid class="text-xs-center"
+        style="display: flex; position: absolute; bottom: 56px">
 
         <v-container>
             <v-layout>
@@ -13,7 +14,7 @@
                                     :readonly="readonly[field]"
                                     type="text"
                                     v-model="userData[field]"
-                                    @dblclick.native="setReadonly(field, false)"
+                                    @dblclick.native="setReadonly(field, true)"
                                     @keyup.enter.prevent="setReadonly(field, true)"
                             ></v-text-field>
                         </v-flex>
@@ -197,18 +198,20 @@
                 openCPW: false,
                 userData: {},
                 showFields: {
+                    name: 'Name',
                     userId: 'Username',
-                    provider: 'Company',
+                    provider: 'Provider',
                     personalGroup: 'Group',
-                    primaryDevice: 'Primary Device',
-                    devices: 'Devices'
+                    primaryDeviceName: 'Primary Device',
+                    fewDevicesName: 'Devices'
                 },
                 readonly: {
+                    name: true,
                     userId: true,
                     provider: true,
                     personalGroup: true,
-                    primaryDevice: true,
-                    devices: true
+                    primaryDeviceName: true,
+                    fewDevicesName: true
                 }
             }
         },

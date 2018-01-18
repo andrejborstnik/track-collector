@@ -1,5 +1,6 @@
 <template>
-    <v-container fluid class="text-xs-center">
+    <v-container id="groupsPage" fluid class="text-xs-center"
+        style="display: flex; position: absolute; bottom: 56px">
 
        <v-dialog v-model="showAlert" persistent lazy>
             <v-card>

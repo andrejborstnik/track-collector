@@ -99,8 +99,8 @@
                 this.$store.user.token = body.token;
                 this.$store.user.email = user_mail;
                 this.$store.user.provider = provider;
-                cookies.set_session_cookie(user_mail, body.token, false, true, provider); // todo admin and cookies
-
+                this.$store.user.name = body.name;
+                cookies.set_session_cookie(user_mail, body.token, false, true, provider, body.name); // todo admin and cookies
                 // Set directives cookie.
                 //            if (user.cookies_accepted)
                 //                cookies.set_directive_cookie();

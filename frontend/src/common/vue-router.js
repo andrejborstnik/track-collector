@@ -51,7 +51,8 @@ let store = {
         intervalLiveLoad: null,
         selectedUser: {'username': null, 'groupId': null},
         defaultZoom: 8,
-        defaultCenterCoordinates: [14.5, 46]
+        defaultCenterCoordinates: [14.5, 46],
+        name: ''
     },
     state: {
         path_to: null,
@@ -122,6 +123,7 @@ let readSessionCookie = function (router, {to, from}) {
         Vue.set(store.user, "admin", session_cookie.admin);
         Vue.set(store.user, "cookies_accepted", session_cookie.cookies_accepted);
         Vue.set(store.user, "provider", session_cookie.provider);
+        Vue.set(store.user, "name", session_cookie.name)
     }
     else {
         for (let key of ['email', 'token', 'admin'])
