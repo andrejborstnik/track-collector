@@ -15,9 +15,14 @@
                             v-model="startDate"
                             no-title
                             scrollable
-                            actions
                             :allowed-dates="allowedStartDate"
                     >
+                        <template scope="{ save, cancel }">
+                            <v-card-actions>
+                                <v-btn flat primary @click.native="cancel()">{{ $t("common.commonCancel") }}</v-btn>
+                                <v-btn flat primary @click.native="save()">{{ $t("common.commonSave") }}</v-btn>
+                            </v-card-actions>
+                        </template>
                     </v-date-picker>
                 </v-dialog>
                 <v-dialog v-model="menuFromTime">
@@ -28,7 +33,14 @@
                             prepend-icon="access_time"
                             readonly
                     ></v-text-field>
-                    <v-time-picker v-model="startTime" format="24hr"></v-time-picker>
+                    <v-time-picker v-model="startTime" format="24hr" actions>
+                        <template scope="{ save, cancel }">
+                            <v-card-actions>
+                                <v-btn flat primary @click.native="cancel()">{{ $t("common.commonCancel") }}</v-btn>
+                                <v-btn flat primary @click.native="save()">{{ $t("common.commonSave") }}</v-btn>
+                            </v-card-actions>
+                        </template>
+                    </v-time-picker>
                 </v-dialog>
                 <v-dialog v-model="menuToDate">
                     <v-text-field
@@ -42,9 +54,14 @@
                             v-model="endDate"
                             no-title
                             scrollable
-                            actions
                             :allowed-dates="allowedEndDate"
                     >
+                        <template scope="{ save, cancel }">
+                            <v-card-actions>
+                                <v-btn flat primary @click.native="cancel()">{{ $t("common.commonCancel") }}</v-btn>
+                                <v-btn flat primary @click.native="save()">{{ $t("common.commonSave") }}</v-btn>
+                            </v-card-actions>
+                        </template>
                     </v-date-picker>
                 </v-dialog>
                 <v-dialog v-model="menuToTime">
@@ -55,7 +72,14 @@
                             prepend-icon="access_time"
                             readonly
                     ></v-text-field>
-                    <v-time-picker v-model="endTime" format="24hr"></v-time-picker>
+                    <v-time-picker v-model="endTime" format="24hr" actions>
+                        <template scope="{ save, cancel }">
+                            <v-card-actions>
+                                <v-btn flat primary @click.native="cancel()">{{ $t("common.commonCancel") }}</v-btn>
+                                <v-btn flat primary @click.native="save()">{{ $t("common.commonSave") }}</v-btn>
+                            </v-card-actions>
+                        </template>
+                    </v-time-picker>
                 </v-dialog>
                 <v-layout row>
                     <v-btn flat primary v-on:click.native="setYesterday">Yesterday</v-btn>
@@ -387,7 +411,7 @@
         let tmpStr = this.$store.user.trackStorage.registerUser(this.$store.user.email, this.$store.pallete.first());
         tmpStr.visible = true;
         tmpStr.setPointAnalysisType(this.$store.user.pointAnalysisType);
-        this.$store.user.toolbarTitle = this.$store.user.email;
+        this.$store.user.toolbarTitle = this.$store.user.name;
         // this.trackStorage = new MultiTrackStorage(this.$refs.map.map);
         // this.storageChanged += 1;
         let cookie = cookies.get_session_cookie();
