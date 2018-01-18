@@ -64,3 +64,11 @@ V ```backend/config/config_default.js``` je potrebno napisati kje se nahaja baza
 
 Vec o Vue frameworku najdes na [https://vuejs.org/]('https://vuejs.org/').
 
+
+-----
+
+
+Projekt sofinancirata Republika Slovenija in Evropska unija iz [Evropskega socialnega sklada](http://www.eu-skladi.si/). 
+
+![Logo](https://github.com/jborlinic/strojno_ucenje/blob/master/logo.png)
+
