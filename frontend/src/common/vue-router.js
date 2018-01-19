@@ -49,7 +49,7 @@ let store = {
         operationMode: 'HISTORY',
         bottomNavState: null,
         intervalLiveLoad: null,
-        selectedUser: {'username': null, 'groupId': null},
+        selectedUser: {'username': null, 'groupId': null, 'name': ""},
         defaultZoom: 8,
         defaultCenterCoordinates: [14.5, 46],
         name: '',

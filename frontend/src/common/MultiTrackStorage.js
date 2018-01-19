@@ -149,7 +149,7 @@ export default class MultiTrackStorage {
     }
 
     resetSelectedUser(store) {
-        store.user.selectedUser = {'username': null, 'groupId': null};
+        store.user.selectedUser = {'username': null, 'groupId': null, 'name': ""};
     }
 
     zoomToDefault(store) {

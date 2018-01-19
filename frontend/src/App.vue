@@ -341,7 +341,7 @@
             this.$store.user.trackStorage.resetSelectedUser(this.$store);
             if(this.$store.user.operationMode == 'HISTORY') { this.$store.user.trackStorage.zoomToDefault(this.$store); }
         } else {
-            this.$store.user.selectedUser = {'username': userInGroup.userId, 'groupId': group.groupId};
+            this.$store.user.selectedUser = {'username': userInGroup.userId, 'groupId': group.groupId, 'name': userInGroup.name};
         }
 
         if(this.$store.user.selectedUser.username) { // set visible color and set group with visible user, also set user visible in history mode

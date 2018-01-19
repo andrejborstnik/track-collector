@@ -73,7 +73,7 @@ export default class GroupsStorage {
                 if (grp.personalGroupUserId === user.userId) {
                     user.visible = true;
                     grp.withVisibleUser = true;
-                    this.store.user.selectedUser = {"username": user.userId, "groupId": grp.groupId}
+                    this.store.user.selectedUser = {"username": user.userId, "groupId": grp.groupId, "name":user.name};
                 } else {
                     user.visible = false;
                 }
