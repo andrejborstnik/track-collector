@@ -259,19 +259,19 @@
             <v-toolbar-side-icon @click.native.stop="toggleLeftMenu" v-if="$store.user.leftMenuEnabled"></v-toolbar-side-icon>
             <v-toolbar-title class="white--text">{{$store.user.toolbarTitle}}</v-toolbar-title>
             <v-spacer></v-spacer>
-          
-            <v-btn-toggle mandatory class="white"  v-model="$store.user.operationMode" @change='toggleLiveHistoryMode'>
+            <div v-if="$store.user.toolbarButtonsVisible">
+              <v-btn-toggle mandatory class="white"  v-model="$store.user.operationMode" @change='toggleLiveHistoryMode' style="marginTop: 24px">
                 <v-btn v-for="btn in operationModeChoices"
                 :value="btn.value"
                 >
                 <v-icon class="primary--text">{{btn.icon}}</v-icon>
                 </v-btn>
-            </v-btn-toggle>
+              </v-btn-toggle>
 
-            <v-btn  @click.native="go_to_map"  icon color="white" style="marginBottom: 16px" depressed>
+              <v-btn  @click.native="go_to_map"  icon color="white" style="marginBottom: 32px" depressed>
                 <v-icon class="white--text" large >explore</v-icon>
-            </v-btn>
-
+              </v-btn>
+            </div>
             <v-btn icon @click.native.stop="toggleRightMenu" v-if="$store.user.rightMenuEnabled" style="marginBottom: 16px" depressed>
                 <v-icon large >account_circle</v-icon>
             </v-btn>

@@ -52,7 +52,8 @@ let store = {
         selectedUser: {'username': null, 'groupId': null},
         defaultZoom: 8,
         defaultCenterCoordinates: [14.5, 46],
-        name: ''
+        name: '',
+        toolbarButtonsVisible: false,
     },
     state: {
         path_to: null,

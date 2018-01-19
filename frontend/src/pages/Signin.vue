@@ -1,5 +1,6 @@
 <template>
-    <v-container fluid class="text-xs-center">
+    <v-container id="signinPage" fluid class="text-xs-center"
+                 style="display: flex; position: absolute; bottom: 56px">
         <v-layout align-center justify-center>
             <v-card raised class="pt-4 pl-5 pr-5 pb-3" @keydown.enter.prevent="login">
                 <v-layout column>
@@ -146,6 +147,7 @@
         this.$store.user.leftMenuEnabled = false;
         this.$store.user.rightMenuEnabled = false;
         this.$store.user.messagesEnabled = false;
+        this.$store.user.toolbarButtonsVisible = false;
         this.getProviders();
     };
 

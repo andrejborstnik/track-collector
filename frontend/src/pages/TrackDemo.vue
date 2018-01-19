@@ -403,6 +403,7 @@
         this.$store.user.rightMenuEnabled = true;
         this.$store.user.messagesEnabled = true;
         this.$store.user.historyEnabled = true;
+        this.$store.user.toolbarButtonsVisible = true;
         this.setDate();
         var grpStor = new GroupsStorage(this.$store);
         grpStor.getGroups(this.startLoading, this.endLoading, this.loadSeparateTrack);
