@@ -33,7 +33,7 @@
                     <v-list-tile slot="item">
                         <v-list-tile-content>
                             <v-list-tile-title style="font-weight: normal;" v-if="!group.withVisibleUser">{{ formatGroupName(group.groupId) }}</v-list-tile-title>
-                            <v-list-tile-title style="font-weight: bold;" class="blue--text" v-if="group.withVisibleUser">{{ formatGroupName(group.groupId) }}</v-list-tile-title>
+                            <v-list-tile-title style="font-weight: bold;" class="primary--text" v-if="group.withVisibleUser">{{ formatGroupName(group.groupId) }}</v-list-tile-title>
                         </v-list-tile-content>
                         <v-list-tile-action style="display: flex; justify-content: flex-end">
                             <v-btn icon @click.native.stop="toggleGroupMessages(group)">
@@ -53,7 +53,7 @@
                         </v-list-tile-content>
                         <v-list-tile-action>
                           <v-btn icon v-on:click.native="toggleVisibility(user, group)">
-                              <v-icon v-if="toggleEyeColor(user, group) == 0" light class="blue--text" >visibility</v-icon>
+                              <v-icon v-if="toggleEyeColor(user, group) == 0" light class="primary--text" >visibility</v-icon>
                               <v-icon v-else-if="toggleEyeColor(user, group) == 1" light>visibility</v-icon>
                               <v-icon v-else="toggleEyeColor(user, group) == 2" light>visibility_off</v-icon>
                           </v-btn>
@@ -210,9 +210,9 @@
                        ></v-text-field>
                         <v-radio-group v-model="sendingType" :mandatory="false">
                            <v-layout row>
-                             <v-radio label="Mobile notification" value="NOTIFICATION"></v-radio>
-                             <v-radio label="Email" value="EMAIL_TEXT"></v-radio>
-                             <v-radio label="For group admins" value="GROUP_NOTIFICATION"></v-radio>
+                             <v-radio color="primary" label="Mobile notification" value="NOTIFICATION"></v-radio>
+                             <v-radio color="primary" label="Email" value="EMAIL_TEXT"></v-radio>
+                             <v-radio color="primary" label="For group admins" value="GROUP_NOTIFICATION"></v-radio>
                            </v-layout>
                         </v-radio-group>
                      </v-card>
@@ -243,9 +243,9 @@
                 </v-card-title>
                 <v-radio-group v-model="pointAnalysisType" :mandatory="false">
                     <v-layout row>
-                        <v-radio class="ml-5" label="Speed" value="SPEED"></v-radio>
-                        <v-radio label="Delay" value="DELAY"></v-radio>
-                        <v-radio label="Battery" value="BATTERY"></v-radio>
+                        <v-radio color="primary" class="ml-5" label="Speed" value="SPEED"></v-radio>
+                        <v-radio color="primary" label="Delay" value="DELAY"></v-radio>
+                        <v-radio color="primary" label="Battery" value="BATTERY"></v-radio>
                     </v-layout>
                 </v-radio-group>
               </v-card>
@@ -264,7 +264,7 @@
                 <v-btn v-for="btn in operationModeChoices"
                 :value="btn.value"
                 >
-                <v-icon class="blue--text">{{btn.icon}}</v-icon>
+                <v-icon class="primary--text">{{btn.icon}}</v-icon>
                 </v-btn>
             </v-btn-toggle>
 
@@ -283,7 +283,7 @@
           <v-btn v-for="btn in $store.user.bottomNavigation"
             :value="btn.key"
             :key="btn.key"
-            flat dark class="teal--text" @click.native="btn.action"
+            flat dark class="primary--text" @click.native="btn.action"
             style="width: 96px"
             >
             <span>{{btn.text}}</span>
@@ -679,3 +679,18 @@
     }
 
 </script>
+
+<style lang="stylus">
+  @require '../node_modules/vuetify/src/stylus/settings/_colors.styl'
+  $theme := {
+    primary: #ef3381
+    accent: #FFC107
+    secondary: #2ebfa5
+    info: #B2DFDB
+    warning: $red.base
+    error: $red.base
+    success: $green.base
+  }
+  @require '../node_modules/vuetify/src/stylus/main.styl'
+</style>
+

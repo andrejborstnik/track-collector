@@ -537,6 +537,7 @@ export default class TrackStorage {
               tmp.push(i);
               obj.coords = tmp;
               obj.username = el.userId;
+              obj.name = el.name;
               if(selectedUsername && selectedUsername == obj.username) obj.analysisMode = this.pointAnalysisLiveMode(obj, true);
               else obj.analysisMode = this.pointAnalysisLiveMode(obj);
               this.data[i] = obj;
