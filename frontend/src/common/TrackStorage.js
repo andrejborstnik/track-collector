@@ -479,8 +479,8 @@ export default class TrackStorage {
       for (let el of output) {
           len += el.samples.length;
       }
-      this.dataLength = len;
-      this.data = new Array(len);
+      // this.dataLength = len;
+      this.data = [];//new Array(len);
       // let linePoints = new Array(len);
       let linePoints = []
       let i = 0;
@@ -488,17 +488,20 @@ export default class TrackStorage {
           for(let obj of el.samples) {
               obj.intTimestamp = moment(obj.timestamp).valueOf();
               obj.intRecorded = moment(obj.recorded).valueOf();
-              let tmp = TrackStorage.transformCoords([obj.longitude, obj.latitude]);
-              tmp.push(i);
-              obj.coords = tmp;
-              obj.analysisMode = this.pointAnalysisMode(obj);
-              obj.username = el.userId;
-              obj.name = el.name;
-              this.data[i] = obj;
-              linePoints.push(tmp);
-              i++;
+              if((obj.intRecorded - obj.intTimestamp) >= 0) {
+                let tmp = TrackStorage.transformCoords([obj.longitude, obj.latitude]);
+                tmp.push(i);
+                obj.coords = tmp;
+                obj.analysisMode = this.pointAnalysisMode(obj);
+                obj.username = el.userId;
+                obj.name = el.name;
+                this.data[i] = obj;
+                linePoints.push(tmp);
+                i++;
+              }
           }
       }
+      this.dataLength = this.data.length;
       let vectorSource = new ol.source.Vector({
           features: []
       });
@@ -545,7 +548,6 @@ export default class TrackStorage {
               i++;
           }
       }
-
       let pointVectorSource = new ol.source.Vector({
           features: []
       });

@@ -86,32 +86,20 @@
             </v-list>
             <v-list class="pt-0" dense>
                 <v-divider></v-divider>
-
-                    <v-list-tile v-on:click.native="logout">
-                        <v-list-tile-action>
-                            <!--COMMENT
-                            <v-icon>question_answer</v-icon>
-                            COMMENT-->
-                            <v-icon>eject</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Logout</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                    <v-list-tile v-on:click.native="profile">
-                        <v-list-tile-action>
+                    <!--v-list-tile v-on:click.native="profile">
+                        <v-list-tile-action-->
                             <!--COMMENT
                             <v-icon>dashboard</v-icon>
                             COMMENT-->
                             <!--COMMENT
                             <v-icon>perm_identity</v-icon>
                             COMMENT-->
-                            <v-icon>person</v-icon>
+                            <!--v-icon>person</v-icon>
                         </v-list-tile-action>
                         <v-list-tile-content>
                             <v-list-tile-title>Profile</v-list-tile-title>
                         </v-list-tile-content>
-                    </v-list-tile>
+                    </v-list-tile-->
                     <v-list-tile @click.native.stop="toggleUserMessages">
                         <v-list-tile-action>
                             <v-icon>message</v-icon>
@@ -120,14 +108,14 @@
                             <v-list-tile-title>Messages</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-                    <v-list-tile v-on:click.native="groups">
-                        <v-list-tile-action>
-                            <v-icon>group</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Groups</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
+                    <!--<v-list-tile v-on:click.native="groups">
+                                            <v-list-tile-action>
+                                                <v-icon>group</v-icon>
+                                            </v-list-tile-action>
+                                            <v-list-tile-content>
+                                                <v-list-tile-title>Groups</v-list-tile-title>
+                                            </v-list-tile-content>
+                                        </v-list-tile>-->
                     <v-list-tile v-on:click.native.stop="toggleSettings">
                         <v-list-tile-action>
                             <v-icon>settings</v-icon>
@@ -144,7 +132,6 @@
                             <v-list-tile-title>Map</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile>
-
                     <!--v-list-tile v-on:click.native="edit_TEMPLATE_ACTION">
                         <v-list-tile-action-->
                             <!--COMMENT
@@ -156,6 +143,17 @@
                             <v-list-tile-title>Edit_TEMPLATE</v-list-tile-title>
                         </v-list-tile-content>
                     </v-list-tile-->
+                    <v-list-tile v-on:click.native="logout">
+                        <v-list-tile-action>
+                            <!--COMMENT
+                            <v-icon>question_answer</v-icon>
+                            COMMENT-->
+                            <v-icon>eject</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Logout</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
             </v-list>
         </v-navigation-drawer>
         <v-dialog v-model="this.$store.user.showAlert" persistent lazy>
@@ -174,9 +172,9 @@
                  </v-btn>
                  <v-toolbar-title>{{messagesTitle}}</v-toolbar-title>
                  <v-spacer></v-spacer>
-                 <v-toolbar-items>
+                 <!--v-toolbar-items>
                    <v-btn dark flat @click.native="toggleSendMessages">Send</v-btn>
-                 </v-toolbar-items>
+                 </v-toolbar-items-->
                </v-toolbar>
                <div style="position: absolute; top: 64px; bottom: 0px; left: 0px; right: 0px; ">
                      <v-card class="ml-2 mr-2 mt-2 mb-2 pa-2" v-if="sendMessages">
@@ -212,7 +210,7 @@
                            <v-layout row>
                              <v-radio color="primary" label="Mobile notification" value="NOTIFICATION"></v-radio>
                              <v-radio color="primary" label="Email" value="EMAIL_TEXT"></v-radio>
-                             <v-radio color="primary" label="For group admins" value="GROUP_NOTIFICATION"></v-radio>
+                             <!--v-radio color="primary" label="For group admins" value="GROUP_NOTIFICATION"></v-radio-->
                            </v-layout>
                         </v-radio-group>
                      </v-card>
@@ -421,7 +419,7 @@
     };
 
     const toggleSendMessages = function() {
-          this.sendMessages = !this.sendMessages;
+          this.sendMessages = true; //!this.sendMessages;
     };
 
     const toggleSettings = function() {
@@ -461,10 +459,11 @@
 
     const processMessages = function(body) {
         let res = [];
+        console.log(body);
         if(body.sent) {
             for(let mes of body.sent) {
                 mes.isSent = true;
-                res.push(mes);
+                if(mes.messageType != "FILE") res.push(mes);
             }
         }
         if(body.received) {
@@ -598,7 +597,7 @@
                 right: null,
                 groupFilter: '',
                 messageBox: false,
-                sendMessages: false,
+                sendMessages: true,
                 messagesTitle: "Messages",
                 sendingType: "NOTIFICATION",
                 settingsBox: false,

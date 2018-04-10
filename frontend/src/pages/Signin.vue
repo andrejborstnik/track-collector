@@ -30,27 +30,27 @@
                     COMMENT-->
 
 
-                    <v-select
+                    <!--v-select
                             label="Auth provider"
                             v-model="provider"
                             v-bind:items="this.$store.providers"
                             single-line
                             bottom
-                    ></v-select>
+                    ></v-select-->
                     <v-flex xm4 class="ma-0">
 
                         <v-btn
                                 @click.native="login">Login
                         </v-btn>
 
-                        <table style="width:100%">
+                        <!--table style="width:100%">
                           <tr>
                             <td><router-link to="resetPassword">Forgot password?</router-link></td>
                           </tr>
                           <tr>
                             <td><router-link to="registration">New account.</router-link></td>
                           </tr>
-                        </table>
+                        </table-->
                     </v-flex>
                 </v-layout>
             </v-card>
@@ -78,7 +78,7 @@
     const login = function () {
         let user_mail = this.user_mail; // zadeve v this se lahko spremenijo sredi izvajanja funkcije, zato si jih zapomnimo.
         let password = this.password;
-        let provider = this.provider == this.systemProvider ? null : this.provider;
+        let provider = "GOOPTI"; //this.provider == this.systemProvider ? null : this.provider; //uncomment to allow list of providers
 
         if (!password || !user_mail) {
             this.$store.user.errorTitle = "Sign in failure";
